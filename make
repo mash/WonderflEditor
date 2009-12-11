@@ -1,0 +1,1 @@
+﻿mxmlc WEditor.as -target-player 10
