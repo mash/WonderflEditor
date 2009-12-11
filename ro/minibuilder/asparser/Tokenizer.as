@@ -388,7 +388,7 @@ package ro.minibuilder.asparser
 				imports = new HashMap;
 
 			//toplevel package
-			if (t.string=='{' && tp.string == 'package')
+			if (t.string=='{' && tp && tp.string == 'package')
 			{
 				_scope = scope.members.getValue('');
 				//imports.setItem('.*');
