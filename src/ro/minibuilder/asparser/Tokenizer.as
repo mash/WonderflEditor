@@ -360,7 +360,14 @@ package ro.minibuilder.asparser
 				imports = new HashMap;
 			}
 
-			var t:Token = nextToken();
+			var t:Token;
+			
+			try {
+				t = nextToken()
+			} catch (e:Error) {
+				t = null;
+			}
+			
 			if (!t)
 				return false;
 
