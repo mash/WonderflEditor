@@ -134,7 +134,10 @@ public class AutoCompletion extends Sprite {
 		
 		a = vectorToDataProvidor(menuData.filter(menuFilterCallback));
 
-		if (a.length == 0) return false;
+		if (a.length == 0) {
+			deactivate();
+			return false;
+		}
 		list.dataProvider = a;
 		list.selectedIndex = 0;
 		
@@ -367,7 +370,7 @@ public class AutoCompletion extends Sprite {
 			}
 			else if (event.keyCode == Keyboard.BACKSPACE)
 			{
-				fldReplaceText(c-1, c, '');
+				//fldReplaceText(c-1, c, '');
 				if (menuStr.length > 0)
 				{
 					menuStr = menuStr.substr(0, -1);
