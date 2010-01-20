@@ -61,6 +61,9 @@ public class WonderflEditor extends Editor
 	
 	protected function triggerAssist():Boolean
 	{
+		/* stop autocompletion when the source is MXML */
+		if (text.charAt(0) == "<" && isMXML(text)) return false;
+		
 		var str:String = text.substring(Math.max(0, selectionBeginIndex-10), selectionBeginIndex);
 		str = str.split('').reverse().join('');
 		return (/^(?:\(|\:|\.|\s+sa\b|\swen\b|\ssdnetxe)/.test(str))

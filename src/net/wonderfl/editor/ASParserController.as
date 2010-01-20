@@ -152,6 +152,9 @@ Author: Victor Dramba
 		
 		public function sourceChanged(source:String, fileName:String):void
 		{
+			/* stop parsing when the source is MXML */
+			if (source.charAt(0) == "<" && isMXML(source)) return;
+			
 			t0 = getTimer();
 			parser.load(source, fileName);
 			if (tc.isRunning(parser))
