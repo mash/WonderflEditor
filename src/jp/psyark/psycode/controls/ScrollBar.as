@@ -159,7 +159,7 @@ public class ScrollBar extends UIControl {
 	}
 	
 	protected function trackMouseDownHandler(event:MouseEvent):void {
-		
+		stageMouseMoveHandler(event);
 	}
 	
 	protected function handleMouseDownHandler(event:MouseEvent):void {
