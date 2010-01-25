@@ -60,14 +60,22 @@ package
 			
 			
 			
+			
 			addEventListener(Event.ADDED_TO_STAGE, init);
 			
-			if (ExternalInterface.available) ExternalInterface.addCallback("xi_get_code", js_xi_get_code);
+			if (ExternalInterface.available) {
+				ExternalInterface.addCallback("xi_get_code", js_xi_get_code);
+				ExternalInterface.addCallback("xi_set_error", _editor.setError);
+				//ExternalInterface.addCallback("xi_clear_errors", _editor.clearErrors);
+			}
 		}
 		
 		private function compile():void
 		{
-			if (ExternalInterface.available && !_mouseUIFlag) ExternalInterface.call("Wonderfl.Compiler.edit_complete");
+			if (ExternalInterface.available && !_mouseUIFlag) {
+				ExternalInterface.call("Wonderfl.Compiler.edit_complete");
+				_editor.clearErrors();
+			}
 		}
 		
 		private function js_xi_get_code():String
@@ -101,7 +109,7 @@ package
 			if (ExternalInterface.available) {
 				var code:String = ExternalInterface.call("Wonderfl.Compiler.get_initial_code");
 				_editor.text = (code) ? code : "";
-			}
+ 			}
 		}
 		
 		private function onResize(e:Event):void 

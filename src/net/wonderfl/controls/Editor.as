@@ -176,6 +176,7 @@ public class Editor extends TextEditUI {
 			preventFollowingTextInput = true;
 			prevSBI = selectionBeginIndex;
 			prevSEI = selectionEndIndex;
+			dispatchEvent(new Event(Event.CHANGE));
 			return;
 		}
 		
@@ -187,6 +188,7 @@ public class Editor extends TextEditUI {
 			preventFollowingTextInput = true;
 			prevSBI = selectionBeginIndex;
 			prevSEI = selectionEndIndex;
+			dispatchEvent(new Event(Event.CHANGE));
 			return;
 		}
 		

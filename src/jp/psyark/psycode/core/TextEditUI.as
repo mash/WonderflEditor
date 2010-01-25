@@ -12,10 +12,12 @@ import flash.utils.setTimeout;
 import jp.psyark.psycode.controls.UIControl;
 import jp.psyark.psycode.controls.TextScrollBar;
 import jp.psyark.psycode.controls.ScrollBar;
-import jp.psyark.psycode.core.linenumber.LineNumberView;
+//import jp.psyark.psycode.core.linenumber.LineNumberView;
 import jp.psyark.utils.callLater;
 import jp.psyark.utils.convertNewlines;
 import jp.psyark.utils.CodeUtil;
+import net.wonderfl.controls.EditorScrollBar;
+import net.wonderfl.LineNumberView;
 
 import flash.events.Event;
 import flash.events.FocusEvent;
@@ -32,10 +34,10 @@ import flash.ui.Keyboard;
  * テキスト編集UIの基本的な機能を提供し、それらの実装を隠蔽します。
  */
 public class TextEditUI extends UIControl {
-	private var linumField:LineNumberView;
-	private var scrollBarV:TextScrollBar;
+	protected var linumField:LineNumberView;
+	private var scrollBarV:EditorScrollBar;
 	private var scrollBarH:TextScrollBar;
-	protected var textField:TextField;
+	public var textField:TextField;
 	
 	private var TAB_STOP_RATIO:Number = 2.42;
 	private var _selectionGraphic:Shape;
@@ -43,6 +45,7 @@ public class TextEditUI extends UIControl {
 	public var fileRef:FileReference;
 	private var _currentSelectionBeginIndex:int = -2;
 	private var _currentSelectionEndIndex:int = -2;
+	private var _frameSprite:Sprite;
 	
 	
 	/**
@@ -76,16 +79,20 @@ public class TextEditUI extends UIControl {
 		fmt.align = TextFormatAlign.RIGHT;
 		fmt.color = 0x666666;
 		
-		linumField = new LineNumberView(textField);
+		linumField = new LineNumberView(this);
 		linumField.setTextFormat(fmt);
 		linumField.addEventListener(Event.RESIZE, linumResizeHandler);
 		
-		scrollBarV = new TextScrollBar(textField);
+		scrollBarV = new EditorScrollBar(textField);
 		scrollBarH = new TextScrollBar(textField, ScrollBar.HORIZONTAL);
+		
+		_frameSprite = new Sprite;
+		//scrollBarV.alpha = 0.3;
 		
 		addChild(_selectionGraphic);
 		addChild(textField);
 		addChild(linumField);
+		addChild(_frameSprite);
 		addChild(scrollBarV);
 		addChild(scrollBarH);
 		
@@ -108,6 +115,36 @@ public class TextEditUI extends UIControl {
 			text = convertNewlines(String(fileRef.data));
 		});
 		fileRef.browse();
+	}
+	
+	public function setErrorPositions($positions:Array):void {
+		var len:int = $positions.length;
+		var i:int;
+		var row:int;
+		var rect:Rectangle;
+		var positions:Array = [];
+		var lastLine:int = lastLineIndex;
+		
+		for (i = 0; i < len; ++i) {
+			row = $positions[i];
+			rect = new Rectangle;
+			
+			if (row <= lastLine) {
+				rect.height = 1 / lastLine;
+				rect.y = row / lastLine;
+				positions.push(rect);
+			}
+		}
+		
+		scrollBarV.setErrorPositions(positions);
+	}
+	
+	public function get lastLineIndex():int
+	{
+		var lastCharIndex:int = textField.length - 1;
+		if (lastCharIndex < 1) return 0;
+		
+		return textField.getLineIndexOfChar(lastCharIndex);
 	}
 	
 	public function save():void {
@@ -214,7 +251,6 @@ public class TextEditUI extends UIControl {
 	
 	private function onMouseDown(e:MouseEvent):void 
 	{
-		trace("mouse down");
 		stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 	}
@@ -228,7 +264,11 @@ public class TextEditUI extends UIControl {
 	private function onMouseMove(e:MouseEvent):void 
 	{
 		drawSelection(textField.selectionBeginIndex, textField.selectionEndIndex);
+		draw();
 	}
+	
+	/* abstruct */
+	protected function drawErrorMessages():void {}
 	
 	private function drawSelection(begin:int, end:int):void {
 		return;
@@ -302,6 +342,19 @@ public class TextEditUI extends UIControl {
 	}
 	
 	
+	protected function draw():void {
+		graphics.clear();
+		graphics.beginFill(0x222222);
+		graphics.drawRect(0, 0, width, height);
+		
+		_frameSprite.graphics.clear();
+		_frameSprite.graphics.beginFill(0x222222);
+		_frameSprite.graphics.drawRect(0, 0, linumField.width, scrollBarH.height);
+		_frameSprite.graphics.drawRect(scrollBarH.x + scrollBarH.width, 0, scrollBarV.width, scrollBarH.height);
+		_frameSprite.graphics.endFill();
+		
+		drawErrorMessages();
+	}
 	
 	/**
 	 * エディタのレイアウトを更新します。
@@ -316,10 +369,10 @@ public class TextEditUI extends UIControl {
 		scrollBarH.x = linumField.width;
 		scrollBarH.y = height - scrollBarH.height;
 		scrollBarH.width = width - scrollBarV.width - linumField.width;
-		graphics.clear();
-		graphics.beginFill(0x222222);
-		graphics.drawRect(0, 0, width, height);
-		drawSelection(textField.selectionBeginIndex, textField.selectionEndIndex);
+		_frameSprite.y = scrollBarH.y;
+		linumField.updateLinePos(true);
+		draw();
+		//drawSelection(textField.selectionBeginIndex, textField.selectionEndIndex);
 	}
 }	
 }
