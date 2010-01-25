@@ -1,6 +1,8 @@
-﻿package jp.psyark.psycode.core 
+package jp.psyark.psycode.core 
 {
+import adobe.utils.CustomActions;
 import flash.display.Shape;
+import flash.display.Sprite;
 import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
 import flash.geom.Rectangle;

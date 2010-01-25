@@ -1,9 +1,16 @@
-﻿package net.wonderfl.editor 
+package net.wonderfl.editor 
 {
+import flash.display.Sprite;
 import flash.events.Event;
+import flash.events.MouseEvent;
+import flash.geom.Rectangle;
 import flash.text.TextFormat;
+import flash.text.TextLineMetrics;
+import flash.utils.clearTimeout;
 import flash.utils.getTimer;
+import flash.utils.setTimeout;
 import net.wonderfl.controls.Editor;
+import net.wonderfl.editor.error.ErrorMessage;
 
 import net.wonderfl.editor.completion.AutoCompletion;
 import ro.victordramba.thread.ThreadsController;
