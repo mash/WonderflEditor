@@ -4,7 +4,7 @@ import flash.events.Event;
 import flash.text.TextField;
 
 public class TextScrollBar extends ScrollBar {
-	private var target:TextField;
+	protected var target:TextField;
 	
 	public function TextScrollBar(target:TextField, direction:String="vertical") {
 		this.target = target;

@@ -139,16 +139,16 @@ public class ScrollBar extends UIControl {
 			if (direction == VERTICAL) {
 				var handleHeight:Number = MIN_HANDLE_LENGTH + (height - MIN_HANDLE_LENGTH) * viewSize / (maxValue - minValue + viewSize);
 				draggableSize = height - handleHeight;
-				handle.setSize(BAR_THICKNESS - 1, handleHeight);
-				handle.x = 1;
+				handle.setSize(BAR_THICKNESS, handleHeight);
+				//handle.x = 1;
 				if (dragging == false) {
 					handle.y = (value - minValue) / (maxValue - minValue) * draggableSize;
 				}
 			} else {
 				var handleWidth:Number = MIN_HANDLE_LENGTH + (width - MIN_HANDLE_LENGTH) * viewSize / (maxValue - minValue + viewSize);
 				draggableSize = width - handleWidth;
-				handle.setSize(handleWidth, BAR_THICKNESS - 1);
-				handle.y = 1;
+				handle.setSize(handleWidth, BAR_THICKNESS);
+				//handle.y = 1;
 				if (dragging == false) {
 					handle.x = (value - minValue) / (maxValue - minValue) * draggableSize;
 				}
@@ -160,7 +160,16 @@ public class ScrollBar extends UIControl {
 	
 	protected function trackMouseDownHandler(event:MouseEvent):void {
 		stageMouseMoveHandler(event);
+		
+		var position:Number;
+		if (direction == VERTICAL) {
+			position = Math.max(0, Math.min(draggableSize, mouseY - handlePressY));
+		}
+		moveCursor(mouseY + handle.height / 2);
 	}
+	
+	/* this works only for EditorScrollBar */
+	protected function moveCursor($position:Number):void {}
 	
 	protected function handleMouseDownHandler(event:MouseEvent):void {
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, stageMouseMoveHandler);
