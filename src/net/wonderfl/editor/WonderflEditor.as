@@ -55,7 +55,13 @@ public class WonderflEditor extends Editor
 				checkMouse();
 			});
 			addEventListener(Event.CHANGE, onChange);
+			addEventListener(Event.SCROLL, onScroll);
 		});
+	}
+	
+	private function onScroll(e:Event):void 
+	{
+		
 	}
 	
 	private function checkMouse():void
@@ -173,41 +179,33 @@ public class WonderflEditor extends Editor
 	override protected function drawErrorMessages():void 
 	{
 		var top:int = scrollV - 1;
-		var bottom:int = textField.bottomScrollV - 1;
+		var bottom:int = lastLineIndex;
 		var len:int = _errors.length;
 		var row:int;
 		var msg:ErrorMessage;
 		var tlm:TextLineMetrics;
 		var rect:Rectangle;
 		
-		trace("scrollV: " + scrollV);
-		
-		graphics.beginFill(ERROR_COLOR);
 		for (var i:int = 0; i < len; ++i) {
 			msg = _errors[i];
 			row = msg.row;
 			try {
 				tlm = textField.getLineMetrics(row);
-				rect = textField.getCharBoundaries(textField.getLineOffset(row));
-				msg.rect.x = rect.x;
-				msg.rect.y = rect.y - linumField.getLinePos(scrollV - 1);
+				msg.rect.y = linumField.getLinePos(row) - linumField.getLinePos(scrollV - 1);
 				msg.rect.width = width;
 				msg.rect.height = tlm.height;
 				_errors[i] = msg;
 			} catch (e:Error) {
+				trace(e);
 				continue;
 			}
-			//if (row >= top && row <= bottom) {
-				rect = msg.rect;
-				graphics.drawRect(rect.x, rect.y, rect.width, rect.height);
-			//}
+			rect = msg.rect;
+			graphics.beginFill(ERROR_COLOR);
+			graphics.drawRect(rect.x, rect.y, rect.width, rect.height);
+			graphics.endFill();
 		}
-		graphics.endFill();
 	}
 	
-	/**
-	 * コードヒントが選択された
-	 */
 	private function codeHintSelectHandler(event:Event):void {
 		//preventFollowingTextInput = false;
 		//var newIndex:int = textField.caretIndex - _autoCompletion.captureLength + _autoCompletion.selectedName.length;
@@ -215,13 +213,5 @@ public class WonderflEditor extends Editor
 		//setSelection(newIndex, newIndex);
 		//dispatchChangeEvent();
 	}
-	
-	
-	//public function loadSource(source:String, filePath:String):void
-	//{
-		//text = source.replace(/(\n|\r\n)/g, '\r');
-		//fileName = filePath;
-		//ctrl.sourceChanged(text, fileName);
-	//}
 }
 }

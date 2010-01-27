@@ -32,7 +32,6 @@
 			var scale:Number = height - BAR_THICKNESS;
 			var h:int;
 			
-			track.graphics.beginFill(0xa7360f);
 			for (i = 0; i < len; ++i) {
 				rect = _positions[i];
 				rect.width = BAR_THICKNESS;
@@ -41,9 +40,10 @@
 				h = (h > 10) ? 10 : h;
 				rect.height = h;
 				rect.y *= scale;
+				track.graphics.beginFill(0xa7360f);
 				track.graphics.drawRect(rect.x, rect.y, rect.width, rect.height);
+				track.graphics.endFill();
 			}
-			track.graphics.endFill();
 		}
 		
 		override protected function moveCursor($position:Number):void 
