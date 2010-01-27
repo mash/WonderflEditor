@@ -13,7 +13,7 @@ import flash.utils.setTimeout;
 /**
  * TextEditorクラス
  */
-class TextEditor extends TextEditorBase {
+public class TextEditor extends TextEditorBase {
 	private var highlightAllTimer:int;
 	
 	/**
