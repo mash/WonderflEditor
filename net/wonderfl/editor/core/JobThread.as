@@ -19,10 +19,11 @@ package net.wonderfl.editor.core
 			terminate();
 		}
 		
-		public static function addJob($job:Function):void {
-			_que.push($job);
-			
+		public static function addJobs(...jobs:Array):Class {
+			_que.push.apply(null, jobs);
 			trace('job added : ' + _que.length);
+			
+			return JobThread;
 		}
 		
 		public static function run():void {
@@ -42,7 +43,7 @@ package net.wonderfl.editor.core
 			
 			var tick:int = getTimer();
 			
-			while (getTimer() - tick < 33) {
+			while (getTimer() - tick < 120) {
 				if (_currentJob == null) {
 					if (_que.length == 0) {
 						terminate();

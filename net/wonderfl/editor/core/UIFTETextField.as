@@ -453,8 +453,8 @@ package net.wonderfl.editor.core
 
 			if (!e.shiftKey && k!=Keyboard.TAB)
 				_setSelection(_caret, _caret);
-				
-			updateCaret();
+			else
+				updateCaret();
 			
 			//save last column
 			if (k!=Keyboard.UP && k!=Keyboard.DOWN && k!=Keyboard.TAB)

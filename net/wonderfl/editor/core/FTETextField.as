@@ -73,6 +73,7 @@ package net.wonderfl.editor.core
 		private var _numLines:int;
 		private var _textDecorationContainer:Sprite = new Sprite;
 		private var _container:Sprite;
+		private var _scrollYEngine:Sprite = new Sprite;
 		
 		public function FTETextField()
 		{
@@ -125,15 +126,21 @@ package net.wonderfl.editor.core
 		{
 			if (_scrollY == value) return;
 			
-			var t:int = getTimer();
-			
 			_scrollY = Math.min(Math.max(0, value), _maxScrollV);
-			updateScrollProps();
-			updateCaret();
-			_setSelection(_selStart, _selEnd);
-			dispatchEvent(new Event(Event.SCROLL, true));
 			
-			trace('set scrollY : ' + (getTimer() - t) + ' ms');
+			if (!_scrollYEngine.hasEventListener(Event.ENTER_FRAME)) {
+				_scrollYEngine.addEventListener(Event.ENTER_FRAME, function (e:Event):void {
+					_scrollYEngine.removeEventListener(Event.ENTER_FRAME, arguments.callee);
+					
+					updateScrollProps();
+					//updateCaret();
+					_setSelection(_selStart, _selEnd);
+					
+					
+					
+					dispatchEvent(new Event(Event.SCROLL, true));
+				});
+			}
 		}
 		
 		public function get scrollY():int
@@ -218,8 +225,16 @@ package net.wonderfl.editor.core
 				_selStart = tmp;
 			}
 			
-			var p0:Point = getPointForIndex(Math.max(_selStart, firstPos));
-			var p1:Point = getPointForIndex(Math.min(_selEnd, lastPos));
+			var i0:int = Math.max(_selStart, firstPos);
+			var i1:int = Math.min(_selEnd, lastPos);
+			
+			trace('getting selStart');
+			var p0:Point = getPointForIndex(i0);
+			var p1:Point;
+			if (i0 != i1) {
+				trace('getting selEnd');
+			}
+			p1 = (i0 == i1) ? p0.clone() : getPointForIndex(i1);
 			var g:Graphics = _selectionShape.graphics;
 			g.clear();
 			if (_selStart != _selEnd && _selStart <= lastPos && _selEnd >= firstPos)
@@ -238,15 +253,15 @@ package net.wonderfl.editor.core
 				}
 			}
 			
-			if (caret)
-			{
+			//if (caret)
+			//{
 				cursor.visible = _caret <= lastPos && _caret >= firstPos;
 				_caret = endIndex;
 				cursor.pauseBlink();
 				cursor.setX(p1.x);
 				cursor.y = p1.y;
 				checkScrollToCursor();
-			}
+			//}
 			
 			trace('_setSelection : ' + (getTimer() - t) + ' ms');
 		}
@@ -255,6 +270,7 @@ package net.wonderfl.editor.core
 		{
 			cursor.visible = _caret <= lastPos && _caret >= firstPos;
 			cursor.pauseBlink();
+			trace('updateCaret');
 			var p:Point = getPointForIndex(_caret);
 			cursor.setX(p.x);
 			cursor.y = p.y;
@@ -357,9 +373,11 @@ package net.wonderfl.editor.core
 			var font:FontDescription = new FontDescription(_defaultTextFormat.font);
 			var linkElement:URLLinkElement;
 			
-			//for (var i:int = 0; i < len; ++i) {
 			var i:int;
-			JobThread.addJob(
+			var l:int;
+			var w:int;
+			
+			JobThread.addJobs(
 				function ():Boolean {
 					elements = new Vector.<ContentElement>;
 					_invalidated = false;
@@ -367,12 +385,10 @@ package net.wonderfl.editor.core
 					len = runs.length;
 					
 					return false;
-				}
-			);
-			JobThread.addJob(
+				},
 				function ():Boolean {
 					var tick:int = getTimer();
-					while ((getTimer() - tick) < 30 && !_invalidated) {
+					while ((getTimer() - tick) < 100 && !_invalidated) {
 						o = runs[i++];
 						if (o == null) break;
 						if (o.end < firstPos) continue;
@@ -407,8 +423,6 @@ package net.wonderfl.editor.core
 										_defaultTextFormat.size + 0, parseInt("0x" + o.color));
 								te = new TextElement($url, elf);
 								te.eventMirror = new LinkElementEventMirror(_textLineContainer, _textDecorationContainer, te, boxHeight);
-								//linkElement = new URLLinkElement($url, elf);
-								//link = new GraphicElement(linkElement, linkElement.width, linkElement.height, elf);
 								elements.push(te);
 								
 								index = $begin + $url.length;
@@ -428,26 +442,11 @@ package net.wonderfl.editor.core
 						oo = o;
 					}
 					
-					trace('' + <>
-						job state : {
-							i
-						} / {
-							len
-						}, tick : {
-							(getTimer() - tick)
-						}
-					</>);
-					
 					return (o != null && (i < len) && !_invalidated);
-				}
-			);
-			//}
-			
-			var l:int;
-			var w:int;
-			
-			JobThread.addJob(
+				},
 				function ():Boolean {
+					if (_invalidated) return false;
+					
 					if (pos < lastPos) {
 						str = _text.substring(oo ? oo.end : firstPos, lastPos);
 						elf = new ElementFormat(font, _defaultTextFormat.size + 0, 0xffffff);
@@ -462,68 +461,87 @@ package net.wonderfl.editor.core
 					
 					_block.content = group;
 					
-					while (_textLineContainer.numChildren) {
-						_textLineContainer.removeChildAt(0);
-					}
-					while (_textDecorationContainer.numChildren)//
-						_textDecorationContainer.removeChildAt(0);//
 						
-					//line = _block.createTextLine(null, 1000000, 0);
 					line = null;
 					l = 0; w = -1;
-				//coloringJob();
-					//
-					//if (line == null || _invalidated) return false;
+					//while (_textLineContainer.numChildren) {
+						//_textLineContainer.removeChildAt(0);
+					//}
+					while (_textDecorationContainer.numChildren)
+						_textDecorationContainer.removeChildAt(0);
 					
 					return false;
-				}
-			);
-			
-			JobThread.addJob(coloringJob);
-			JobThread.run();
-			
-			trace('updateVisibleText : ' + (getTimer() - t) + ' ms');
-			
-			function coloringJob(wait:int = 33):Boolean {
-				var tick:int = getTimer();
-				
-				while ((getTimer() - tick) < wait && !_invalidated) {
-					line = _block.createTextLine(line, TextLine.MAX_LINE_WIDTH);
+				},
+				function ():Boolean {
+					if (_invalidated) return false;
 					
-					if (line == null) break;
+					var tick:int = getTimer();
 					
-					line.x = 4;
-					line.y = boxHeight * ++l - 2;
-					w = (w < line.textWidth) ? line.textWidth : w;
-					_textLineContainer.addChild(line);
-					drawRegions(line.mirrorRegions);
-				}
-				
-				if (_invalidated) {
-					_invalidated = false;
-					line = null;
+					while ((getTimer() - tick) < 60 && !_invalidated) {
+						line = _block.createTextLine(line, TextLine.MAX_LINE_WIDTH);
+						
+						if (line == null) break;
+						
+						line.x = 4;
+						line.y = boxHeight * ++l - 2;
+						w = (w < line.textWidth) ? line.textWidth : w;
+						//_textLineContainer.addChild(line);
+						if (line.mirrorRegions) {
+							drawRegions(line.mirrorRegions);
+						} else {
+							line.mouseEnabled = line.mouseChildren = false;
+						}
+					}
+					
+					if (_invalidated) {
+						_invalidated = false;
+						line = null;
+						return false;
+					}
+					
+					if (line == null) {
+						w += 4;
+						
+						w = (w < width) ? width : w;
+						_maxWidth = w;
+						//visibleColumns = (width / boxWidth) >> 0;
+						//_maxScrollH = ((w / boxWidth) >> 0) - visibleColumns;
+						trace('width : ' + w);
+					}
+					
+					return (line != null);
+				},
+				function ():Boolean {
+					addEventListener(Event.RENDER, function render(e:Event):void {
+						removeEventListener(Event.RENDER, render);
+						var num:int = _textLineContainer.numChildren;
+						var children:Array = [];
+						for (i = 0; i < num; ++i) {
+							children[i] = _textLineContainer.getChildAt(i);
+						}
+						line = _block.firstLine;
+						i = 0;
+						while (line) {
+							if (i < num) {
+								_textLineContainer.removeChild(children[i++]);
+							}
+							_textLineContainer.addChild(line);
+							line = line.nextLine;
+						}
+						
+						while (i < num)
+							_textLineContainer.removeChild(children[i++]);
+						
+						children.length = 0;
+					});
+					dispatchEvent(new Event(Event.RENDER));
 					return false;
 				}
-				
-				if (line == null) {
-					w += 4;
-					
-					w = (w < width) ? width : w;
-					_maxWidth = w;
-					//visibleColumns = (width / boxWidth) >> 0;
-					//_maxScrollH = ((w / boxWidth) >> 0) - visibleColumns;
-					trace('width : ' + w);
-					//width = w;	
-				}
-				
-				return (line != null);
-			}
+			).run();
 		}
 		
 		private function drawRegions($regions:Vector.<TextLineMirrorRegion>):void
 		{
-			if ($regions == null) return;
-			
 			var len:int = $regions.length;
 			var region:TextLineMirrorRegion;
 			var linkMirror:LinkElementEventMirror;
@@ -616,7 +634,12 @@ package net.wonderfl.editor.core
 			if (l < 0) return firstPos;
 			if (l >= _textLineContainer.numChildren) return lastPos;
 			//
-			var line:TextLine = _textLineContainer.getChildAt(l) as TextLine;
+			i = 0;
+			var line:TextLine = _block.firstLine;
+			while (line && i++ < l) {
+				line = line.nextLine;
+			}
+			//var line:TextLine = _textLineContainer.getChildAt(l) as TextLine;
 			
 			//for (i=pos; i<_text.length && (c=_text.charAt(i))!=NL; i++)
 			//{
@@ -626,7 +649,7 @@ package net.wonderfl.editor.core
 			l = 0; i = pos;
 			while (i < _text.length && (c = _text.charAt(i)) != NL) {
 				l = i - pos;
-				if (l >= line.atomCount) break;
+				if (line == null || l >= line.atomCount) break;
 				cx = line.getAtomBounds(l).x;
 				if (cx > p.x - line.x) break;
 				
@@ -652,21 +675,24 @@ package net.wonderfl.editor.core
 			}
 			var ypos:int = (lines - _scrollY) * boxHeight + 2;
 			var xpos:int;
+			var i:int = 0;
 			var line:TextLine;
 			var l:int = lines - _scrollY;
-			var numLines:int = _textLineContainer.numChildren;
-			if (l >= 0 && l < numLines) {
-				line = _textLineContainer.getChildAt(l) as TextLine;
+			if (l >= 0) {
+				//line = _textLineContainer.getChildAt(l) as TextLine;
+				i = 0;
+				line = _block.firstLine;
+				while (line && i++ < l) line = line.nextLine;
 				l = index - lastNL;
-				if (l >= 0 && l < line.atomCount)
+				if (l >= 0 && line && l < line.atomCount)
 					xpos = line.getAtomBounds(index - lastNL).x + line.x;
 				else
-					calcXposByOriginalMethod();
+					calcXposByOriginalMethod("faild @ atomCount");
 			} else 
-				calcXposByOriginalMethod();
+				calcXposByOriginalMethod("faild @ numLines");
 			
-			function calcXposByOriginalMethod():void {
-				trace('calcXposByOriginalMethod');
+			function calcXposByOriginalMethod(msg:String):void {
+				trace('calcXposByOriginalMethod : ' + msg);
 				//count tabs
 				for (var i:int=lastNL, tabs:int=0; i<index; i++) if (_text.charAt(i)=='\t') tabs++;
 				//simple tabs, just 4 spaces, no align
