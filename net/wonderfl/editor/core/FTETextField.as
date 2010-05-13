@@ -694,8 +694,9 @@ package net.wonderfl.editor.core
 			function calcXposByOriginalMethod(msg:String):void {
 				trace('calcXposByOriginalMethod : ' + msg);
 				//count tabs
-				for (var i:int=lastNL, tabs:int=0; i<index; i++) if (_text.charAt(i)=='\t') tabs++;
+				//for (var i:int=lastNL, tabs:int=0; i<index; i++) if (_text.charAt(i)=='\t') tabs++;
 				//simple tabs, just 4 spaces, no align
+				var tabs:int = 0;
 				xpos = (index - lastNL + tabs * 3) * boxWidth + 4;
 			}
 			//trace('getPointForIndex : ' + (getTimer() - t) + ' ms');

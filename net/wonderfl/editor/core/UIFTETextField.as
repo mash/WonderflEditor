@@ -157,13 +157,14 @@ package net.wonderfl.editor.core
 				_setSelection(dragStart, dragStart, true);
 			}
 			
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			stage.addEventListener(Event.ENTER_FRAME, onMouseMove);
 			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			
-			var IID:int = setInterval(intervalScroll, 30);
+			//var IID:int = setInterval(intervalScroll, 30);
 			var scrollDelta:int = 0;
+			var prevMouse:Point = new Point(NaN);
 			
-			function onMouseMove(e:MouseEvent):void
+			function onMouseMove(e:Event):void
 			{
 				if (mouseY < 0)
 					scrollDelta = -1;
@@ -172,17 +173,24 @@ package net.wonderfl.editor.core
 				else
 					scrollDelta = 0;
 					
+				if (scrollDelta != 0) {
+					scrollY += scrollDelta;
+				}
+				
 				p.x = mouseX; p.y = mouseY;
-				_setSelection(dragStart, getIndexForPoint(p));
+				if (!p.equals(prevMouse)) {
+					_setSelection(dragStart, getIndexForPoint(p));
+					prevMouse = p.clone();
+				}
 			}
 			
 			function onMouseUp(e:MouseEvent):void
 			{
 				stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-				stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+				stage.removeEventListener(Event.ENTER_FRAME, onMouseMove);
 				p.x = mouseX; p.y = mouseY;
 				_setSelection(dragStart, getIndexForPoint(p), true);
-				clearInterval(IID);
+				//clearInterval(IID);
 				saveLastCol();
 			}
 			
@@ -493,7 +501,7 @@ package net.wonderfl.editor.core
 		{
 			replaceSelection(e.text);
 			_setSelection(_caret, _caret);
-			updateCaret();
+			//updateCaret();
 			saveLastCol();
 			checkScrollToCursor();
 			e.preventDefault();
