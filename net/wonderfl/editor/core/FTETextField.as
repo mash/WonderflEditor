@@ -333,22 +333,19 @@ package net.wonderfl.editor.core
 			updateVisibleText();
 		}
 		
+		protected var _invalidated:Boolean = false;
+		
 		private function updateVisibleText():void {
-			if (_coloringTask != null) return;
-			
 			var t:int = getTimer();
 			var line:TextLine;
-			if (_block.firstLine)
-				_block.releaseLines(_block.firstLine, _block.lastLine);
-				
-			_block.content = null;
-			while (_textLineContainer.numChildren) {
-				line = _textLineContainer.removeChildAt(0) as TextLine;
-			}
-			while (_textDecorationContainer.numChildren)
-				_textDecorationContainer.removeChildAt(0);
 			
-			var elements:Vector.<ContentElement> = new Vector.<ContentElement>;
+			if (JobThread.running) {
+				_invalidated = true;
+				JobThread.abort();
+			}
+			
+			
+			var elements:Vector.<ContentElement>;
 			var len:int = runs.length;
 			var pos:int, index:int;
 			var o:Object, oo:Object;
@@ -360,91 +357,152 @@ package net.wonderfl.editor.core
 			var font:FontDescription = new FontDescription(_defaultTextFormat.font);
 			var linkElement:URLLinkElement;
 			
-			for (var i:int = 0; i < len; ++i) {
-				o = runs[i];
-				if (o.end < firstPos) continue;
-				if (o.begin > lastPos) {
-					break;
+			//for (var i:int = 0; i < len; ++i) {
+			var i:int;
+			JobThread.addJob(
+				function ():Boolean {
+					elements = new Vector.<ContentElement>;
+					_invalidated = false;
+					i = 0;
+					len = runs.length;
+					
+					return false;
 				}
-				
-				if (o.begin >= firstPos) {
-					str = _text.substring((oo ? oo.end : firstPos), o.begin);
-					elf = new ElementFormat(font, _defaultTextFormat.size + 0, 0xffffff);
-					te = new TextElement(str, elf);
-					elements.push(te);
-				}
-				
-				str = _text.substring(Math.max(o.begin, firstPos), Math.min(o.end, lastPos));
-				elf = new ElementFormat(
-						new FontDescription(_defaultTextFormat.font, (o.bold ? FontWeight.BOLD : FontWeight.NORMAL), (o.italic ? FontPosture.ITALIC : FontPosture.NORMAL)),
-						_defaultTextFormat.size + 0, parseInt("0x" + o.color));
+			);
+			JobThread.addJob(
+				function ():Boolean {
+					var tick:int = getTimer();
+					while ((getTimer() - tick) < 30 && !_invalidated) {
+						o = runs[i++];
+						if (o == null) break;
+						if (o.end < firstPos) continue;
+						if (o.begin > lastPos) {
+							return false;
+						}
 						
-				index = 0;
-				str.replace(
-					new RegExp("https?://[-_.!~*()a-zA-Z0-9;/?:@&=+$,%#]+", "g"),
-					function ($url:String, $begin:int, $str:String):String {
+						if (o.begin >= firstPos) {
+							str = _text.substring((oo ? oo.end : firstPos), o.begin);
+							elf = new ElementFormat(font, _defaultTextFormat.size + 0, 0xffffff);
+							te = new TextElement(str, elf);
+							elements.push(te);
+						}
+						
+						str = _text.substring(Math.max(o.begin, firstPos), Math.min(o.end, lastPos));
 						elf = new ElementFormat(
 								new FontDescription(_defaultTextFormat.font, (o.bold ? FontWeight.BOLD : FontWeight.NORMAL), (o.italic ? FontPosture.ITALIC : FontPosture.NORMAL)),
 								_defaultTextFormat.size + 0, parseInt("0x" + o.color));
-						te = new TextElement(str.substring(index, $begin), elf);
-						elements.push(te);
+								
+						index = 0;
+						str.replace(
+							new RegExp("https?://[-_.!~*()a-zA-Z0-9;/?:@&=+$,%#]+", "g"),
+							function ($url:String, $begin:int, $str:String):String {
+								elf = new ElementFormat(
+										new FontDescription(_defaultTextFormat.font, (o.bold ? FontWeight.BOLD : FontWeight.NORMAL), (o.italic ? FontPosture.ITALIC : FontPosture.NORMAL)),
+										_defaultTextFormat.size + 0, parseInt("0x" + o.color));
+								te = new TextElement(str.substring(index, $begin), elf);
+								elements.push(te);
+								
+								elf = new ElementFormat(
+										new FontDescription(_defaultTextFormat.font, (o.bold ? FontWeight.BOLD : FontWeight.NORMAL), (o.italic ? FontPosture.ITALIC : FontPosture.NORMAL)),
+										_defaultTextFormat.size + 0, parseInt("0x" + o.color));
+								te = new TextElement($url, elf);
+								te.eventMirror = new LinkElementEventMirror(_textLineContainer, _textDecorationContainer, te, boxHeight);
+								//linkElement = new URLLinkElement($url, elf);
+								//link = new GraphicElement(linkElement, linkElement.width, linkElement.height, elf);
+								elements.push(te);
+								
+								index = $begin + $url.length;
+								
+								return $url;
+							}
+						);
 						
-						elf = new ElementFormat(
-								new FontDescription(_defaultTextFormat.font, (o.bold ? FontWeight.BOLD : FontWeight.NORMAL), (o.italic ? FontPosture.ITALIC : FontPosture.NORMAL)),
-								_defaultTextFormat.size + 0, parseInt("0x" + o.color));
-						te = new TextElement($url, elf);
-						te.eventMirror = new LinkElementEventMirror(_textLineContainer, _textDecorationContainer, te, boxHeight);
-						//linkElement = new URLLinkElement($url, elf);
-						//link = new GraphicElement(linkElement, linkElement.width, linkElement.height, elf);
-						elements.push(te);
+						if (index < str.length) {
+							elf = new ElementFormat(
+									new FontDescription(_defaultTextFormat.font, (o.bold ? FontWeight.BOLD : FontWeight.NORMAL), (o.italic ? FontPosture.ITALIC : FontPosture.NORMAL)),
+									_defaultTextFormat.size + 0, parseInt("0x" + o.color));
+							elements.push(new TextElement(str.substr(index), elf));
+						}
 						
-						index = $begin + $url.length;
-						
-						return $url;
+						pos = o.end;
+						oo = o;
 					}
-				);
-				
-				if (index < str.length) {
-					elf = new ElementFormat(
-							new FontDescription(_defaultTextFormat.font, (o.bold ? FontWeight.BOLD : FontWeight.NORMAL), (o.italic ? FontPosture.ITALIC : FontPosture.NORMAL)),
-							_defaultTextFormat.size + 0, parseInt("0x" + o.color));
-					elements.push(new TextElement(str.substr(index), elf));
+					
+					trace('' + <>
+						job state : {
+							i
+						} / {
+							len
+						}, tick : {
+							(getTimer() - tick)
+						}
+					</>);
+					
+					return (o != null && (i < len) && !_invalidated);
 				}
-				
-				pos = o.end;
-				oo = o;
-			}
+			);
+			//}
 			
-			if (pos < lastPos) {
-				str = _text.substring(oo ? oo.end : firstPos, lastPos);
-				elf = new ElementFormat(font, _defaultTextFormat.size + 0, 0xffffff);
-				te = new TextElement(str, elf);
-				pos = lastPos;
-				
-				elements.push(te);
-			}
+			var l:int;
+			var w:int;
 			
+			JobThread.addJob(
+				function ():Boolean {
+					if (pos < lastPos) {
+						str = _text.substring(oo ? oo.end : firstPos, lastPos);
+						elf = new ElementFormat(font, _defaultTextFormat.size + 0, 0xffffff);
+						te = new TextElement(str, elf);
+						pos = lastPos;
+						
+						elements.push(te);
+					}
+					
+					var group:GroupElement = new GroupElement;
+					group.setElements(elements);
+					
+					_block.content = group;
+					
+					while (_textLineContainer.numChildren) {
+						_textLineContainer.removeChildAt(0);
+					}
+					while (_textDecorationContainer.numChildren)//
+						_textDecorationContainer.removeChildAt(0);//
+						
+					//line = _block.createTextLine(null, 1000000, 0);
+					line = null;
+					l = 0; w = -1;
+				//coloringJob();
+					//
+					//if (line == null || _invalidated) return false;
+					
+					return false;
+				}
+			);
 			
-			var group:GroupElement = new GroupElement;
-			group.setElements(elements);
+			JobThread.addJob(coloringJob);
+			JobThread.run();
 			
-			_block.content = group;
-			//trace(_block.dump());
-			line = _block.createTextLine(null, 1000000, 0);
-			var l:int = 0;
-			trace('creating text elements' + (getTimer() - t) + ' ms');
-			var w:int = -1;
+			trace('updateVisibleText : ' + (getTimer() - t) + ' ms');
 			
 			function coloringJob(wait:int = 33):Boolean {
 				var tick:int = getTimer();
 				
-				while (line && (getTimer() - tick) < wait) {
+				while ((getTimer() - tick) < wait && !_invalidated) {
+					line = _block.createTextLine(line, TextLine.MAX_LINE_WIDTH);
+					
+					if (line == null) break;
+					
 					line.x = 4;
 					line.y = boxHeight * ++l - 2;
 					w = (w < line.textWidth) ? line.textWidth : w;
 					_textLineContainer.addChild(line);
 					drawRegions(line.mirrorRegions);
-					line = _block.createTextLine(line, TextLine.MAX_LINE_WIDTH);
+				}
+				
+				if (_invalidated) {
+					_invalidated = false;
+					line = null;
+					return false;
 				}
 				
 				if (line == null) {
@@ -460,11 +518,6 @@ package net.wonderfl.editor.core
 				
 				return (line != null);
 			}
-			
-			coloringJob(33 - (getTimer() - t));
-			
-			if (line == null) return;
-			doColoring(coloringJob);
 		}
 		
 		private function drawRegions($regions:Vector.<TextLineMirrorRegion>):void
@@ -483,22 +536,6 @@ package net.wonderfl.editor.core
 			}
 		}
 		
-		private var _coloringTask:Function;
-		
-		private function doColoring(job:Function):void {
-			if (_coloringTask == null) {
-				var frame:int = 0;
-				addEventListener(Event.ENTER_FRAME, function ():void {
-					if (!_coloringTask()) {
-						_coloringTask = null;
-						
-						trace('the job costs ' + ++frame + ' frame');
-						removeEventListener(Event.ENTER_FRAME, arguments.callee);
-					}
-				});
-			}
-			_coloringTask = job;
-		}
 		
 		public function replaceSelection(text:String):void
 		{
@@ -576,26 +613,26 @@ package net.wonderfl.editor.core
 			var i:int;
 			l -= _scrollY;
 			
-			//if (l < 0) return firstPos;
-			//if (l >= _textLineContainer.numChildren) return lastPos;
+			if (l < 0) return firstPos;
+			if (l >= _textLineContainer.numChildren) return lastPos;
 			//
-			//var line:TextLine = _textLineContainer.getChildAt(l) as TextLine;
+			var line:TextLine = _textLineContainer.getChildAt(l) as TextLine;
 			
-			for (i=pos; i<_text.length && (c=_text.charAt(i))!=NL; i++)
-			{
-				cx += (c=='\t' ? 4 : 1)*boxWidth;
-				if (cx > p.x) break;
-			}
-			//l = 0; i = pos;
-			//while (i < _text.length && (c = _text.charAt(i)) != NL) {
-				//l = i - pos;
-				//if (l >= line.atomCount) break;
-				//cx = line.getAtomBounds(l).x;
-				//if (cx > p.x - line.x) break;
-				//
-				//++i;
+			//for (i=pos; i<_text.length && (c=_text.charAt(i))!=NL; i++)
+			//{
+				//cx += (c=='\t' ? 4 : 1)*boxWidth;
+				//if (cx > p.x) break;
 			//}
-			trace('getIndexForPoint : ' + (getTimer() - t) + ' ms');
+			l = 0; i = pos;
+			while (i < _text.length && (c = _text.charAt(i)) != NL) {
+				l = i - pos;
+				if (l >= line.atomCount) break;
+				cx = line.getAtomBounds(l).x;
+				if (cx > p.x - line.x) break;
+				
+				++i;
+			}
+			//trace('getIndexForPoint : ' + (getTimer() - t) + ' ms');
 			
 			return i;
 		}
@@ -615,27 +652,28 @@ package net.wonderfl.editor.core
 			}
 			var ypos:int = (lines - _scrollY) * boxHeight + 2;
 			var xpos:int;
-			//var line:TextLine;
-			//var l:int = lines - _scrollY;
-			//var numLines:int = _textLineContainer.numChildren;
-			//if (l >= 0 && l < numLines) {
-				//line = _textLineContainer.getChildAt(l) as TextLine;
-				//l = index - lastNL;
-				//if (l >= 0 && l < line.atomCount)
-					//xpos = line.getAtomBounds(index - lastNL).x + line.x;
-				//else
-					//calcXposByOriginalMethod();
-			//} else 
+			var line:TextLine;
+			var l:int = lines - _scrollY;
+			var numLines:int = _textLineContainer.numChildren;
+			if (l >= 0 && l < numLines) {
+				line = _textLineContainer.getChildAt(l) as TextLine;
+				l = index - lastNL;
+				if (l >= 0 && l < line.atomCount)
+					xpos = line.getAtomBounds(index - lastNL).x + line.x;
+				else
+					calcXposByOriginalMethod();
+			} else 
 				calcXposByOriginalMethod();
 			
 			function calcXposByOriginalMethod():void {
+				trace('calcXposByOriginalMethod');
 				//count tabs
 				for (var i:int=lastNL, tabs:int=0; i<index; i++) if (_text.charAt(i)=='\t') tabs++;
 				//simple tabs, just 4 spaces, no align
 				xpos = (index - lastNL + tabs * 3) * boxWidth + 4;
 			}
-			trace('getPointForIndex : ' + (getTimer() - t) + ' ms');
-			//xpos += _container.x;
+			//trace('getPointForIndex : ' + (getTimer() - t) + ' ms');
+			//xpos = x;
 			return new Point(xpos, ypos);
 		}
 		
