@@ -1,5 +1,6 @@
 package net.wonderfl.editor.core 
 {
+	import com.bit101.components.Accordion;
 	import flash.desktop.Clipboard;
 	import flash.desktop.ClipboardFormats;
 	import flash.display.DisplayObject;
@@ -79,7 +80,6 @@ package net.wonderfl.editor.core
 				if (t - prevMouseUpTime < 250) {
 					onDoubleClick();
 				}
-				stage.focus = inputTF;
 				prevMouseUpTime = t;
 			});
 		}
@@ -141,15 +141,19 @@ package net.wonderfl.editor.core
 		
 		public function onMouseDown(e:MouseEvent):void
 		{
+			stage.focus = inputTF;
+			var p:Point = new Point;
+			
+			p.x = mouseX; p.y = mouseY;
 			var dragStart:int;
 			if (e.shiftKey)
 			{
 				dragStart = _caret;
-				_setSelection(dragStart, getIndexForPoint(new Point(mouseX, mouseY)), true);
+				_setSelection(dragStart, getIndexForPoint(p), true);
 			}
 			else
 			{
-				dragStart = getIndexForPoint(new Point(mouseX, mouseY));
+				dragStart = getIndexForPoint(p);
 				_setSelection(dragStart, dragStart, true);
 			}
 			
@@ -167,14 +171,17 @@ package net.wonderfl.editor.core
 					scrollDelta = 1;
 				else
 					scrollDelta = 0;
-				_setSelection(dragStart, getIndexForPoint(new Point(mouseX, mouseY)));
+					
+				p.x = mouseX; p.y = mouseY;
+				_setSelection(dragStart, getIndexForPoint(p));
 			}
 			
 			function onMouseUp(e:MouseEvent):void
 			{
 				stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 				stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-				_setSelection(dragStart, getIndexForPoint(new Point(mouseX, mouseY)), true);
+				p.x = mouseX; p.y = mouseY;
+				_setSelection(dragStart, getIndexForPoint(p), true);
 				clearInterval(IID);
 				saveLastCol();
 			}
@@ -184,7 +191,8 @@ package net.wonderfl.editor.core
 				if (scrollDelta != 0)
 				{
 					scrollY += scrollDelta;
-					_setSelection(dragStart, getIndexForPoint(new Point(mouseX, mouseY)));
+					p.x = mouseX; p.y = mouseY;
+					_setSelection(dragStart, getIndexForPoint(p));
 				}
 			}
 		}
