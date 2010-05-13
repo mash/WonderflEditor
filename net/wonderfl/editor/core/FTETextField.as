@@ -253,15 +253,15 @@ package net.wonderfl.editor.core
 				}
 			}
 			
-			//if (caret)
-			//{
 				cursor.visible = _caret <= lastPos && _caret >= firstPos;
 				_caret = endIndex;
 				cursor.pauseBlink();
 				cursor.setX(p1.x);
 				cursor.y = p1.y;
+			if (caret)
+			{
 				checkScrollToCursor();
-			//}
+			}
 			
 			trace('_setSelection : ' + (getTimer() - t) + ' ms');
 		}
