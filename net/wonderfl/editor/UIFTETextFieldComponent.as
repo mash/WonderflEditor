@@ -41,6 +41,7 @@ package net.wonderfl.editor
 			});
 			
 			_field.addEventListener(Event.SCROLL, onTextScroll);
+			_field.addEventListener(Event.RESIZE, onFieldResize);
 			
 			lineNums = new LineNumberField(_field);
 			addChild(lineNums);
@@ -60,17 +61,28 @@ package net.wonderfl.editor
 			addChild(_hScroll);
 		}
 		
+		private function onFieldResize(e:Event):void 
+		{
+			_hScroll.setThumbPercent((_width - lineNums.width - 15) / _field.maxWidth);
+			
+			var maxH:int = ((_field.maxWidth - _width + lineNums.width + 15) / _field.boxWidth) >> 0;
+			maxH = (maxH < 0) ? 0 : maxH;
+			maxH++;
+			
+			_hScroll.setSliderParams(1, maxH, _hScroll.value);
+		}
+		
 		private function onHScroll(e:Event):void 
 		{
-			trace('on h scroll : ' + _hScroll.value);
+			//trace('on h scroll : ' + _hScroll.value);
 			_field.scrollH = _hScroll.value;
 //			_field.x = lineNums.width - _hScroll.value * _boxWidth;
 		}
 		
 		private function onTextScroll(e:Event):void 
 		{
-			_hScroll.setThumbPercent(_width / _field.maxWidth);
-			_hScroll.setSliderParams(1, _field.width / _boxWidth, _hScroll.value);
+			//_hScroll.setThumbPercent(_width / _field.maxWidth);
+			//_hScroll.setSliderParams(1, _field.width / _boxWidth, _hScroll.value);
 		}
 		
 		private function numStageMouseUp(e:Event):void
@@ -82,6 +94,7 @@ package net.wonderfl.editor
 		override protected function updateSize():void 
 		{
 			_field.height = _height - _hScroll.height;
+			_field.width = _width - lineNums.width - _vScroll.width;
 			_vScroll.height = _height;
 			_hScroll.width = _width;
 			_vScroll.x = _width - _vScroll.width;

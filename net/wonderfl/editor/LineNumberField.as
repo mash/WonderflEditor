@@ -55,6 +55,8 @@ package net.wonderfl.editor
 			var end:int = start + rows;
 			var arr:Array = [];
 			
+			end = (end > _fte.numLines) ? _fte.numLines : end;
+			
 			for (var i:int = start; i <= end; ++i) 
 			{
 				arr[i - start] = i;
@@ -80,7 +82,7 @@ package net.wonderfl.editor
 				line = line.nextLine;
 			}
 			
-			w += 4;
+			w += 6;
 			if (_width != w) {
 				_width = w;
 				

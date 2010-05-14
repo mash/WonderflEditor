@@ -45,8 +45,8 @@ package net.wonderfl.editor.core
 		
 		protected var _text:String = '';
 		
-		private var boxHeight:int = 16;
-		private var boxWidth:int = 12;
+		public var boxHeight:int = 16;
+		public var boxWidth:int = 12;
 		
 		protected var _scrollY:int = 0;
 		protected var _scrollH:int = 0;
@@ -59,7 +59,7 @@ package net.wonderfl.editor.core
 		
 		public var visibleRows:int;
 		public var visibleColumns:int;
-		private var _maxWidth:int;
+		private var _maxWidth:int = -1;
 		
 		static protected var NL:String = '\r';
 		
@@ -244,20 +244,21 @@ package net.wonderfl.editor.core
 					g.drawRect(p0.x, p0.y, p1.x - p0.x, boxHeight);
 				else
 				{
-					g.drawRect(p0.x, p0.y, width - p0.x, boxHeight);
+					g.drawRect(p0.x, p0.y, _maxWidth - p0.x, boxHeight);
 					var rows:int = (p1.y - p0.y) / boxHeight;
 					for (var i:int=1; i<rows; i++)
-						g.drawRect(1, p0.y + boxHeight * i, width, boxHeight);
+						g.drawRect(1, p0.y + boxHeight * i, _maxWidth, boxHeight);
 					//if selection is past last visible pos, we draw a full line
-					g.drawRect(1, p0.y + boxHeight * i, lastPos >= _selEnd ? p1.x : width, boxHeight);
+					g.drawRect(1, p0.y + boxHeight * i, lastPos >= _selEnd ? p1.x : _maxWidth, boxHeight);
 				}
 			}
 			
-				cursor.visible = _caret <= lastPos && _caret >= firstPos;
-				_caret = endIndex;
-				cursor.pauseBlink();
-				cursor.setX(p1.x);
-				cursor.y = p1.y;
+			cursor.visible = _caret <= lastPos && _caret >= firstPos;
+			_caret = endIndex;
+			cursor.pauseBlink();
+			cursor.setX(p1.x);
+			cursor.y = p1.y;
+			
 			if (caret)
 			{
 				checkScrollToCursor();
@@ -380,6 +381,7 @@ package net.wonderfl.editor.core
 			JobThread.addJobs(
 				function ():Boolean {
 					elements = new Vector.<ContentElement>;
+					
 					_invalidated = false;
 					i = 0;
 					len = runs.length;
@@ -500,10 +502,13 @@ package net.wonderfl.editor.core
 					}
 					
 					if (line == null) {
-						w += 4;
+						w += 8;
 						
 						w = (w < width) ? width : w;
-						_maxWidth = w;
+						if (_maxWidth < w) {
+							_maxWidth = w;
+							dispatchEvent(new Event(Event.RESIZE));
+						}
 						//visibleColumns = (width / boxWidth) >> 0;
 						//_maxScrollH = ((w / boxWidth) >> 0) - visibleColumns;
 						trace('width : ' + w);
@@ -512,8 +517,7 @@ package net.wonderfl.editor.core
 					return (line != null);
 				},
 				function ():Boolean {
-					addEventListener(Event.RENDER, function render(e:Event):void {
-						removeEventListener(Event.RENDER, render);
+						//removeEventListener(Event.RENDER, render);
 						var num:int = _textLineContainer.numChildren;
 						var children:Array = [];
 						for (i = 0; i < num; ++i) {
@@ -533,8 +537,7 @@ package net.wonderfl.editor.core
 							_textLineContainer.removeChild(children[i++]);
 						
 						children.length = 0;
-					});
-					dispatchEvent(new Event(Event.RENDER));
+						
 					return false;
 				}
 			).run();
@@ -705,8 +708,9 @@ package net.wonderfl.editor.core
 		}
 		
 		public function set scrollH(value:int):void {
+			//trace('scrollH = ' + value);
 			_scrollH = value;
-			_container.x = - 2 * boxWidth * value;
+			_container.x = - boxWidth * (value - 1);
 		}
 		
 		public function get scrollH():int { return _scrollH; }

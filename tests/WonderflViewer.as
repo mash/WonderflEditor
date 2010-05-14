@@ -191,14 +191,14 @@
 				}
 			}
 			
-			width = (w > 465) ? w - 465 : w;;
+			width = (w > 465) ? w - 465 : w;
 			height = h;
 		}
 		
 		override protected function updateSize():void 
 		{
 			_viewer.width = width;
-			_scaleDownButton.x = width - _scaleDownButton.width;
+			_scaleDownButton.x = width - _scaleDownButton.width - 15;
 			_scaleDownButton.visible = (width > 464 || height > 466);
 			if (_isLive) {
 				_infoPanel.width = _scaleDownButton.visible ? _scaleDownButton.x  : width - 15;
