@@ -1,5 +1,6 @@
 package net.wonderfl.editor.core 
 {
+	import flash.display.JointStyle;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.utils.getTimer;
@@ -11,19 +12,32 @@ package net.wonderfl.editor.core
 	{
 		private static var _engine:Sprite = new Sprite;
 		private static var _que:Array = [];
-		private static var _cancelFlag:Boolean = false;
 		private static var _running:Boolean = false;
-		private static var _currentJob:Function = null;
+		private static var _currentJob:Job = null;
 		
 		public static function abort():void {
 			terminate();
 		}
 		
-		public static function addJobs(...jobs:Array):Class {
-			_que.push.apply(null, jobs);
+		public static function addJob(...jobslices:Array):Class {
+			_que.push(new Job(jobslices));
+			//_que = [new Job(jobslices)];
 			trace('job added : ' + _que.length);
 			
 			return JobThread;
+		}
+		
+		public static function getPendingJobs():Array {
+			return _que.slice();
+		}
+		
+		public static function killJob($id:int):void {
+			_que = _que.filter(function ($item:Job, $index:int, $array:Array):Boolean {
+				return ($item.id != $id);
+			});
+		}
+		public static function get length():int {
+			return _que.length
 		}
 		
 		public static function run():void {
@@ -36,14 +50,9 @@ package net.wonderfl.editor.core
 		static public function get running():Boolean { return _running; }
 		
 		private static function executer(e:Event):void {
-			if (_cancelFlag) {
-				terminate();
-				return;
-			}
-			
 			var tick:int = getTimer();
 			
-			while (getTimer() - tick < 120) {
+			while (getTimer() - tick < 25) {
 				if (_currentJob == null) {
 					if (_que.length == 0) {
 						terminate();
@@ -54,7 +63,7 @@ package net.wonderfl.editor.core
 					trace(_que.length + ' jobs left');
 				}
 				
-				if (!_currentJob()) {
+				if (!_currentJob.runSlice()) {
 					_currentJob = null;
 				}
 			}
@@ -67,8 +76,6 @@ package net.wonderfl.editor.core
 			_currentJob = null;
 			_que.length = 0;
 			_running = false;
-			_cancelFlag = false;
 		}
 	}
-
 }

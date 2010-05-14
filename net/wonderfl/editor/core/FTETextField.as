@@ -28,7 +28,9 @@ package net.wonderfl.editor.core
 	import flash.text.TextFormat;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
+	import flash.utils.clearTimeout;
 	import flash.utils.getTimer;
+	import flash.utils.setTimeout;
 	import net.wonderfl.editor.IEditor;
 	import net.wonderfl.editor.utils.calcFontBox;
 	import ro.victordramba.scriptarea.ScriptCursor;
@@ -129,15 +131,18 @@ package net.wonderfl.editor.core
 			
 			_scrollY = Math.min(Math.max(0, value), _maxScrollV);
 			
-			if (!_scrollYEngine.hasEventListener(Event.ENTER_FRAME)) {
-				_scrollYEngine.addEventListener(Event.ENTER_FRAME, function (e:Event):void {
-					_scrollYEngine.removeEventListener(Event.ENTER_FRAME, arguments.callee);
-					
+			//if (!_scrollYEngine.hasEventListener(Event.ENTER_FRAME)) {
+				//_scrollYEngine.addEventListener(Event.ENTER_FRAME, function (e:Event):void {
+					//_scrollYEngine.removeEventListener(Event.ENTER_FRAME, arguments.callee);
 					updateScrollProps();
-					
-					//dispatchEvent(new Event(Event.SCROLL, true));
-				});
-			}
+			//var time:int;
+			//
+			//(function ():void {
+				//clearTimeout(time);
+				//time = setTimeout(updateScrollProps, 30);
+			//})();
+				//});
+			//}
 		}
 		
 		public function get scrollY():int
@@ -353,11 +358,11 @@ package net.wonderfl.editor.core
 			var t:int = getTimer();
 			var line:TextLine;
 			
-			if (JobThread.running) {
-				_invalidated = true;
-				JobThread.abort();
-			}
-			
+			//if (JobThread.running) {
+				//_invalidated = true;
+				//JobThread.abort();
+			//}
+			killJobs();
 			
 			var elements:Vector.<ContentElement>;
 			var len:int = runs.length;
@@ -375,7 +380,7 @@ package net.wonderfl.editor.core
 			var l:int;
 			var w:int;
 			
-			JobThread.addJobs(
+			JobThread.addJob(
 				function ():Boolean {
 					elements = new Vector.<ContentElement>;
 					
@@ -387,7 +392,7 @@ package net.wonderfl.editor.core
 				},
 				function ():Boolean {
 					var tick:int = getTimer();
-					while ((getTimer() - tick) < 100 && !_invalidated) {
+					while ((getTimer() - tick) < 6 && !_invalidated) {
 						o = runs[i++];
 						if (o == null) break;
 						if (o.end < firstPos) continue;
@@ -466,6 +471,7 @@ package net.wonderfl.editor.core
 					//while (_textLineContainer.numChildren) {
 						//_textLineContainer.removeChildAt(0);
 					//}
+					_textDecorationContainer.visible = false;
 					while (_textDecorationContainer.numChildren)
 						_textDecorationContainer.removeChildAt(0);
 					
@@ -476,7 +482,7 @@ package net.wonderfl.editor.core
 					
 					var tick:int = getTimer();
 					
-					while ((getTimer() - tick) < 60 && !_invalidated) {
+					while ((getTimer() - tick) < 6 && !_invalidated) {
 						line = _block.createTextLine(line, TextLine.MAX_LINE_WIDTH);
 						
 						if (line == null) break;
@@ -532,12 +538,31 @@ package net.wonderfl.editor.core
 						while (i < num)
 							_textLineContainer.removeChild(children[i++]);
 						
+						_textDecorationContainer.visible = true;
 						children.length = 0;
 						_setSelection(_selStart, _selEnd);
 						dispatchEvent(new Event(Event.SCROLL, true));
 					return false;
 				}
 			).run();
+		}
+		
+		private function killJobs():void
+		{
+			var jobs:Array = JobThread.getPendingJobs();
+			var len:int = jobs.length;
+			var prev:Job, job:Job;
+			prev = jobs[0];
+			var now:int = getTimer();
+			for (var i:int = 1; i < len; ++i) {
+				job = jobs[i];
+				trace('job timestamp : ' + job.timestamp);
+				if (job.id % 2 == 1) {
+					JobThread.killJob(job.id);
+				} else {
+					prev = job;
+				}
+			}
 		}
 		
 		private function drawRegions($regions:Vector.<TextLineMirrorRegion>):void

@@ -16,8 +16,11 @@ package net.wonderfl.editor.core
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
 	import flash.utils.clearInterval;
+	import flash.utils.clearTimeout;
+	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	import flash.utils.setInterval;
+	import flash.utils.setTimeout;
 	import net.wonderfl.editor.IEditor;
 	/**
 	 * ...
@@ -29,10 +32,13 @@ package net.wonderfl.editor.core
 		private var extChar:int;
 		private var prevMouseUpTime:int = 0;
 		protected var inputTF:TextField;
+		private var _downKey:int = -1;
+		private var _keyIntervalID:uint;
+		private var _keyTimeOut:uint;
+		private var _keyWatcher:Function;
 		
 		public function UIFTETextField() 
 		{
-			//doubleClickEnabled = true;
 			focusRect = false;
 			
 			inputTF = new TextField;
@@ -44,7 +50,9 @@ package net.wonderfl.editor.core
 			});
 			
 			
+			addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
 			addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			addEventListener(KeyboardEvent.KEY_UP, _onKeyUp);
 			addEventListener(FocusEvent.KEY_FOCUS_CHANGE, function(e:FocusEvent):void {
 				e.preventDefault();
 				e.stopImmediatePropagation();
@@ -82,6 +90,138 @@ package net.wonderfl.editor.core
 				}
 				prevMouseUpTime = t;
 			});
+			
+		}
+		
+		private function _onKeyDown(e:KeyboardEvent):void 
+		{
+			var k:uint = e.keyCode;
+			var i:int;
+			var pos:int;
+			
+			if (e.keyCode != _downKey) {
+				clearTimeout(_keyTimeOut);
+				//clearInterval(_keyIntervalID);
+				_downKey = k;
+				_keyTimeOut = setTimeout(
+					function ():void {
+						//_keyIntervalID = setInterval(checkKey, 1000 / 20);
+						addEventListener(Event.ENTER_FRAME, checkKey);
+					}, 100
+				);
+				checkKey(null);
+				_keyWatcher = checkKey;
+			}
+			
+			function checkKey(event:Event):void {
+				if (k == Keyboard.DOWN)
+				{
+					//look for next NL
+					i = _text.indexOf(NL, _caret);
+					if (i != -1)
+					{ 
+						_caret = i+1;
+					
+						//line = lines[line.index+1];
+						
+						i = _text.indexOf(NL, _caret);
+						if (i==-1) i = _text.length;
+						
+						
+						//restore col
+						if (i - _caret > lastCol)
+							_caret += lastCol;
+						else
+							_caret = i;
+							
+						if (e.shiftKey) extendSel(false);
+					}
+				}
+				else if (k == Keyboard.UP)
+				{
+					i = _text.lastIndexOf(NL, _caret-1);
+					var lineBegin:int = i;
+					if (i != -1)
+					{
+						i = _text.lastIndexOf(NL, i-1);
+						if (i != -1) _caret = i+1;
+						else _caret = 0;
+						
+						//line = lines[line.index - 1];
+						//_caret = line.start;
+						
+						//restore col
+						if (lineBegin - _caret > lastCol)
+							_caret += lastCol;
+						else
+							_caret = lineBegin;
+							
+						if (e.shiftKey) extendSel(true);
+					}
+				}
+				else if (k == Keyboard.PAGE_UP)
+				{
+					for (i = 0, pos = _caret; i <= visibleRows; i++) 
+					{
+						pos = _text.lastIndexOf(NL, pos-1);
+						if (pos == -1)
+						{
+							_caret = 0;
+							break;
+						}
+						_caret = pos+1;
+					}
+				}
+				else if (k == Keyboard.PAGE_DOWN)
+				{
+					for (i = 0, pos = _caret; i <= visibleRows; i++) 
+					{
+						pos = _text.indexOf(NL, pos+1);
+						if (pos == -1)
+						{
+							_caret = _text.length;
+							break;
+						}
+						_caret = pos+1;
+					}
+				}
+				
+				if (!e.shiftKey && k!=Keyboard.TAB)
+					_setSelection(_caret, _caret);
+				
+				//save last column
+				if (k!=Keyboard.UP && k!=Keyboard.DOWN && k!=Keyboard.TAB)
+					saveLastCol();
+				
+				checkScrollToCursor();
+				e.updateAfterEvent();
+				
+				function extendSel(left:Boolean):void
+				{
+					if (left)
+					{
+						if (_caret < _selStart)
+							_setSelection(_caret, _selEnd);
+						else
+							_setSelection(_selStart, _caret);
+					}
+					else
+					{
+						if (_caret > _selEnd)
+							_setSelection(_selStart, _caret);
+						else
+							_setSelection(_caret, _selEnd);
+					}
+				}
+			}
+		}
+		
+		private function _onKeyUp(e:KeyboardEvent):void 
+		{
+			_downKey = -1;
+			//clearInterval(_keyIntervalID);
+			removeEventListener(Event.ENTER_FRAME, _keyWatcher);
+			clearTimeout(_keyTimeOut);
 		}
 		
 		private function onDoubleClick():void {
@@ -295,51 +435,6 @@ package net.wonderfl.editor.core
 					}
 				}
 			}
-			else if (k == Keyboard.DOWN)
-			{
-				//look for next NL
-				i = _text.indexOf(NL, _caret);
-				if (i != -1)
-				{ 
-					_caret = i+1;
-				
-					//line = lines[line.index+1];
-					
-					i = _text.indexOf(NL, _caret);
-					if (i==-1) i = _text.length;
-					
-					
-					//restore col
-					if (i - _caret > lastCol)
-						_caret += lastCol;
-					else
-						_caret = i;
-						
-					if (e.shiftKey) extendSel(false);
-				}
-			}
-			else if (k == Keyboard.UP)
-			{
-				i = _text.lastIndexOf(NL, _caret-1);
-				var lineBegin:int = i;
-				if (i != -1)
-				{
-					i = _text.lastIndexOf(NL, i-1);
-					if (i != -1) _caret = i+1;
-					else _caret = 0;
-					
-					//line = lines[line.index - 1];
-					//_caret = line.start;
-					
-					//restore col
-					if (lineBegin - _caret > lastCol)
-						_caret += lastCol;
-					else
-						_caret = lineBegin;
-						
-					if (e.shiftKey) extendSel(true);
-				}
-			}
 			else if (k == Keyboard.HOME)
 			{
 				if (e.ctrlKey)
@@ -363,32 +458,6 @@ package net.wonderfl.editor.core
 					_caret = i == -1 ? _text.length : i;
 				}
 				if (e.shiftKey) extendSel(false);
-			}
-			else if (k == Keyboard.PAGE_UP)
-			{
-				for (i = 0, pos = _caret; i <= visibleRows; i++) 
-				{
-					pos = _text.lastIndexOf(NL, pos-1);
-					if (pos == -1)
-					{
-						_caret = 0;
-						break;
-					}
-					_caret = pos+1;
-				}
-			}
-			else if (k == Keyboard.PAGE_DOWN)
-			{
-				for (i = 0, pos = _caret; i <= visibleRows; i++) 
-				{
-					pos = _text.indexOf(NL, pos+1);
-					if (pos == -1)
-					{
-						_caret = _text.length;
-						break;
-					}
-					_caret = pos+1;
-				}
 			}
 			//else if (k == Keyboard.BACKSPACE)
 			//{
@@ -467,7 +536,7 @@ package net.wonderfl.editor.core
 				saveLastCol();
 			
 			checkScrollToCursor();
-			e.updateAfterEvent();
+			//e.updateAfterEvent();
 			
 			//local function
 			function extendSel(left:Boolean):void
