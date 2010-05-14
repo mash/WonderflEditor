@@ -3,6 +3,7 @@ package net.wonderfl.editor.core
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Shape;
+	import flash.display.Sprite;
 	import flash.events.EventDispatcher;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
@@ -28,12 +29,13 @@ package net.wonderfl.editor.core
 		private var _overFormat:ElementFormat;
 		private var _outFormat:ElementFormat;
 		private var _url:String;
-		private var _hover:Hover;
-		private var _underline:Underline;
+		private var _hover:Shape;
+		private var _underline:Shape;
 		private var _line:TextLine;
 		private var _text:TextElement;
 		private var _lineHeight:int;
 		private var _over:Boolean = false;
+		private var _linkSprite:Sprite;
 		
 		public function LinkElementEventMirror($textLineContainer:DisplayObjectContainer, $decorationContainer:DisplayObjectContainer, $text:TextElement, $lineHeight:int) 
 		{
@@ -46,9 +48,10 @@ package net.wonderfl.editor.core
 			_outFormat = $text.elementFormat.clone();
 			_lineHeight = $lineHeight;
 			
-			addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-			addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-			addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			_linkSprite = new Sprite;
+			_linkSprite.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			_linkSprite.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+			_linkSprite.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
 		}
 		
 		public function draw($region:TextLineMirrorRegion):void {
@@ -58,19 +61,27 @@ package net.wonderfl.editor.core
 			
 			_line = line;
 			
-			_hover = new Hover;
+			_hover = new Shape;
 			_hover.graphics.beginFill(0xf39c64);
-			_hover.graphics.drawRect(line.x + rect.x, line.y + rect.y - 2, rect.width, metrics.underlineOffset + 4 - rect.y);
+			_hover.graphics.drawRect(0, rect.y - 2, rect.width, metrics.underlineOffset + 4 - rect.y);
 			_hover.graphics.endFill();
 			_hover.visible = false;
 			
-			_underline = new Underline;
+			_underline = new Shape;
 			_underline.graphics.lineStyle(1, _outFormat.color);
-			_underline.graphics.moveTo(line.x + rect.x, line.y + metrics.underlineOffset + 2);
-			_underline.graphics.lineTo(line.x + rect.x + rect.width, line.y + metrics.underlineOffset + 2);
+			_underline.graphics.moveTo(0, metrics.underlineOffset + 2);
+			_underline.graphics.lineTo(rect.width, metrics.underlineOffset + 2);
 			
-			_decorationContainer.addChild(_hover);
-			_decorationContainer.addChild(_underline);
+			
+			_linkSprite.graphics.beginFill(0, 0);
+			_linkSprite.graphics.drawRect(0, rect.y - 2, rect.width, metrics.underlineOffset + 4 - rect.y);
+			_linkSprite.graphics.endFill();
+			_linkSprite.x = line.x + rect.x;
+			_linkSprite.y = line.y;
+			
+			_decorationContainer.addChild(_linkSprite);
+			_linkSprite.addChild(_hover);
+			_linkSprite.addChild(_underline);
 		}
 		
 		private function onMouseUp(e:MouseEvent):void 
@@ -120,7 +131,3 @@ package net.wonderfl.editor.core
 	}
 
 }
-import flash.display.Shape;
-
-internal class Hover extends Shape {}
-internal class Underline extends Shape {}

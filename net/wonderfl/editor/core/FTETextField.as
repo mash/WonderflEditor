@@ -100,7 +100,8 @@ package net.wonderfl.editor.core
 			_container.addChild(_textDecorationContainer);
 			_container.addChild(_selectionShape);
 			_container.addChild(_textLineContainer);
-			_textDecorationContainer.mouseChildren = _textDecorationContainer.mouseEnabled = false;
+			//_textDecorationContainer.mouseChildren = _textDecorationContainer.mouseEnabled = false;
+			_textLineContainer.mouseChildren = _textLineContainer.mouseEnabled = false;
 			
 			_block = new TextBlock;
 			
@@ -482,13 +483,11 @@ package net.wonderfl.editor.core
 						
 						line.x = 4;
 						line.y = boxHeight * ++l - 2;
+						line.mouseChildren = line.mouseEnabled = false;
 						w = (w < line.textWidth) ? line.textWidth : w;
 						//_textLineContainer.addChild(line);
 						if (line.mirrorRegions) {
 							drawRegions(line.mirrorRegions);
-						} else {
-							line.mouseEnabled = line.mouseChildren = false;
-							_textLineContainer.mouseChildren = false;
 						}
 					}
 					
