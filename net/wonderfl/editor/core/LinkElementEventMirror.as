@@ -47,8 +47,8 @@ package net.wonderfl.editor.core
 			_lineHeight = $lineHeight;
 			
 			addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-			addEventListener(MouseEvent.ROLL_OVER, onMouseOver);
-			addEventListener(MouseEvent.ROLL_OUT, onMouseOut);
+			addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+			addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
 		}
 		
 		public function draw($region:TextLineMirrorRegion):void {

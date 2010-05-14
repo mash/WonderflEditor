@@ -133,12 +133,8 @@ package net.wonderfl.editor.core
 					_scrollYEngine.removeEventListener(Event.ENTER_FRAME, arguments.callee);
 					
 					updateScrollProps();
-					//updateCaret();
-					_setSelection(_selStart, _selEnd);
 					
-					
-					
-					dispatchEvent(new Event(Event.SCROLL, true));
+					//dispatchEvent(new Event(Event.SCROLL, true));
 				});
 			}
 		}
@@ -345,9 +341,9 @@ package net.wonderfl.editor.core
 				if (o.end >= startIndex) o.end += delta;
 			}
 			
-			trace('_replaceText costs : ' + (getTimer() - t) + ' ms');
 			
 			updateVisibleText();
+			trace('_replaceText costs : ' + (getTimer() - t) + ' ms');
 		}
 		
 		protected var _invalidated:Boolean = false;
@@ -492,6 +488,7 @@ package net.wonderfl.editor.core
 							drawRegions(line.mirrorRegions);
 						} else {
 							line.mouseEnabled = line.mouseChildren = false;
+							_textLineContainer.mouseChildren = false;
 						}
 					}
 					
@@ -537,7 +534,8 @@ package net.wonderfl.editor.core
 							_textLineContainer.removeChild(children[i++]);
 						
 						children.length = 0;
-						
+						_setSelection(_selStart, _selEnd);
+						dispatchEvent(new Event(Event.SCROLL, true));
 					return false;
 				}
 			).run();
@@ -642,13 +640,7 @@ package net.wonderfl.editor.core
 			while (line && i++ < l) {
 				line = line.nextLine;
 			}
-			//var line:TextLine = _textLineContainer.getChildAt(l) as TextLine;
 			
-			//for (i=pos; i<_text.length && (c=_text.charAt(i))!=NL; i++)
-			//{
-				//cx += (c=='\t' ? 4 : 1)*boxWidth;
-				//if (cx > p.x) break;
-			//}
 			l = 0; i = pos;
 			while (i < _text.length && (c = _text.charAt(i)) != NL) {
 				l = i - pos;
