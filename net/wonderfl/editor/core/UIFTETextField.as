@@ -36,6 +36,7 @@ package net.wonderfl.editor.core
 		private var _keyIntervalID:uint;
 		private var _keyTimeOut:uint;
 		private var _keyWatcher:Function;
+		private var _this:UIFTETextField;
 		
 		public function UIFTETextField() 
 		{
@@ -44,11 +45,10 @@ package net.wonderfl.editor.core
 			inputTF = new TextField;
 			inputTF.type = TextFieldType.INPUT;
 			inputTF.addEventListener(TextEvent.TEXT_INPUT, onInputText);
-			var me:UIFTETextField = this;
+			_this = this;
 			inputTF.addEventListener(KeyboardEvent.KEY_UP, function(e:KeyboardEvent):void {
-				if (stage) stage.focus = me;
+				if (stage) stage.focus = _this;
 			});
-			
 			
 			new KeyDownProxy(this, onKeyDown, [Keyboard.DOWN, Keyboard.UP, Keyboard.PAGE_DOWN, Keyboard.PAGE_UP, Keyboard.LEFT, Keyboard.RIGHT]);
 			//addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
@@ -82,14 +82,6 @@ package net.wonderfl.editor.core
 			addEventListener(MouseEvent.ROLL_OUT, function(e:MouseEvent):void {
 				//Mouse.cursor = MouseCursor.AUTO;
 			});
-			addEventListener(MouseEvent.MOUSE_UP, function ():void {
-				var t:int = getTimer();
-				if (t - prevMouseUpTime < 250) {
-					onDoubleClick();
-				}
-				prevMouseUpTime = t;
-			});
-			
 		}
 		
 		private function onDoubleClick():void {
@@ -196,6 +188,14 @@ package net.wonderfl.editor.core
 			{
 				stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 				stage.removeEventListener(Event.ENTER_FRAME, onMouseMove);
+				
+				var t:int = getTimer();
+				if (t - prevMouseUpTime < 250) {
+					onDoubleClick();
+					prevMouseUpTime = t;
+					return;
+				}
+				prevMouseUpTime = t;
 				p.x = mouseX; p.y = mouseY;
 				_setSelection(dragStart, getIndexForPoint(p), true);
 				//clearInterval(IID);
@@ -476,6 +476,7 @@ package net.wonderfl.editor.core
 			
 			checkScrollToCursor();
 			//e.updateAfterEvent();
+			//captureInput();
 			
 			//local function
 			function extendSel(left:Boolean):void
@@ -497,11 +498,18 @@ package net.wonderfl.editor.core
 			}
 		}
 		
-		//private function captureInput():void
-		//{
-			//if (stage && stage.focus == this)
-				//stage.focus = inputTF;
-		//}s
+		override public function _setSelection(beginIndex:int, endIndex:int, caret:Boolean = false):void 
+		{
+			super._setSelection(beginIndex, endIndex, caret);
+			
+			stage.focus = this;
+		}
+		
+		private function captureInput():void
+		{
+			if (stage && stage.focus == this)
+				stage.focus = inputTF;
+		}
 		
 		private function onInputText(e:TextEvent):void
 		{
