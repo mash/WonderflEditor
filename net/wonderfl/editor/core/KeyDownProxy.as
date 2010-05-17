@@ -43,7 +43,7 @@ package net.wonderfl.editor.core
 					_keyDownTimeout = setTimeout(
 						function ():void {
 								_engine.addEventListener(Event.ENTER_FRAME, keyWatcher);
-						}, 80);
+						}, 120);
 					_keyDownHandler(e);
 				}
 			} else {
