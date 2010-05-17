@@ -75,11 +75,13 @@ package net.wonderfl.editor
 			}
 			w += 4;
 			i = 0;
-			line = getChildAt(0) as TextLine;
-			while (line) {
-				line.x = w - line.textWidth;
-				line.y = box.height * i++ - 2;
-				line = line.nextLine;
+			if (numChildren) {
+				line = getChildAt(0) as TextLine;
+				while (line) {
+					line.x = w - line.textWidth;
+					line.y = box.height * i++ - 2;
+					line = line.nextLine;
+				}
 			}
 			
 			w += 6;
