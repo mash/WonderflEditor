@@ -5,6 +5,8 @@ package net.wonderfl.editor.core
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.ui.Mouse;
+	import flash.ui.MouseCursor;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -29,6 +31,18 @@ package net.wonderfl.editor.core
 			_target.addEventListener(Event.SCROLL, onScroll);
 			
 			addChild(_handle);
+			addEventListener(MouseEvent.MOUSE_UP, onTrackClick);
+			addEventListener(MouseEvent.MOUSE_OVER, function ():void {
+				Mouse.cursor = MouseCursor.BUTTON;
+			});
+			addEventListener(MouseEvent.MOUSE_OUT, function ():void {
+				Mouse.cursor = MouseCursor.IBEAM;
+			});
+		}
+		
+		private function onTrackClick(e:MouseEvent):void 
+		{
+			updateHandlePos(mouseY);
 		}
 		
 		private function onScroll(e:Event):void 
@@ -45,20 +59,27 @@ package net.wonderfl.editor.core
 			_diff = _handle.y - mouseY;
 		}
 		
+		private function updateHandlePos($ypos:int):void {
+			_handle.y = truncate(_diff + $ypos);
+			var oldValue:int = _scrollY;
+			_scrollY = Math.round(_target.maxScrollV * (_handle.y / _trackHeight));
+			if (oldValue != _scrollY) {
+				_target.scrollY = _scrollY;
+			}
+		}
+		
 		private function checkMouse(e:Event):void 
 		{
 			if (mouseY != _prevMouseY) {
-				_prevMouseY = mouseY;
-				var yPos:Number = _diff + _prevMouseY;
-				yPos = (yPos < 0) ? 0 : yPos;
-				yPos = (yPos > _trackHeight) ? _trackHeight : yPos;
-				_handle.y = yPos;
-				var oldValue:int = _scrollY;
-				_scrollY = Math.round(_target.maxScrollV * (_handle.y / _trackHeight));
-				if (oldValue != _scrollY) {
-					_target.scrollY = _scrollY;
-				}
+				updateHandlePos(_prevMouseY = mouseY);
 			}
+		}
+		
+		private function truncate($value:int):int {
+			$value = ($value < 0) ? 0 : $value;
+			$value = ($value > _trackHeight) ? _trackHeight : $value;
+			
+			return $value;
 		}
 		
 		protected function onDrop(event:MouseEvent):void
