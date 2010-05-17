@@ -50,7 +50,7 @@ package net.wonderfl.editor.core
 			});
 			
 			
-			new KeyDownProxy(this, onKeyDown);
+			new KeyDownProxy(this, onKeyDown, [Keyboard.DOWN, Keyboard.UP, Keyboard.PAGE_DOWN, Keyboard.PAGE_UP, Keyboard.LEFT, Keyboard.RIGHT]);
 			//addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			addEventListener(FocusEvent.KEY_FOCUS_CHANGE, function(e:FocusEvent):void {
 				e.preventDefault();

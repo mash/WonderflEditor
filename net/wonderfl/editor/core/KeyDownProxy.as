@@ -13,17 +13,14 @@ package net.wonderfl.editor.core
 	public class KeyDownProxy
 	{
 		private static var _engine:Sprite = new Sprite;
-		private var _downKey:int = -1;
 		private var _keyDownTimeout:uint;
 		private var _keyDownHandler:Function;
-		private var _keyWatcher:Function;
+		private var _keyEventDispatchers:Object = {};
 		private var _target:InteractiveObject;
+		private var _watchKeys:Array;
 		
-		public function KeyDownProxy($target:InteractiveObject, $keyDownHandler:Function) {
-			addProxy($target, $keyDownHandler);
-		}
-		
-		public function addProxy($target:InteractiveObject, $keyDownHandler:Function):void {
+		public function KeyDownProxy($target:InteractiveObject, $keyDownHandler:Function, $watchKeys:Array) {
+			_watchKeys = $watchKeys;
 			_target = $target;
 			_keyDownHandler = $keyDownHandler;
 			
@@ -38,14 +35,18 @@ package net.wonderfl.editor.core
 		
 		private function onKeyDown(e:KeyboardEvent):void 
 		{
-			if (e.keyCode != _downKey) {
-				clearTimeout(_keyDownTimeout);
-				_downKey = e.keyCode;
-				_keyWatcher = bind(e);
-				_keyDownTimeout = setTimeout(
-					function ():void {
-							_engine.addEventListener(Event.ENTER_FRAME, _keyWatcher);
-					}, 100);
+			if (_watchKeys.indexOf(e.keyCode) > -1) {
+				if (_keyEventDispatchers[e.keyCode] == null) {
+					clearTimeout(_keyDownTimeout);
+					var keyWatcher:Function = bind(e);
+					_keyEventDispatchers[e.keyCode] = keyWatcher;
+					_keyDownTimeout = setTimeout(
+						function ():void {
+								_engine.addEventListener(Event.ENTER_FRAME, keyWatcher);
+						}, 80);
+					_keyDownHandler(e);
+				}
+			} else {
 				_keyDownHandler(e);
 			}
 		}
@@ -59,9 +60,12 @@ package net.wonderfl.editor.core
 		
 		private function onKeyUp(e:KeyboardEvent):void 
 		{
-			_downKey = -1;
 			clearTimeout(_keyDownTimeout);
-			_engine.removeEventListener(Event.ENTER_FRAME, _keyWatcher);
+			var keyWatcher:Function = _keyEventDispatchers[e.keyCode];
+			if (keyWatcher != null) {
+				_engine.removeEventListener(Event.ENTER_FRAME, keyWatcher);
+				_keyEventDispatchers[e.keyCode] = null;
+			}
 		}
 	}
 
