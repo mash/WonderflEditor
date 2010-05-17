@@ -2,6 +2,8 @@ package net.wonderfl.editor.core
 {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.ui.Mouse;
+	import flash.ui.MouseCursor;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -26,6 +28,19 @@ package net.wonderfl.editor.core
 			_handle = new TextScrollBarHandle;
 			_handle.addEventListener(MouseEvent.MOUSE_DOWN, _onDrag);
 			addChild(_handle);
+			
+			addEventListener(MouseEvent.MOUSE_OVER, function ():void {
+				Mouse.cursor = MouseCursor.BUTTON;
+			});
+			addEventListener(MouseEvent.MOUSE_OUT, function ():void {
+				Mouse.cursor = MouseCursor.IBEAM;
+			});
+			addEventListener(MouseEvent.MOUSE_UP, _onTrackMouseUp);
+		}
+		
+		private function _onTrackMouseUp(e:MouseEvent):void 
+		{
+			onTrackMouseUp(e);
 		}
 		
 		protected function calcValueFromHandlePos($position:Number):void {
@@ -35,6 +50,13 @@ package net.wonderfl.editor.core
 				_value = newValue;
 				dispatchEvent(new Event(Event.SCROLL));
 			}
+		}
+		
+		protected function truncateHandlePos($pos:Number):Number {
+			$pos = ($pos < 0) ? 0 : $pos;
+			$pos = ($pos > _handleMax) ? _handleMax : $pos;
+			
+			return $pos;
 		}
 		
 		private function _onDrag(e:MouseEvent):void 
@@ -59,6 +81,7 @@ package net.wonderfl.editor.core
 		protected function checkMouse(e:Event):void { }
 		protected function onDrag(e:MouseEvent):void { }
 		protected function onTargetScroll(e:Event):void { }
+		protected function onTrackMouseUp(e:MouseEvent):void { }
 		public function setThumbPercent(value:Number):void { }		
 		public function set pageSize(value:int):void { }
 		public function get value():int { return _value; }

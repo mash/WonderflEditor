@@ -28,17 +28,21 @@ package net.wonderfl.editor.core
 			_diff = _handle.x - mouseX;
 		}
 		
+		override protected function onTrackMouseUp(e:MouseEvent):void 
+		{
+			updateHandlePos(mouseX);
+		}
+		
 		override protected function checkMouse(e:Event):void 
 		{
 			if (mouseX != _prevMouse) {
-				_prevMouse = mouseX;
-				var xPos:int = _prevMouse + _diff;
-				xPos = (xPos < 0) ? 0 : xPos;
-				xPos = (xPos > _handleMax) ? _handleMax : xPos;
-				_handle.x = xPos;
-				
-				calcValueFromHandlePos(xPos);
+				updateHandlePos(_prevMouse = mouseX);
 			}
+		}
+		
+		private function updateHandlePos($pos:Number):void {
+			_handle.x = truncateHandlePos($pos + _diff);
+			calcValueFromHandlePos(_handle.x);
 		}
 		
 		override public function setSliderParams($min:int, $max:int, $value:int):void 
