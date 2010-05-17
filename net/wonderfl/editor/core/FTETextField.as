@@ -85,7 +85,7 @@ package net.wonderfl.editor.core
 
 			
 			_selectionShape = new Shape;
-			_defaultTextFormat = new TextFormat('_ゴシック', 12, 0xffffff);
+			_defaultTextFormat = new TextFormat('Courier New', 12, 0xffffff);
 			//for each (var fnt:Font in Font.enumerateFonts(true))
 				//if (fnt.fontName == 'ＭＳ Ｐゴシック')
 				//{
