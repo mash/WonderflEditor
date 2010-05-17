@@ -102,6 +102,14 @@ package net.wonderfl.editor
 			lineNums.height = _field.height;
 		}
 		
+		public function copy():void {
+			_field.onCopy();
+		}
+		
+		public function selectAll():void {
+			_field.onSelectAll(null);
+		}
+		
 		public function applyFormatRuns():void
 		{
 			_field.applyFormatRuns();
@@ -119,6 +127,9 @@ package net.wonderfl.editor
 		public function set scrollH(value:int):void {
 			
 		}
+		
+		public function get selectionBeginIndex():int { return _field.selectionBeginIndex; }
+		public function get selectionEndIndex():int { return _field.selectionEndIndex; }
 		
 		public function clearFormatRuns():void
 		{
