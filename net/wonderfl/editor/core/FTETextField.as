@@ -131,18 +131,7 @@ package net.wonderfl.editor.core
 			
 			_scrollY = Math.min(Math.max(0, value), _maxScrollV);
 			
-			//if (!_scrollYEngine.hasEventListener(Event.ENTER_FRAME)) {
-				//_scrollYEngine.addEventListener(Event.ENTER_FRAME, function (e:Event):void {
-					//_scrollYEngine.removeEventListener(Event.ENTER_FRAME, arguments.callee);
-					updateScrollProps();
-			//var time:int;
-			//
-			//(function ():void {
-				//clearTimeout(time);
-				//time = setTimeout(updateScrollProps, 30);
-			//})();
-				//});
-			//}
+			updateScrollProps();
 		}
 		
 		public function get scrollY():int
@@ -230,12 +219,12 @@ package net.wonderfl.editor.core
 			var i0:int = Math.max(_selStart, firstPos);
 			var i1:int = Math.min(_selEnd, lastPos);
 			
-			trace('getting selStart');
+			//trace('getting selStart');
 			var p0:Point = getPointForIndex(i0);
 			var p1:Point;
-			if (i0 != i1) {
-				trace('getting selEnd');
-			}
+			//if (i0 != i1) {
+				//trace('getting selEnd');
+			//}
 			p1 = (i0 == i1) ? p0.clone() : getPointForIndex(i1);
 			var g:Graphics = _selectionShape.graphics;
 			g.clear();
@@ -247,11 +236,14 @@ package net.wonderfl.editor.core
 				else
 				{
 					g.drawRect(p0.x, p0.y, _maxWidth - p0.x, boxHeight);
-					var rows:int = (p1.y - p0.y) / boxHeight;
-					for (var i:int=1; i<rows; i++)
-						g.drawRect(1, p0.y + boxHeight * i, _maxWidth, boxHeight);
+					var rows:int = (p1.y - p0.y) / boxHeight;// rows >= 1
+					//for (var i:int=1; i<rows; i++)
+						//g.drawRect(1, p0.y + boxHeight * i, _maxWidth, boxHeight);
+						if (rows > 1) {
+							g.drawRect(1, p0.y + boxHeight, _maxWidth, boxHeight * (rows - 1));
+						}
 					//if selection is past last visible pos, we draw a full line
-					g.drawRect(1, p0.y + boxHeight * i, lastPos >= _selEnd ? p1.x : _maxWidth, boxHeight);
+					g.drawRect(1, p0.y + boxHeight * Math.max(1, rows), lastPos >= _selEnd ? p1.x : _maxWidth, boxHeight);
 				}
 			}
 			
@@ -375,24 +367,35 @@ package net.wonderfl.editor.core
 			var linkID:int = 0;
 			var font:FontDescription = new FontDescription(_defaultTextFormat.font);
 			var linkElement:URLLinkElement;
+			var killFlag:Boolean = false;
 			
 			var i:int;
 			var l:int;
 			var w:int;
 			
 			JobThread.addJob(
+				function ():void {
+					killFlag = true;
+				},
 				function ():Boolean {
 					elements = new Vector.<ContentElement>;
 					
 					_invalidated = false;
+					killFlag = false;
 					i = 0;
 					len = runs.length;
+					
+					// skip formats
+					var searchBegin:int;
+					var searchEnd:int;
 					
 					return false;
 				},
 				function ():Boolean {
+					if (killFlag) return false;
+					
 					var tick:int = getTimer();
-					while ((getTimer() - tick) < 6 && !_invalidated) {
+					while ((getTimer() - tick) < 10) {
 						o = runs[i++];
 						if (o == null) break;
 						if (o.end < firstPos) continue;
@@ -403,8 +406,8 @@ package net.wonderfl.editor.core
 						if (o.begin >= firstPos) {
 							str = _text.substring((oo ? oo.end : firstPos), o.begin);
 							elf = new ElementFormat(font, _defaultTextFormat.size + 0, 0xffffff);
-							te = new TextElement(str, elf);
-							elements.push(te);
+							if (killFlag) return false;
+							replaceURLString();
 						}
 						
 						str = _text.substring(Math.max(o.begin, firstPos), Math.min(o.end, lastPos));
@@ -412,52 +415,23 @@ package net.wonderfl.editor.core
 								new FontDescription(_defaultTextFormat.font, (o.bold ? FontWeight.BOLD : FontWeight.NORMAL), (o.italic ? FontPosture.ITALIC : FontPosture.NORMAL)),
 								_defaultTextFormat.size + 0, parseInt("0x" + o.color));
 								
-						index = 0;
-						str.replace(
-							new RegExp("https?://[-_.!~*()a-zA-Z0-9;/?:@&=+$,%#]+", "g"),
-							function ($url:String, $begin:int, $str:String):String {
-								elf = new ElementFormat(
-										new FontDescription(_defaultTextFormat.font, (o.bold ? FontWeight.BOLD : FontWeight.NORMAL), (o.italic ? FontPosture.ITALIC : FontPosture.NORMAL)),
-										_defaultTextFormat.size + 0, parseInt("0x" + o.color));
-								te = new TextElement(str.substring(index, $begin), elf);
-								elements.push(te);
-								
-								elf = new ElementFormat(
-										new FontDescription(_defaultTextFormat.font, (o.bold ? FontWeight.BOLD : FontWeight.NORMAL), (o.italic ? FontPosture.ITALIC : FontPosture.NORMAL)),
-										_defaultTextFormat.size + 0, parseInt("0x" + o.color));
-								te = new TextElement($url, elf);
-								te.eventMirror = new LinkElementEventMirror(_textLineContainer, _textDecorationContainer, te, boxHeight);
-								elements.push(te);
-								
-								index = $begin + $url.length;
-								
-								return $url;
-							}
-						);
-						
-						if (index < str.length) {
-							elf = new ElementFormat(
-									new FontDescription(_defaultTextFormat.font, (o.bold ? FontWeight.BOLD : FontWeight.NORMAL), (o.italic ? FontPosture.ITALIC : FontPosture.NORMAL)),
-									_defaultTextFormat.size + 0, parseInt("0x" + o.color));
-							elements.push(new TextElement(str.substr(index), elf));
-						}
+						replaceURLString();
 						
 						pos = o.end;
 						oo = o;
 					}
 					
-					return (o != null && (i < len) && !_invalidated);
+					return (o != null && (i < len) && !killFlag);
 				},
 				function ():Boolean {
-					if (_invalidated) return false;
+					if (killFlag) return false;
 					
 					if (pos < lastPos) {
 						str = _text.substring(oo ? oo.end : firstPos, lastPos);
 						elf = new ElementFormat(font, _defaultTextFormat.size + 0, 0xffffff);
-						te = new TextElement(str, elf);
-						pos = lastPos;
 						
-						elements.push(te);
+						replaceURLString();
+						pos = lastPos;
 					}
 					
 					var group:GroupElement = new GroupElement;
@@ -478,11 +452,12 @@ package net.wonderfl.editor.core
 					return false;
 				},
 				function ():Boolean {
+					if (killFlag) return false;
 					if (_invalidated) return false;
 					
 					var tick:int = getTimer();
 					
-					while ((getTimer() - tick) < 6 && !_invalidated) {
+					while ((getTimer() - tick) < 6 && !killFlag) {
 						line = _block.createTextLine(line, TextLine.MAX_LINE_WIDTH);
 						
 						if (line == null) break;
@@ -496,6 +471,8 @@ package net.wonderfl.editor.core
 							drawRegions(line.mirrorRegions);
 						}
 					}
+					
+					if (killFlag) return false;
 					
 					if (_invalidated) {
 						_invalidated = false;
@@ -519,6 +496,7 @@ package net.wonderfl.editor.core
 					return (line != null);
 				},
 				function ():Boolean {
+						if (killFlag) return false;
 						//removeEventListener(Event.RENDER, render);
 						var num:int = _textLineContainer.numChildren;
 						var children:Array = [];
@@ -545,6 +523,29 @@ package net.wonderfl.editor.core
 					return false;
 				}
 			).run();
+			
+			function replaceURLString():void {
+				index = 0;
+				str.replace(
+					new RegExp("https?://[-_.!~*()a-zA-Z0-9;/?:@&=+$,%#]+", "g"),
+					function ($url:String, $begin:int, $str:String):String {
+						trace($url);
+						te = new TextElement($str.substring(index, $begin), elf.clone());
+						elements.push(te);
+						
+						te = new TextElement($url, elf.clone());
+						te.eventMirror = new LinkElementEventMirror(_textLineContainer, _textDecorationContainer, te, boxHeight);
+						elements.push(te);
+						
+						index = $begin + $url.length;
+						
+						return $url;
+					}
+				);
+				if (index < str.length) {
+					elements.push(new TextElement(str.substr(index), elf.clone()));
+				}
+			}
 		}
 		
 		private function killJobs():void
@@ -556,8 +557,7 @@ package net.wonderfl.editor.core
 			var now:int = getTimer();
 			for (var i:int = 1; i < len; ++i) {
 				job = jobs[i];
-				trace('job timestamp : ' + job.timestamp);
-				if (job.id % 2 == 1) {
+				if ((job.id & 3) > 0) {
 					JobThread.killJob(job.id);
 				} else {
 					prev = job;
@@ -682,9 +682,16 @@ package net.wonderfl.editor.core
 		public function getPointForIndex(index:int):Point
 		{
 			var t:int = getTimer();
-			var pos:int = 0;
-			var lines:int = 0;
+			var pos:int;
 			var lastNL:int = 0;
+			
+			// give up providing proper value for these indeces
+			if (index < firstPos) return new Point(cursor.x, -boxHeight);
+			if (index > lastPos) return new Point(cursor.x, boxHeight * visibleRows + 2);
+			
+			var lines:int = 0;
+			pos = firstPos;
+			
 			while (true)
 			{
 				pos = _text.indexOf(NL, pos)+1;
@@ -692,19 +699,17 @@ package net.wonderfl.editor.core
 				lines++;
 				lastNL = pos;
 			}
-			var ypos:int = (lines - _scrollY) * boxHeight + 2;
+			var ypos:int = lines * boxHeight + 2;
 			var xpos:int;
 			var i:int = 0;
-			var line:TextLine;
-			var l:int = lines - _scrollY;
-			if (l >= 0) {
-				//line = _textLineContainer.getChildAt(l) as TextLine;
+			var textLine:TextLine;
+			if (lines >= 0) {
 				i = 0;
-				line = _block.firstLine;
-				while (line && i++ < l) line = line.nextLine;
-				l = index - lastNL;
-				if (l >= 0 && line && l < line.atomCount)
-					xpos = line.getAtomBounds(index - lastNL).x + line.x;
+				textLine = _block.firstLine;
+				while (textLine && i++ < lines) textLine = textLine.nextLine;
+				lines = index - lastNL;
+				if (lines >= 0 && textLine && lines < textLine.atomCount)
+					xpos = textLine.getAtomBounds(index - lastNL).x + textLine.x;
 				else
 					calcXposByOriginalMethod("faild @ atomCount");
 			} else 
@@ -712,13 +717,9 @@ package net.wonderfl.editor.core
 			
 			function calcXposByOriginalMethod(msg:String):void {
 				trace('calcXposByOriginalMethod : ' + msg);
-				//count tabs
-				//for (var i:int=lastNL, tabs:int=0; i<index; i++) if (_text.charAt(i)=='\t') tabs++;
-				//simple tabs, just 4 spaces, no align
-				var tabs:int = 0;
-				xpos = (index - lastNL + tabs * 3) * boxWidth + 4;
+				xpos = cursor.x;
 			}
-			//trace('getPointForIndex : ' + (getTimer() - t) + ' ms');
+			trace('getPointForIndex : ' + (getTimer() - t) + ' ms');
 			//xpos = x;
 			return new Point(xpos, ypos);
 		}

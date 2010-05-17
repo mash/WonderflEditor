@@ -19,9 +19,8 @@ package net.wonderfl.editor.core
 			terminate();
 		}
 		
-		public static function addJob(...jobslices:Array):Class {
-			_que.push(new Job(jobslices));
-			//_que = [new Job(jobslices)];
+		public static function addJob($killer:Function, ...$jobslices:Array):Class {
+			_que.push(new Job($jobslices, $killer));
 			trace('job added : ' + _que.length);
 			
 			return JobThread;
@@ -33,7 +32,13 @@ package net.wonderfl.editor.core
 		
 		public static function killJob($id:int):void {
 			_que = _que.filter(function ($item:Job, $index:int, $array:Array):Boolean {
-				return ($item.id != $id);
+				var result:Boolean = ($item.id != $id);
+				
+				if (!result) {
+					$item.kill();
+				}
+				
+				return result;
 			});
 		}
 		public static function get length():int {

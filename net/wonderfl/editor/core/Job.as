@@ -1,6 +1,5 @@
 package net.wonderfl.editor.core 
 {
-	import flash.utils.getTimer;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -9,16 +8,21 @@ package net.wonderfl.editor.core
 	{
 		private var _currentSlice:Function;
 		private var _slices:Array = [];
+		private var _jobKiller:Function;
 		private static var _id:int = 0;
 		public var id:int;
-		public var timestamp:int;
 		
-		public function Job($slices:Array) {
+		
+		public function Job($slices:Array, $jobKiller:Function) {
 			_slices = $slices;
 			id = _id++;
-			timestamp = getTimer();
 		}
 		
+		
+		public function kill():void {
+			if (_jobKiller != null)
+				_jobKiller();
+		}
 		/**
 		 * @return false : this job end
 		 *         true  : this job is not complete yet

@@ -95,7 +95,7 @@ package net.wonderfl.editor.core
 			_over = true;
 			
 			_text.elementFormat = _overFormat.clone();
-			updateView();
+			JobThread.addJob(new Function, updateView).run();
 			Mouse.cursor = MouseCursor.BUTTON;
 		}
 		
@@ -105,11 +105,11 @@ package net.wonderfl.editor.core
 			_over = false;
 			
 			_text.elementFormat = _outFormat.clone();
-			updateView();
+			JobThread.addJob(new Function, updateView).run();
 			Mouse.cursor = MouseCursor.IBEAM;
 		}
 		
-		private function updateView():void
+		private function updateView():Boolean
 		{
 			var block:TextBlock = _line.textBlock;
 			while (_textLineContainer.numChildren) _textLineContainer.removeChildAt(0);
@@ -126,6 +126,8 @@ package net.wonderfl.editor.core
 			
 			_hover.visible = _over;
 			_underline.visible = !_over;
+			
+			return false;
 		}
 		
 	}
