@@ -156,7 +156,7 @@ package net.wonderfl.editor.core
 			//for (i = _scrollY, pos=0; i > 0; i--)
 				//pos = _text.indexOf(NL, pos)+1;
 			
-			firstPos = _textLineCache[_scrollY] + 1;
+			firstPos = (_scrollY > 0) ? _textLineCache[_scrollY] + 1 : 0;
 			
 			i = Math.min(visibleRows, _numLines) + _scrollY;
 			
@@ -204,9 +204,6 @@ package net.wonderfl.editor.core
 			_selStart = beginIndex;
 			_selEnd = endIndex;
 			
-			trace(<>
-				beginIndex : { beginIndex }, endIndex : { endIndex }
-			</>);
 			
 			if (_selStart > _selEnd)
 			{
@@ -328,6 +325,7 @@ package net.wonderfl.editor.core
 			for (i=0; i<runs.length; i++)
 			{
 				o = runs[i];
+				
 				if (o.begin < startIndex && o.end < startIndex) continue;
 				if (o.begin > startIndex && o.end < endIndex)
 				{
@@ -707,6 +705,7 @@ package net.wonderfl.editor.core
 			var xpos:int;
 			var i:int = 0;
 			var textLine:TextLine;
+			var rect:Rectangle;
 			if (lines >= 0) {
 				i = 0;
 				textLine = _block.firstLine;
@@ -714,7 +713,10 @@ package net.wonderfl.editor.core
 				lines = index - lastNL;
 				if (lines >= 0 && textLine && lines < textLine.atomCount)
 					xpos = textLine.getAtomBounds(index - lastNL).x + textLine.x;
-				else
+				else if (index == _text.length && (index - lastNL - 1) >= 0) {
+					rect = textLine.getAtomBounds(index - lastNL - 1);
+					xpos = rect.x + rect.width + textLine.x;
+				} else
 					calcXposByOriginalMethod("faild @ atomCount");
 			} else 
 				calcXposByOriginalMethod("faild @ numLines");

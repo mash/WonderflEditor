@@ -131,7 +131,7 @@ package net.wonderfl.editor.core
 			//} catch (e:SecurityError) { };//can't paste
 		//}
 		
-		private function onCopy(e:Event=null):void
+		public function onCopy(e:Event=null):void
 		{
 			if (_selStart != _selEnd)
 				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _text.substring(_selStart, _selEnd));
@@ -142,7 +142,7 @@ package net.wonderfl.editor.core
 			//replaceSelection('');
 			//dipatchChange();
 		//}
-		private function onSelectAll(e:Event):void
+		public function onSelectAll(e:Event):void
 		{
 			_setSelection(0, _text.length, true);
 		}
