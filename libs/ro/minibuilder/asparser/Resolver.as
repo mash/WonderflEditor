@@ -21,7 +21,7 @@ Author: Victor Dramba
 package ro.minibuilder.asparser
 {
 	import __AS3__.vec.Vector;
-	import com.victordramba.console.debug;
+	//import com.victordramba.console.debug;
 	
 	import ro.victordramba.util.HashMap;
 	
@@ -86,7 +86,7 @@ package ro.minibuilder.asparser
 		
 		public function getMissingImports(name:String, pos:int):Vector.<String>
 		{
-			debug('get missing imports');
+			//debug('get missing imports');
 			
 			//find the scope
 			var t:Token = tokenizer.tokenByPos(pos);
@@ -109,7 +109,7 @@ package ro.minibuilder.asparser
 				}
 			}
 			
-			debug(missing.join('\n'));
+			//debug(missing.join('\n'));
 			
 			if (!found) return missing;
 			return null;
@@ -117,7 +117,7 @@ package ro.minibuilder.asparser
 		
 		public function getAllOptions(pos:int):Vector.<String>
 		{
-			debug('get all options');
+			//debug('get all options');
 			var f:Field;
 			
 			var a:Vector.<String> = new Vector.<String>;

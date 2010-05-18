@@ -31,7 +31,7 @@ Author: Victor Dramba
 package ro.minibuilder.asparser
 {
 	
-	import com.victordramba.console.debug;
+	//import com.victordramba.console.debug;
 	
 	import ro.victordramba.util.HashMap;
 
@@ -456,7 +456,7 @@ package ro.minibuilder.asparser
 					// failproof for syntax errors
 					catch(e:Error)
 					{
-						debug(e.message + ' ' + tl+','+t+','+tp+','+tp2+','+tp3);
+						trace(e.message + ' ' + tl+','+t+','+tp+','+tp2+','+tp3);
 					}
 				}
 				//add current package to imports

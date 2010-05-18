@@ -100,7 +100,7 @@ package ro.minibuilder.asparser
 		/**
 		 * Apply color highliting
 		 */
-		public function applyFormats(textField:ScriptAreaComponent):void
+		public function applyFormats(textField:IEditor):void
 		{
 			//textField.setTextFormat(formats.getValue('default'));
 			textField.clearFormatRuns();

@@ -1,5 +1,6 @@
 package ro.minibuilder.swcparser.abc
 {
+	import __AS3__.vec.Vector;
 	import ro.minibuilder.asparser.TypeDB;
 
 	internal class Traits
@@ -27,7 +28,6 @@ package ro.minibuilder.swcparser.abc
 			for each (var m:MemberInfo in members)
 			{
 				//m.dump(abc, attr, typeDB)
-				//trace("Traits::dump:", attr);
 				m.dbDump(typeDB);
 			}
 		}

@@ -30,7 +30,7 @@ package ro.minibuilder.asparser
 {
 	import __AS3__.vec.Vector;
 	
-	import com.victordramba.console.debug;
+	//import com.victordramba.console.debug;
 	
 	import flash.net.registerClassAlias;
 	import flash.utils.ByteArray;
@@ -205,7 +205,7 @@ package ro.minibuilder.asparser
 					//debug(type.type + ' resolved in ' + pack + ' DB:'+dbName);
 					var res:Field = packMap.getValue(type.type);
 					res.sourcePath = dbName;
-					debug('fld src: ' + res + '-' + res.sourcePath);
+					//debug('fld src: ' + res + '-' + res.sourcePath);
 					return res;
 				}
 			}
@@ -352,11 +352,11 @@ package ro.minibuilder.asparser
 			return ba;
 		}
 		
-		/*public static function fromByteArray(ba:ByteArray):TypeDB
+		public static function fromByteArray(ba:ByteArray):TypeDB
 		{
 			registerClassAlias('TypeDB', TypeDB);
 			return ba.readObject() as TypeDB;
-		}*/
+		}
 		
 		public function toString():String
 		{

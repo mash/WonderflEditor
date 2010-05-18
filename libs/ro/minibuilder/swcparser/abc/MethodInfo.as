@@ -48,7 +48,7 @@ package ro.minibuilder.swcparser.abc
 			
 			Abc.log(attr+s+' '+format())
 			
-			//if (code) ... dump zāEcode
+			//if (code) ... dump ză code
 		}
 		
 		override public function dbDump(typeDB:TypeDB):void

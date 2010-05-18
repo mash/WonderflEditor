@@ -31,6 +31,8 @@ Author: Victor Dramba
 
 package ro.minibuilder.swcparser.abc
 {
+	import __AS3__.vec.Vector;
+	
 	//import com.victordramba.debug.debug;
 	import flash.utils.ByteArray;
 	
@@ -77,8 +79,8 @@ package ro.minibuilder.swcparser.abc
 			return tmp;
 		}
 		
-		public static function log(str:*):void {
-			//trace(str);
+		public static function log(str:*):void
+		{
 			//logStr += str + '\n';
 		}
 		
@@ -523,8 +525,6 @@ package ro.minibuilder.swcparser.abc
 			//infoPrint("MethodBodies count " + count + " size "+(data.position-start)+" "+int(100*(data.position-start)/data.length)+" %")
 		}
 		
-		//private var infoPrint:* = trace;
-		
 		public function dump():void
 		{
 			for each (var t:Traits in scripts)
@@ -532,9 +532,8 @@ package ro.minibuilder.swcparser.abc
 				log("// scriptname: " + t.name)
 				t.dump(this, '', typeDB)
 				//log('//init');
-				//t.init.dump(this, '', typeDB)
+				//t.init.dump(this)
 			}
-			//trace("methods", methods);
 			/*log('//methods');
 			for each (var m:* in methods)
 			{

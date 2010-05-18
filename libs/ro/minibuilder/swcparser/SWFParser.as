@@ -67,6 +67,8 @@ bugs:
 
 package ro.minibuilder.swcparser
 {
+	import __AS3__.vec.Vector;
+	
 	//import com.victordramba.console.debug;
 	
 	import flash.utils.ByteArray;
@@ -82,7 +84,7 @@ package ro.minibuilder.swcparser
 	    public static function parse(swf:ByteArray, exportAbc:Boolean=false):TypeDB
 	    {
 	    	
-	    	//trace('swf:'+swf.length);
+	    	//debug('swf:'+swf.length);
 			
 			//if export, we don't parse
 			if (!exportAbc)
@@ -133,7 +135,7 @@ package ro.minibuilder.swcparser
 		            return null;//unknown format
 		            break
 	        }
-		    //trace('Time: ' + (new Date().getTime() - t0) + 'ms');
+		    //debug('Time: ' + (new Date().getTime() - t0) + 'ms');
 		    
 		    
 		    return typeDB;
@@ -197,6 +199,7 @@ import flash.utils.ByteArray;
 
 import ro.minibuilder.asparser.TypeDB;
 import ro.minibuilder.swcparser.abc.Abc;
+import __AS3__.vec.Vector;
 
 
 class Swf
@@ -212,9 +215,9 @@ class Swf
     function Swf(data:ByteArray)
     {
         this.data = data
-        //trace("size "+decodeRect())
-        //trace("frame rate "+(data.readUnsignedByte()<<8|data.readUnsignedByte()))
-        //trace("frame count "+data.readUnsignedShort())
+        //debug("size "+decodeRect())
+        //debug("frame rate "+(data.readUnsignedByte()<<8|data.readUnsignedByte()))
+        //debug("frame count "+data.readUnsignedShort())
 		
 		abcs = new Vector.<ByteArray>;
 		scripts = new Vector.<String>;
@@ -245,8 +248,7 @@ class Swf
                 var pos1:int = data.position
                 data.readInt()
 				var scriptName:String = readString();
-				//trace("scriptName:", scriptName);
-                //Abc.log("\n//abc name "+scriptName)
+                Abc.log("\n//abc name "+scriptName)
                 length -= (data.position-pos1)
                 // fall through
             case 72://stagDoABC:

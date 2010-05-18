@@ -20,7 +20,7 @@ Author: Victor Dramba
 
 package ro.minibuilder.swcparser
 {
-	import com.victordramba.console.debug;
+	//import com.victordramba.console.debug;
 	
 	import flash.utils.ByteArray;
 	
@@ -36,7 +36,6 @@ package ro.minibuilder.swcparser
 			var zip:ZipFile = new ZipFile(swcData);
 			for each (var file:ZipEntry in zip.entries)
 			{
-				//trace("filename:", file.name);
 				if (/library\.swf$/.test(file.name))
 					return SWFParser.parse(zip.getInput(file));
 			}
