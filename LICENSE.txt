@@ -2,6 +2,7 @@
 WonderflEditor is written by:
 
 jp.psyark namespace: Keiichi Yoshikawa
+net.hires namespace: Mr.doob
 nochump namespace:   David Chang
 ro namespace:        Victor Dramba
 others:              Taro Kobayashi (http://github.com/9re) , Masakazu Ohtsuka (http://github.com/mash)
