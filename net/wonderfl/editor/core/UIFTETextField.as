@@ -1,6 +1,5 @@
 package net.wonderfl.editor.core 
 {
-	import com.bit101.components.Accordion;
 	import flash.desktop.Clipboard;
 	import flash.desktop.ClipboardFormats;
 	import flash.display.DisplayObject;

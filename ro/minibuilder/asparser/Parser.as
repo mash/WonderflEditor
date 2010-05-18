@@ -33,7 +33,6 @@ package ro.minibuilder.asparser
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 	import net.wonderfl.editor.IEditor;
-	import net.wonderfl.editor.WonderflEditor;
 	
 	import ro.victordramba.thread.IThread;
 	import ro.victordramba.util.HashMap;

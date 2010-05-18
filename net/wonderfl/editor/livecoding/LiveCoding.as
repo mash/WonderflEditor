@@ -1,6 +1,5 @@
 ﻿package net.wonderfl.editor.livecoding 
 {
-	import jp.psyark.psycode.core.history.HistoryEntry;
 	import net.wonderfl.editor.IEditor;
 	/**
 	 * @author kobayashi-taro
@@ -43,10 +42,6 @@
 		
 		public static function stop():void {
 			_broadCaster.endLiveCoding();
-		}
-		
-		public function pushHistory($entry:HistoryEntry):void {
-			_broadCaster.replaceText($entry.index, $entry.index + $entry.oldText.length, $entry.newText);
 		}
 		
 		public function pushCurrentSelection($selectionBeginIndex:int, $selectionEndIndex:int):void {

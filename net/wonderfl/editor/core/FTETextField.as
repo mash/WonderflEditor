@@ -370,7 +370,7 @@ package net.wonderfl.editor.core
 			var link:GraphicElement;
 			var linkID:int = 0;
 			var font:FontDescription = new FontDescription(_defaultTextFormat.font);
-			var linkElement:URLLinkElement;
+			//var linkElement:URLLinkElement;
 			var killFlag:Boolean = false;
 			
 			var i:int;

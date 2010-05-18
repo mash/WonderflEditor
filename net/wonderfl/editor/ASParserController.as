@@ -42,7 +42,7 @@ Author: Victor Dramba
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
-	import net.wonderfl.editor.coloring.TextColoringThread;
+	//import net.wonderfl.editor.coloring.TextColoringThread;
 	import ro.minibuilder.swcparser.SWCParser;
 	
 	
@@ -81,7 +81,7 @@ Author: Victor Dramba
 		//public var typeInfo:Array/*of String*/
 		
 		private var editor:IEditor;
-		public var coloringThread:TextColoringThread;
+		//public var coloringThread:TextColoringThread;
 		
 		public function ASParserController(stage:Stage, $editor:IEditor)
 		{
@@ -122,14 +122,14 @@ Author: Victor Dramba
 			});
 		}
 		
-		public function startColoringThread():void {
-			if (coloringThread) {
-				if (tc.isRunning(coloringThread))
-					tc.kill(coloringThread);
-				
-				tc.run(coloringThread);
-			}
-		}
+		//public function startColoringThread():void {
+			//if (coloringThread) {
+				//if (tc.isRunning(coloringThread))
+					//tc.kill(coloringThread);
+				//
+				//tc.run(coloringThread);
+			//}
+		//}
 
 		public function saveTypeDB():void
 		{

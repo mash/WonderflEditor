@@ -22,23 +22,22 @@
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 	import jp.psyark.utils.callLater;
-	import jp.psyark.psycode.controls.UIControl;
 	import jp.psyark.utils.CodeUtil;
 	import jp.psyark.utils.StringComparator;
 	import net.wonderfl.editor.ASParserController;
+	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.UIFTETextFieldComponent;
 	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingEvent;
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
 	import net.wonderfl.editor.livecoding.SocketBroadCaster;
-	import net.wonderfl.editor.livecoding.TextArea;
 	import net.wonderfl.editor.livecoding.ViewerInfoPanel;
 	import org.libspark.ui.SWFWheel;
 	/**
 	 * ...
 	 * @author kobayashi-taro
 	 */
-	public class WonderflViewer extends UIControl
+	public class WonderflViewer extends UIComponent
 	{
 		private static const TICK:int = 80;
 		private static const COPY:String = 'Copy (C-c)';

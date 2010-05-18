@@ -8,12 +8,12 @@
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.utils.getTimer;
-	import jp.psyark.psycode.controls.UIControl;
 	import mx.effects.easing.Quadratic;
+	import net.wonderfl.editor.core.UIComponent;
 	/**
 	 * @author kobayashi-taro
 	 */
-	public class ViewerInfoPanel extends UIControl
+	public class ViewerInfoPanel extends UIComponent
 	{
 		[Embed(source = '../../../../../assets/on_live.png')]
 		private var _onClass:Class;
