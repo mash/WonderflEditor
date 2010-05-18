@@ -1,9 +1,10 @@
 <flex-config>
 	<compiler>
-		<debug>true</debug>
+		<debug>false</debug>
 		<incremental>true</incremental>
 		<source-path>
-			<path-element>..</path-element>
+			<path-element>.</path-element>
+			<path-element>../libs</path-element>
 		</source-path>
 	</compiler>
 	<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>

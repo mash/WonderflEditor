@@ -1,4 +1,4 @@
-﻿package tests 
+﻿package  
 {
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
@@ -46,10 +46,10 @@
 		private static const MINI_BUILDER:String = 'MiniBuilder';
 		public var fileRef:FileReference;
 		
-		[Embed(source = '../../assets/btn_smallscreen.jpg')]
+		[Embed(source = '../assets/btn_smallscreen.jpg')]
 		private var _image_out_:Class;
 		
-		[Embed(source = '../../assets/btn_smallscreen_o.jpg')]
+		[Embed(source = '../assets/btn_smallscreen_o.jpg')]
 		private var _image_over_:Class;
 		
 		private var _viewer:UIFTETextFieldComponent;
