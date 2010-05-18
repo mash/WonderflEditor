@@ -33,6 +33,8 @@ package net.wonderfl.editor.core
 	import flash.utils.setTimeout;
 	import net.wonderfl.editor.IEditor;
 	import net.wonderfl.editor.utils.calcFontBox;
+	import net.wonderfl.thread.ThreadTask;
+	import net.wonderfl.thread.ThreadExecuter;
 	import ro.victordramba.scriptarea.ScriptCursor;
 	import ro.victordramba.scriptarea.Base;
 	
@@ -358,7 +360,7 @@ package net.wonderfl.editor.core
 			var t:int = getTimer();
 			var line:TextLine;
 			
-			killJobs();
+			killTasks();
 			
 			var elements:Vector.<ContentElement>;
 			var len:int = runs.length;
@@ -377,7 +379,7 @@ package net.wonderfl.editor.core
 			var l:int;
 			var w:int;
 			
-			JobThread.addJob(
+			ThreadExecuter.addTask(
 				function ():void {
 					killFlag = true;
 				},
@@ -551,17 +553,17 @@ package net.wonderfl.editor.core
 			}
 		}
 		
-		private function killJobs():void
+		private function killTasks():void
 		{
-			var jobs:Array = JobThread.getPendingJobs();
+			var jobs:Array = ThreadExecuter.getPendingTaks();
 			var len:int = jobs.length;
-			var prev:Job, job:Job;
+			var prev:ThreadTask, job:ThreadTask;
 			prev = jobs[0];
 			var now:int = getTimer();
 			for (var i:int = 1; i < len; ++i) {
 				job = jobs[i];
 				if ((job.id & 3) > 0) {
-					JobThread.killJob(job.id);
+					ThreadExecuter.killTask(job.id);
 				}
 			}
 		}

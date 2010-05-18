@@ -1,4 +1,4 @@
-package net.wonderfl.editor.core 
+package net.wonderfl.editor.scroll 
 {
 	import flash.display.Sprite;
 	import flash.events.Event;

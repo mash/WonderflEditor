@@ -1,4 +1,4 @@
-﻿package net.wonderfl.editor 
+﻿package net.wonderfl.editor.minibuilder 
 {
 /* license section
 
@@ -40,6 +40,7 @@ Author: Victor Dramba
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
+	import net.wonderfl.editor.IEditor;
 	import net.wonderfl.editor.utils.isMXML;
 	import ro.minibuilder.asparser.Parser;
 	import ro.minibuilder.asparser.TypeDB;
@@ -50,13 +51,13 @@ Author: Victor Dramba
 	[Event(type="flash.events.Event", name="change")]
 	public class ASParserController extends EventDispatcher
 	{
-		[Embed(source="../../../../assets/globals.amf", mimeType="application/octet-stream")]
+		[Embed(source="../../../../../assets/globals.amf", mimeType="application/octet-stream")]
 		private static var GlobalTypesAsset:Class;
 		
 		//[Embed(source="../../../../assets/playerglobal.swc", mimeType="application/octet-stream")]
 		//private static var PlayerglobalSWC:Class;
 		
-		[Embed(source="../../../../assets/playerglobals.amf", mimeType="application/octet-stream")]
+		[Embed(source="../../../../../assets/playerglobals.amf", mimeType="application/octet-stream")]
 		private static var PlayerglobalAsset:Class;
 		
 		//[Embed(source = "../../../../assets/framework.swc", mimeType = "application/octet-stream")]

@@ -3,13 +3,10 @@ package net.wonderfl.editor
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
-	import flash.text.TextField;
-	import flash.utils.clearTimeout;
-	import flash.utils.setTimeout;
-	import net.wonderfl.editor.core.TextHScroll;
-	import net.wonderfl.editor.core.TextVScroll;
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.core.UIFTETextField;
+	import net.wonderfl.editor.scroll.TextHScroll;
+	import net.wonderfl.editor.scroll.TextVScroll;
 	import net.wonderfl.editor.utils.calcFontBox;
 	/**
 	 * ...

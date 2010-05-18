@@ -1,10 +1,11 @@
-package net.wonderfl.editor.core 
+package net.wonderfl.editor.scroll 
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import net.wonderfl.editor.core.FTETextField;
 	import net.wonderfl.editor.utils.calcFontBox;
 	/**
 	 * ...

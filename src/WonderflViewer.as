@@ -24,7 +24,7 @@
 	import jp.psyark.utils.callLater;
 	import jp.psyark.utils.CodeUtil;
 	import jp.psyark.utils.StringComparator;
-	import net.wonderfl.editor.ASParserController;
+	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.UIFTETextFieldComponent;
 	import net.wonderfl.editor.livecoding.LiveCoding;

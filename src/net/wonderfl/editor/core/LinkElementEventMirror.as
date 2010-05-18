@@ -17,6 +17,7 @@ package net.wonderfl.editor.core
 	import flash.text.engine.TextLineMirrorRegion;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
+	import net.wonderfl.thread.ThreadExecuter;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -95,7 +96,7 @@ package net.wonderfl.editor.core
 			_over = true;
 			
 			_text.elementFormat = _overFormat.clone();
-			JobThread.addJob(new Function, updateView).run();
+			ThreadExecuter.addTask(new Function, updateView).run();
 			Mouse.cursor = MouseCursor.BUTTON;
 		}
 		
@@ -105,7 +106,7 @@ package net.wonderfl.editor.core
 			_over = false;
 			
 			_text.elementFormat = _outFormat.clone();
-			JobThread.addJob(new Function, updateView).run();
+			ThreadExecuter.addTask(new Function, updateView).run();
 			Mouse.cursor = MouseCursor.IBEAM;
 		}
 		

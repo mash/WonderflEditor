@@ -1,9 +1,11 @@
-package net.wonderfl.editor.core 
+package net.wonderfl.editor.scroll 
 {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
+	import net.wonderfl.editor.core.FTETextField;
+	import net.wonderfl.editor.core.UIComponent;
 	/**
 	 * ...
 	 * @author kobayashi-taro

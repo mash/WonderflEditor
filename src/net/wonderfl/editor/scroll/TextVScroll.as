@@ -1,4 +1,4 @@
-package net.wonderfl.editor.core 
+package net.wonderfl.editor.scroll 
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -7,6 +7,8 @@ package net.wonderfl.editor.core
 	import flash.geom.Rectangle;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
+	import net.wonderfl.editor.core.FTETextField;
+	import net.wonderfl.editor.core.UIComponent;
 	/**
 	 * ...
 	 * @author kobayashi-taro
