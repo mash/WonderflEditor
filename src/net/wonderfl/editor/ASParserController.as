@@ -42,7 +42,7 @@ Author: Victor Dramba
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
-	import net.wonderfl.editor.coloring.TextColoringThread;
+	//import net.wonderfl.editor.coloring.TextColoringThread;
 	import ro.minibuilder.swcparser.SWCParser;
 	
 	
@@ -53,6 +53,7 @@ Author: Victor Dramba
 	import ro.victordramba.thread.ThreadEvent;
 	import ro.victordramba.thread.ThreadsController;
 
+	import mx.core.ByteArrayAsset;
 	[Event(type="flash.events.Event", name="change")]
 	public class ASParserController extends EventDispatcher
 	{
@@ -79,10 +80,10 @@ Author: Victor Dramba
 		//public var scopeInfo:Array/*of String*/
 		//public var typeInfo:Array/*of String*/
 		
-		private var editor:WonderflEditor;
-		private var _coloring:TextColoringThread;
+		private var editor:IEditor;
+		//public var coloringThread:TextColoringThread;
 		
-		function ASParserController(stage:Stage, $editor:WonderflEditor)
+		public function ASParserController(stage:Stage, $editor:IEditor)
 		{
 			editor = $editor;
 			//TODO refactor, Controller should probably be a singleton
@@ -95,7 +96,7 @@ Author: Victor Dramba
 				TypeDB.setDB('playerglobal', TypeDB.fromByteArray(new PlayerglobalAsset));
 			}
 			parser = new Parser;
-			_coloring = new TextColoringThread;
+		
 			
 			//parser.addTypeData(TypeDB.formByteArray(new PlayerglobalAsset), 'player');
 			//parser.addTypeData(TypeDB.formByteArray(new ASwingAsset), 'aswing');
@@ -105,9 +106,9 @@ Author: Victor Dramba
 			tc.addEventListener(ThreadEvent.THREAD_READY, function(e:ThreadEvent):void
 			{
 				if (e.thread != parser) return;
+				status = 'Parse time: ' + (getTimer() - t0) + 'ms ' + parser.tokenCount + ' tokens';
 				parser.applyFormats(editor); // 
 				//cursorMoved(textField.caretIndex);
-				status = 'Parse time: ' + (getTimer() - t0) + 'ms ' + parser.tokenCount + ' tokens';
 				trace('status: ' + status);
 				dispatchEvent(new Event('status'));
 			});
@@ -119,7 +120,16 @@ Author: Victor Dramba
 				percentReady = parser.percentReady;
 				dispatchEvent(new Event('status'));
 			});
-		}		
+		}
+		
+		//public function startColoringThread():void {
+			//if (coloringThread) {
+				//if (tc.isRunning(coloringThread))
+					//tc.kill(coloringThread);
+				//
+				//tc.run(coloringThread);
+			//}
+		//}
 
 		public function saveTypeDB():void
 		{
@@ -150,17 +160,21 @@ Author: Victor Dramba
 			TypeDB.setDB(fileName, SWFParser.parse(swfData));
 		}
 		
-		public function sourceChanged(source:String, fileName:String):void
+		public function sourceChanged(source:String, fileName:String):Boolean
 		{
 			/* stop parsing when the source is MXML */
-			if (source.charAt(0) == "<" && isMXML(source)) return;
+			if (source && source.charAt(0) == "<" && isMXML(source)) return false;
+			source = source.replace(/\n|\r\n/g, '\r');
+			
+			trace('source changed');
 			
 			t0 = getTimer();
 			parser.load(source, fileName);
 			if (tc.isRunning(parser))
 				tc.kill(parser);
 			tc.run(parser);
-			status = 'Processing ...';
+			
+			return true;
 		}
 		
 		public static function addSourceFile(source:String, fileName:String, onComplete:Function):void
@@ -168,7 +182,9 @@ Author: Victor Dramba
 			source = source.replace(/(\n|\r\n)/g, '\r');
 			var parser:Parser = new Parser;
 			parser.load(source, fileName);
-			while(parser.runSlice());
+			while (parser.runSlice()) {
+				//
+			}
 			setTimeout(onComplete, 1);
 		}
 		
