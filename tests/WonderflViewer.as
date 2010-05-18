@@ -378,7 +378,8 @@
 			_viewer.text = _source;
 			_selectionObject = {
 				index : $endIndex + $newText.length
-			}				
+			}
+			onChange(null);
 		}
 		
 		private function onSetSelection($selectionBeginIndex:int, $selectionEndIndex:int):void
@@ -396,6 +397,7 @@
 		{
 			//JSLog.logToConsole('viewer: onSendCurrentText ', $text);
 			_viewer.text = _source = $text;
+			onChange(null);
 		}		
 	}
 }

@@ -286,8 +286,8 @@ package net.wonderfl.editor.core
 		
 		public function replaceText($startIndex:int, $endIndex:int, $text:String):void
 		{
-			$text = $text.replace(/\r\n/g, NL);
-			$text = $text.replace(/\n/g, NL);
+			//$text = $text.replace(/\r\n/g, NL);
+			//$text = $text.replace(/\n/g, NL);
 			
 			_numLines = $text.split(NL).length;
 			_maxScrollV = Math.max(0, _numLines - visibleRows);
@@ -713,8 +713,11 @@ package net.wonderfl.editor.core
 				lines = index - lastNL;
 				if (lines >= 0 && textLine && lines < textLine.atomCount)
 					xpos = textLine.getAtomBounds(index - lastNL).x + textLine.x;
-				else if (index == _text.length && (index - lastNL - 1) >= 0) {
-					rect = textLine.getAtomBounds(index - lastNL - 1);
+				else if (index == _text.length && textLine) {
+					var atomCount:int = index - lastNL - 1;
+					atomCount = (atomCount >= textLine.atomCount) ? atomCount - 1 : atomCount;
+					atomCount = (atomCount < 0) ? 0 : atomCount;
+					rect = textLine.getAtomBounds(atomCount);
 					xpos = rect.x + rect.width + textLine.x;
 				} else
 					calcXposByOriginalMethod("faild @ atomCount");
