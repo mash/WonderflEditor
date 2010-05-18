@@ -43,7 +43,7 @@ package ro.victordramba.thread
 	
 	public class ThreadsController extends EventDispatcher
 	{
-		private var sliceTime:int = 150;
+		private var sliceTime:int = 33;
 		private var uiEvent:Boolean;
 		private var stage:Stage;
 		private var endUIID:int;

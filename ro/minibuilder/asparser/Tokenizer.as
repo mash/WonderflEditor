@@ -364,7 +364,7 @@ package ro.minibuilder.asparser
 			var t:Token;
 			var tick:int = getTimer();
 			
-			while (getTimer() - tick < 150) {
+			while (getTimer() - tick < 6) {
 				
 			try {
 				t = nextToken()
