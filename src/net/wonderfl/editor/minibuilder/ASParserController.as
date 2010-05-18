@@ -37,23 +37,16 @@ Author: Victor Dramba
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.net.FileReference;
-	import flash.net.SharedObject;
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
-	//import net.wonderfl.editor.coloring.TextColoringThread;
-	import ro.minibuilder.swcparser.SWCParser;
-	
-	
+	import net.wonderfl.editor.utils.isMXML;
 	import ro.minibuilder.asparser.Parser;
 	import ro.minibuilder.asparser.TypeDB;
-	//import ro.minibuilder.main.editor.ScriptAreaComponent;
 	import ro.minibuilder.swcparser.SWFParser;
 	import ro.victordramba.thread.ThreadEvent;
 	import ro.victordramba.thread.ThreadsController;
 
-	import mx.core.ByteArrayAsset;
 	[Event(type="flash.events.Event", name="change")]
 	public class ASParserController extends EventDispatcher
 	{
