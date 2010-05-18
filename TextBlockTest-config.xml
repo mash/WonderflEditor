@@ -1,0 +1,16 @@
+<flex-config>
+	<compiler>
+		<define>
+			<name>CONFIG::debugging</name>
+			<value>true</value>
+		</define>
+		<debug>true</debug>
+		<incremental>true</incremental>
+		<source-path>
+			<path-element>.</path-element>
+		</source-path>
+	</compiler>
+	<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
+	<default-frame-rate>30</default-frame-rate>
+	<default-background-color>0</default-background-color>
+</flex-config>
