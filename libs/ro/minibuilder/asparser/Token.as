@@ -32,7 +32,8 @@ package ro.minibuilder.asparser
 	
 	import ro.victordramba.util.HashMap;
 
-	internal class Token {
+	internal class Token 
+	{
 		public static const STRING_LITERAL:String = "stringLiteral";
 		public static const SYMBOL:String = "symbol";
 		public static const STRING:String = "string";
@@ -50,7 +51,9 @@ package ro.minibuilder.asparser
 		public static const E4X_COMMENT:String = "e4xComment";
 		public static const E4X_COMMAND:String = "e4xCommand";*/
 
-		public var string:String, type:String, pos:uint;
+		public var string:String;
+		public var type:String;
+		public var pos:uint;
 		public var id:uint;
 
 		public var children:Array/*of Token*/;
@@ -64,7 +67,8 @@ package ro.minibuilder.asparser
 		static private var count:Number = 0;
 
 
-		public function Token(string:String, type:String, endPos:uint) {
+		public function Token(string:String, type:String, endPos:uint) 
+		{
 			this.string = string;
 			this.type = type;
 			this.pos = endPos - string.length;
@@ -72,7 +76,8 @@ package ro.minibuilder.asparser
 			map[id] = this;
 		}
 
-		public function toString():String {
+		public function toString():String 
+		{
 			return string;
 		}
 	}

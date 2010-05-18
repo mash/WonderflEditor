@@ -20,7 +20,8 @@ Author: Victor Dramba
 
 package ro.minibuilder.asparser
 {
-	//import com.victordramba.console.debug;
+	import __AS3__.vec.Vector;
+	import com.victordramba.console.debug;
 	
 	import ro.victordramba.util.HashMap;
 	
@@ -29,7 +30,8 @@ package ro.minibuilder.asparser
 	{
 		private var typeDB:TypeDB;
 		private var tokenizer:Tokenizer;
-		
+
+		private var tokenScopeClass:Field;
 		
 		public function Resolver(tokenizer:Tokenizer)
 		{
@@ -39,6 +41,7 @@ package ro.minibuilder.asparser
 		
 		/**
 		 * this only checks if the name is in the scope at pos, it will not look in the imports
+		 * we use it to add an import only if it's not shadowed by a local name
 		 */		
 		public function isInScope(name:String, pos:int):Boolean
 		{
@@ -46,22 +49,52 @@ package ro.minibuilder.asparser
 			var t:Token = tokenizer.tokenByPos(pos);
 			if (!t) return false;
 			
-			// is it in our scope?
-			return resolveName(name, t.scope) != null;
+			//check in function scope chain
+			//also, find if we are in static scope
+			var isStatic:Boolean = false;
+			var scope:Field;
+			var f:Field;
+			for (scope = t.scope; scope && 
+				scope.fieldType=='function' || scope.fieldType=='get' || scope.fieldType=='set';
+				scope = scope.parent) 
+			{
+				if (scope.members.hasKey(name) || scope.params.hasKey(name)) return true;
+				if (scope.isStatic) isStatic = true;
+			}
+			
+			//compute tokenScopeClass
+			findScopeClass(t.scope);
+			
+			//class scope
+			if (tokenScopeClass)
+			{
+				//for static scope, add only static members
+				//current class
+				for each(f in tokenScopeClass.members.toArray())
+					if ((!isStatic || f.isStatic) && f.name==name) return true;
+			
+				//inheritance
+				scope=tokenScopeClass;
+				while ((scope = typeDB.resolveName(scope.extendz)))
+					for each(f in scope.members.toArray())
+						if (f.access!='private' && (!isStatic || f.isStatic) && f.name==name) return true;
+			}
+			
+			
+			return false;
 		}
 		
 		public function getMissingImports(name:String, pos:int):Vector.<String>
 		{
+			debug('get missing imports');
+			
 			//find the scope
 			var t:Token = tokenizer.tokenByPos(pos);
 			if (!t) return null;
 			var imports:HashMap = findImports(t);
 			
-			//trace("getMissingImports", name);
-			
 			var found:Boolean = false;
 			var missing:Vector.<String> = typeDB.listImportsFor(name)
-			if (!imports) return missing;
 			loop1: for each (var pack:String in missing)
 			{
 				for each (var line:String in imports.toArray())
@@ -76,43 +109,88 @@ package ro.minibuilder.asparser
 				}
 			}
 			
+			debug(missing.join('\n'));
+			
 			if (!found) return missing;
 			return null;
 		}
 		
 		public function getAllOptions(pos:int):Vector.<String>
 		{
-			//debug('get all options');
-			var lst:Vector.<Field> = typeDB.listAll();
+			debug('get all options');
+			var f:Field;
+			
 			var a:Vector.<String> = new Vector.<String>;
-			for each (var f:Field in lst)
+			a.push('function ');
+			//all package level items
+			for each (f in typeDB.listAll())
 				a.push(f.name);
 
 			//find the scope
 			var t:Token = tokenizer.tokenByPos(pos);
-			if (!t) return a;			
+			if (!t) return a;
+			
+			if (t.scope.fieldType == 'class')
+			{
+				a.push('private function ');
+				a.push('protected function ');
+				a.push('public function ');
+				a.push('private var ');
+				a.push('protected var ');
+				a.push('public var ');
+				a.push('static ');
+			}
 			
 			var hash:HashMap = new HashMap;
+			var scope:Field;
 			
+			function addKeys(map:HashMap):void
+			{
+				for each (var name:String in map.getKeys())
+					a.push(name);
+			}
+						
+			//find items in function scope chain
+			//also, find if we are in static scope
+			var isStatic:Boolean = false;
+			for (scope = t.scope; scope && 
+				scope.fieldType=='function' || scope.fieldType=='get' || scope.fieldType=='set';
+				scope = scope.parent) 
+			{
+				addKeys(scope.members);
+				addKeys(scope.params);
+				if (scope.isStatic) isStatic = true;
+			}
+			
+			//compute tokenScopeClass
 			findScopeClass(t.scope);
 			
-			for (var scope:Field = t.scope; scope.parent; scope = scope.parent)
-				hash.merge(listMembers(scope, true));
+			//class scope
+			if (tokenScopeClass)
+			{
+				//for static scope, add only static members
+				//current class
+				for each(f in tokenScopeClass.members.toArray())
+					if (!isStatic || f.isStatic) a.push(f.name);
 			
-			for each(var name:String in hash.getKeys())
-				a.push(name);
-				
-			a.sort(Array.CASEINSENSITIVE);
-				
+				//inheritance
+				scope=tokenScopeClass;
+				while ((scope = typeDB.resolveName(scope.extendz)))
+					for each(f in scope.members.toArray())
+						if (f.access!='private' && (!isStatic || f.isStatic)) a.push(f.name);
+			}
 			return a;
 		}
+		
 
-		public function getAllTypes():Vector.<String>
+		public function getAllTypes(isFunction:Boolean=true):Vector.<String>
 		{
 			var lst:Vector.<Field> = typeDB.listAllTypes();
 			var a:Vector.<String> = new Vector.<String>;
 			for each (var f:Field in lst)
 				a.push(f.name);
+				
+			if (isFunction) a.push('void');
 				
 			a.sort(Array.CASEINSENSITIVE);
 			return a;
@@ -120,7 +198,8 @@ package ro.minibuilder.asparser
 		
 		public function getFunctionDetails(text:String, pos:int):String
 		{
-			var field:Field = resolve(text, pos, true);
+			resolve(text, pos);
+			var field:Field = resolvedRef;
 			
 			//debug(field);
 			
@@ -149,20 +228,73 @@ package ro.minibuilder.asparser
 		 */
 		public function getMemberList(text:String, pos:int):Vector.<String>
 		{
-			//trace("getMemberList:", text.substr(pos, 3));
-			
-			var field:Field = resolve(text, pos, false);
-			if (!field) return null;
-			
+			resolve(text, pos);
+			if (!resolved) return null;
 			
 			//convert member list in string list
 			var a:Vector.<String> = new Vector.<String>;
-			//trace(field, listMembers(field).toArray().length);
-			for each (var m:Field in listMembers(field).toArray()) {
+			
+			for each (var m:Field in listMembers(resolved, resolvedIsClass).toArray())
 				a.push(m.name);
-			}
 			a.sort(Array.CASEINSENSITIVE);
 			return a;
+		}
+		
+		private function listMembers(type:Field, statics:Boolean):HashMap
+		{
+			return statics ? listStaticMembers(type) : listTypeMembers(type);
+		}
+		
+		private function listStaticMembers(type:Field):HashMap
+		{
+			var map:HashMap = new HashMap;
+			for each (var m:Field in type.members.toArray())
+				if (m.isStatic && (m.access=='public' || tokenScopeClass==type))
+					map.setValue(m.name, m);
+			return map;
+		}
+		
+		
+		private function listTypeMembers(type:Field, skipConstructor:Boolean=true):HashMap
+		{
+			if (type.fieldType != 'class' && type.fieldType != 'interface') 
+				throw new Error('type has to be class');
+			
+			var map:HashMap = new HashMap;
+			
+			
+			var protectedOK:Boolean = false;
+			
+			for (; type; type = typeDB.resolveName(type.extendz))
+			{
+				if (tokenScopeClass == type)
+				{
+					protectedOK = true;
+					map.merge(type.members);
+					continue;
+				}
+			
+				for each (var m:Field in type.members.toArray())
+				{
+					if (m.isStatic) continue;
+					var constrCond:Boolean = (m.name == type.name) && skipConstructor;
+					if ((m.access=='public' || (protectedOK && m.access=='protected')) && !constrCond) 
+						map.setValue(m.name, m);
+				}
+			}
+				
+			return map;
+		}
+		
+		
+		public function findDefinition(text:String, pos:int):Field
+		{
+			//adjust position to next word boundary
+			var re:RegExp = /\b/g;
+			re.lastIndex = pos;
+			pos = re.exec(text).index;
+			resolve(text, pos);
+			return resolvedRef;
 		}
 		
 		//find the imports for this token
@@ -174,94 +306,135 @@ package ro.minibuilder.asparser
 			return token.imports;			
 		}
 		
-		private var tokenScopeClass:Field;
 		
-		private function resolve(text:String, pos:int, isFnDetails:Boolean):Field
+		private var resolved:Field;
+		private var resolvedIsClass:Boolean;
+		private var resolvedRef:Field;
+		
+		private function resolve(text:String, pos:int):void
 		{
+			resolved = null;
+			resolvedRef = null;
+			resolvedIsClass = false;
+			
 			var t0:Token = tokenizer.tokenByPos(pos);
 			if (t0.type == Token.COMMENT)
-				return null;			
+				return;			
 			
 			var bp:BackwardsParser = new BackwardsParser;
-			if (!bp.parse(text, pos)) return null;
+			if (!bp.parse(text, pos)) return;
 			
-			//trace('bp names: '+bp.names);
+			//debug('bp names: '+bp.names);
 			
 			//find the scope
 			var t:Token = tokenizer.tokenByPos(bp.startPos);
-			if (!t) return null;
+			if (!t) return;
 			
 			var i:int = 0;
-			var name:String = bp.names[i];
-			var itemType:String = bp.types[i];
-			
-			//trace(name, itemType);
+			var name:String = bp.names[0];
+			var itemType:String = bp.types[0];
 			
 			var imports:HashMap = findImports(t);
 			
-			// is it in our scope?
-			var field:Field = resolveName(name, t.scope, !isFnDetails);
-			//trace("resolveName: ", field);
+			findScopeClass(t.scope);
 			
-			//or is it an imported thing?
-			if (!field && imports)
+			//1. is it in function scope chain?
+			var isStatic:Boolean = false;
+			for (scope = t.scope; scope && 
+				scope.fieldType=='function' || scope.fieldType=='get' || scope.fieldType=='set';
+				scope = scope.parent) 
 			{
-				field = typeDB.resolveName(new Multiname(name, imports));
-				//trace("not imported", field);
-				// a class called as function means call constructor
-				// but only if it's last item
-				if (isFnDetails && field && field.fieldType=='class' && bp.names.length==1) 
-					field = field.members.getValue(field.name);
+				if (scope.isStatic) isStatic = true;
+				if (scope.members.hasKey(name))
+				{
+					resolved = scope.members.getValue(name);
+					break;
+				}
+				if (scope.params.hasKey(name))
+				{
+					resolved = scope.params.getValue(name);
+					break;
+				}
 			}
+			
+			var scope:Field;
+			
+			//2. is it this or super?
+			if (!resolved)
+			{
+				//non-static instance context
+				var cond:Boolean = t.scope.parent && t.scope.parent.fieldType=='class' && !isStatic;
+				if (name == 'this' && cond)
+					resolved = t.scope.parent;
+				if (name == 'super' && cond)
+					resolved = typeDB.resolveName(t.scope.parent.extendz);
+			}
+			
+			
+			//3. or is it in the class/inheritance scope?
+			for (scope=tokenScopeClass; !resolved && scope; scope=typeDB.resolveName(scope.extendz))
+			{
+				var m:Field = scope.members.getValue(name);
+				if (!m) continue;
 				
-			//we didn't find it
-			if (!field) {
-				//trace("return null");
-				return null;
+				if (scope != tokenScopeClass && m.access=='private')
+					continue;
+					
+				//skip constructors in inheritance chain
+				if (m.name == scope.name) continue;
+				
+				if (!isStatic || m.isStatic)
+					resolved = m;
+			}
+
+			//4. last, is it an imported thing?
+			if (!resolved && imports)
+			{
+				resolved = typeDB.resolveName(new Multiname(name, imports));
+				if (resolved && resolved.fieldType == 'class' && itemType == BackwardsParser.NAME)
+					resolvedIsClass = true;
 			}
 			
-			if (itemType == BackwardsParser.EXPR)
-				field = newInstance(field, field);
-			else checkIsReturn();
+			//we didn't find the first name, we quit
+			if (!resolved) return;
+			checkReturnType();
 			
-			//trace("before hash map");
 			
 			var aM:HashMap;
 			do {
 				i++;
 				if (i > bp.names.length-1) break;
-				aM = listMembers(field, false, !isFnDetails);
-				field = aM.getValue(bp.names[i]);
-				
-				//trace("230:", field);
-				
-				checkIsReturn();
+				aM = listMembers(resolved, resolvedIsClass);
+				resolved = aM.getValue(bp.names[i]);
+				resolvedIsClass = false;
+				itemType = bp.types[i];
+				if (!resolved) return;
+				checkReturnType();
 			}
-			while (field);
-			return field;
+			while (resolved);
 			
-			function checkIsReturn():void
+			//check return type or var type
+			function checkReturnType():void
 			{
-				// not is last and we need function details
-				if (field && !(i==bp.names.length-1 && isFnDetails))
+				//for function signature
+				resolvedRef = resolved;
+				if (resolved.fieldType == 'class' && resolvedIsClass)//return the constructor
 				{
-					// we don't have function exec syntax
-					if (field.fieldType=='function' && bp.types[i]!=BackwardsParser.FUNCTION)
-						field = newInstance(t.scope, typeDB.resolveName(new Multiname('Function')));
-					else if (field.fieldType=='class' && bp.types[i]==BackwardsParser.FUNCTION)
-						field = newInstance(field, field);
+					var m:Field = resolved.members.getValue(resolved.name);
+					if (m) resolvedRef = m;
+				}
+				
+				
+				if (resolved.fieldType=='var' || resolved.fieldType=='get' || resolved.fieldType=='set' ||
+					(itemType == BackwardsParser.FUNCTION && resolved.fieldType == 'function'))
+				{
+					resolved = typeDB.resolveName(resolved.type);
+				}
+				else if (resolved.fieldType == 'function' && itemType != BackwardsParser.FUNCTION)
+				{
+					resolved = typeDB.resolveName(new Multiname('Function'));
 				}
 			}
-		}
-		
-		private function newInstance(scope:Field, type:Field):Field
-		{
-			//construct an "instance"
-			var fld:Field = new Field('var');
-			fld.type = new Multiname();
-			fld.parent = scope;
-			fld.type.resolved = type;
-			return fld;
 		}
 		
 		private function findScopeClass(scope:Field):void
@@ -270,105 +443,6 @@ package ro.minibuilder.asparser
 			//we set the scope to be able to deal with private/protected, etc access
 			for (tokenScopeClass = scope; tokenScopeClass.fieldType!='class' && tokenScopeClass.parent; tokenScopeClass=tokenScopeClass.parent);
 			if (tokenScopeClass.fieldType != 'class') tokenScopeClass = null;
-		}
-		
-		/**
-		 * Recursevly resolve a name in a given scope
-		 */
-		private function resolveName(name:String, scope:Field, skipConstructor:Boolean=true):Field
-		{
-			var f:Field;
-			var ret:Field;
-			
-			findScopeClass(scope);
-
-			//decide if it's a static scope			
-			var isStatic:Boolean = scope.fieldType == 'class';
-			for (f=scope; !isStatic && f.parent; f = f.parent)
-				if (f.isStatic)
-				{
-					isStatic = true;
-					break;
-				}
-				
-			if (name == 'this')
-			{
-				if (isStatic) return null;
-				for (; scope.parent; scope = scope.parent)
-				{
-					if (scope.fieldType == 'class')
-						return newInstance(scope, scope);
-				}
-				return null;
-			}
-			
-			
-			for (; scope.parent; scope = scope.parent)
-			{
-				ret = scope.params.getValue(name);
-				if (ret) return ret;
-				
-				var noPrivate:Boolean = false;
-				
-				for (f=scope; f; f=typeDB.resolveName(f.extendz))
-				{
-					ret = f.members.getValue(name);
-					if (
-						ret &&
-						//skip non-static members in static scope, accept local vars
-						(!isStatic || ret.isStatic || (f.fieldType=='function' && !noPrivate)) &&
-						//skip private members
-						(!noPrivate || ret.access != 'private')
-						)
-					{
-						//skip constructor
-						//in a class scope, ClassName should be the class, not the constructor member
-						if (skipConstructor && ret && f.fieldType=='class' && ret.name==f.name) return f;
-						if (ret) return ret;
-					}
-					noPrivate = true;
-				}
-			}
-			return null;
-		}
-
-		/**
-		 * resolve the list of members considering inheritance
-		 */
-		private function listMembers(f:Field, isScope:Boolean=false, skipConstructor:Boolean=true):HashMap/*of Field*/
-		{
-			//trace('!listMembers '+f);
-			var a:HashMap = new HashMap;
-			if (!f) return a;
-			var m:Field;
-			
-			if (!isScope && f.fieldType == 'class')
-			{
-				//trace('static members');
-				for each (m in f.members.toArray())
-					if (m.isStatic && m.access!='private')
-						a.setValue(m.name, m);
-				return a;
-			}
-			
-			if (!isScope) f = typeDB.resolveName(f.type);
-			//if (!isScope) trace('get instance type');
-			//trace('we are in: '+tokenScopeClass);
-			var protectedOk:Boolean = false;
-			for (; f; f = typeDB.resolveName(f.extendz))
-			{
-				if (tokenScopeClass && tokenScopeClass.name == f.name)
-					protectedOk = true;
-				for each (m in f.members.toArray())
-				{
-					if ((!isScope && m.isStatic)) continue;
-					if (skipConstructor && m.name==f.name && f.fieldType=='class') continue;
-					if ((m.access=='private') && (tokenScopeClass==null || tokenScopeClass.name!=f.name)) continue;
-					if (m.access=='protected' && !protectedOk) continue;
-					a.setValue(m.name, m);
-				}
-			}
-			return a;
 		}
 	}
 }

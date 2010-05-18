@@ -28,7 +28,9 @@ Author: Victor Dramba
 
 package ro.minibuilder.asparser
 {
-	//import com.victordramba.console.debug;
+	import __AS3__.vec.Vector;
+	
+	import com.victordramba.console.debug;
 	
 	import flash.net.registerClassAlias;
 	import flash.utils.ByteArray;
@@ -88,8 +90,6 @@ package ro.minibuilder.asparser
 			
 			if (/^_.*flash_display_(Sprite|MovieClip)$/.test(classField.name))
 				return;
-				
-			//trace(packageName, classField.members);
 			
 			if (packageName == '') packageName = '-';//toplevel name is '-'
 			
@@ -174,7 +174,12 @@ package ro.minibuilder.asparser
 		{
 			if (!type) return null;
 			//TODO do we need to be able to clear all resolved at one point?
-			if (type.resolved) return type.resolved;
+			/*if (type.resolved)
+			{
+				var tmp:Field = type.resolved;
+				type.resolved = null;
+				return tmp;
+			}*/
 			
 			//if (type && type.imports)
 			//	debug('look for ' + type.imports.toArray()+'::'+type.type + ' DB:'+dbName);
@@ -199,7 +204,8 @@ package ro.minibuilder.asparser
 				{
 					//debug(type.type + ' resolved in ' + pack + ' DB:'+dbName);
 					var res:Field = packMap.getValue(type.type);
-					type.resolved = res;
+					res.sourcePath = dbName;
+					debug('fld src: ' + res + '-' + res.sourcePath);
 					return res;
 				}
 			}
@@ -295,7 +301,7 @@ package ro.minibuilder.asparser
 				if (des[id]) return des[id];
 				
 				var o:Object = list[id];
-				var fld:Field = new Field;
+				var fld:Field = new Field(null);
 				des[id] = fld;
 				for each (var k:String in fieldLst)
 					fld[k] = o[k];
@@ -346,11 +352,11 @@ package ro.minibuilder.asparser
 			return ba;
 		}
 		
-		public static function fromByteArray(ba:ByteArray):TypeDB
+		/*public static function fromByteArray(ba:ByteArray):TypeDB
 		{
 			registerClassAlias('TypeDB', TypeDB);
 			return ba.readObject() as TypeDB;
-		}
+		}*/
 		
 		public function toString():String
 		{

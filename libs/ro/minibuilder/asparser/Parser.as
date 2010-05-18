@@ -100,14 +100,12 @@ package ro.minibuilder.asparser
 		/**
 		 * Apply color highliting
 		 */
-		public function applyFormats(textField:IEditor):void
+		public function applyFormats(textField:ScriptAreaComponent):void
 		{
 			//textField.setTextFormat(formats.getValue('default'));
 			textField.clearFormatRuns();
-			var tick:int = getTimer();
-			var len:int = tokenizer.tokens.length;
 			
-			for (var i:int = 0; i < tokenizer.tokens.length; i++)
+			for (var i:int=0; i<tokenizer.tokens.length; i++)
 			{
 				var t:Token = tokenizer.tokens[i];
 				var type:String = topType.test(t.string) ? 'topType' : t.type;				
@@ -123,7 +121,6 @@ package ro.minibuilder.asparser
 				}
 			}
 			
-			trace('Parser::applyFormats : ' + (getTimer() - tick ) + ' ms');
 			textField.applyFormatRuns();
 		}
 		
@@ -148,14 +145,25 @@ package ro.minibuilder.asparser
 				tokenizer2 = null;
 				TypeDB.setDB(fileName, tokenizer.typeDB);
 			}
-			
 			return b;
 		}
 
 		public function kill():void
 		{
+			/*if (tokenizer2) 
+			{
+				tokenizer2.kill();
+				tokenizer2 = null;
+			}*/
 		}
 
+		/*public function getNodeByPos(pos:uint):Token
+		{
+			if (!tokenizer) return null;
+			return tokenizer.tokenByPos(pos);
+		}*/
+		
+		
 		
 		public function newResolver():Resolver
 		{

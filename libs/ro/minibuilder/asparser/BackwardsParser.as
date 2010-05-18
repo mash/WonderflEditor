@@ -21,6 +21,8 @@ Author: Victor Dramba
 package ro.minibuilder.asparser
 {
 
+	import __AS3__.vec.Vector;
+	
 	public class BackwardsParser
 	{
 		public static const EXPR:String = 'expr';
@@ -51,7 +53,7 @@ package ro.minibuilder.asparser
 			
 			// reverse a fragment
 			var tmp:String = text.substring(Math.max(0, pos-1000), pos).split('').reverse().join('');
-			var m:Array
+			var m:Array;
 			
 			//check for regexp literal
 			if (tmp.match(/^[gimsx]{0,5}\/[^\/\r]+\/\s*[=,(\;\[\}\{]/))

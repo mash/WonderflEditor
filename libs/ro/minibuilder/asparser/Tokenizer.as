@@ -31,9 +31,8 @@ Author: Victor Dramba
 package ro.minibuilder.asparser
 {
 	
-	//import com.victordramba.console.debug;
+	import com.victordramba.console.debug;
 	
-	import flash.utils.getTimer;
 	import ro.victordramba.util.HashMap;
 
 
@@ -43,7 +42,7 @@ package ro.minibuilder.asparser
 
 		private var string:String;
 		private var pos:uint;
-
+		
 		private static const keywordsA:Array = [
 			'as', 'is', 'in', 'break', 'case', 'continue', 'default', 'do', 'while', 'else', 'for', 'in', 'each',
 			'if', 'label', 'return', 'super', 'switch', 'throw', 'try', 'catch', 'finally', 'while',
@@ -143,7 +142,7 @@ package ro.minibuilder.asparser
 				{
 					//look for regexp syntax
 					lt = tokens[tokens.length-1].string;
-					if (lt=='=' || lt==',' || lt=='[' || lt=='(' || lt=='}' || lt=='{' || lt==';')
+					if (lt=='=' || lt==',' || lt=='[' || lt=='(' || lt=='}' || lt=='{' || lt==';' || lt=='&' || lt=='|')
 					{
 						skipUntilWithEscNL('/');
 						while (isLetter(string.charAt(pos))) pos++;
@@ -361,17 +360,7 @@ package ro.minibuilder.asparser
 				imports = new HashMap;
 			}
 
-			var t:Token;
-			var tick:int = getTimer();
-			
-			while (getTimer() - tick < 6) {
-				
-			try {
-				t = nextToken()
-			} catch (e:Error) {
-				t = null;
-			}
-			
+			var t:Token = nextToken();
 			if (!t)
 				return false;
 
@@ -399,7 +388,7 @@ package ro.minibuilder.asparser
 				imports = new HashMap;
 
 			//toplevel package
-			if (t.string=='{' && tp && tp.string == 'package')
+			if (t.string=='{' && tp.string == 'package')
 			{
 				_scope = scope.members.getValue('');
 				//imports.setItem('.*');
@@ -450,7 +439,13 @@ package ro.minibuilder.asparser
 					{
 						field.access = access;
 						access = null;
+						
 					}
+					//all interface methods are public
+					if (scope.fieldType == 'interface')
+						field.access = 'public';
+					//this is so members will have the parent set to the scope
+					field.parent = scope;
 				}
 				if (_scope && (tp.string=='class' || tp.string=='interface' || scope.fieldType=='package'))
 				{
@@ -461,7 +456,7 @@ package ro.minibuilder.asparser
 					// failproof for syntax errors
 					catch(e:Error)
 					{
-						//debug(e.message + ' ' + tl+','+t+','+tp+','+tp2+','+tp3);
+						debug(e.message + ' ' + tl+','+t+','+tp+','+tp2+','+tp3);
 					}
 				}
 				//add current package to imports
@@ -555,8 +550,12 @@ package ro.minibuilder.asparser
 			{
 				//info += scope.parent.name + '<-' + scope.name+'\n';
 				scope = scope.parent;
-			}
-			
+				
+				//force a ; to close the scope here. needs further testing
+				var sepT:Token = new Token(';', Token.SYMBOL, t.pos+1);
+				sepT.scope = scope;
+				sepT.parent = t.parent;
+				tokens.push(sepT);
 			}
 
 			return true;

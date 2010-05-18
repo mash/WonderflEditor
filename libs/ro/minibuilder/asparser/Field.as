@@ -40,6 +40,9 @@ package ro.minibuilder.asparser
 			this.pos = pos;
 			this.name = name;
 		}
+		
+		//set at resolve time, late
+		public var sourcePath:String;
 
 		public var pos:uint;
 
