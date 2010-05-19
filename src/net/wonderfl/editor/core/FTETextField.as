@@ -288,8 +288,8 @@ package net.wonderfl.editor.core
 		
 		public function replaceText($startIndex:int, $endIndex:int, $text:String):void
 		{
-			//$text = $text.replace(/\r\n/g, NL);
-			//$text = $text.replace(/\n/g, NL);
+			$text = $text.replace(/\r\n/g, NL);
+			$text = $text.replace(/\n/g, NL);
 			
 			_numLines = $text.split(NL).length;
 			_maxScrollV = Math.max(0, _numLines - visibleRows);
