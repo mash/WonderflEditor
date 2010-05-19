@@ -1,7 +1,10 @@
 package net.wonderfl.editor.core 
 {
+	import flash.desktop.Clipboard;
+	import flash.desktop.ClipboardFormats;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -11,48 +14,15 @@ package net.wonderfl.editor.core
 		
 		public function UIFTETextInput() 
 		{
+			super();
+			
 			addEventListener(Event.CUT, onCut);
 			addEventListener(Event.PASTE, onPaste);
-			
 		}
 		
-		
-		override protected function onKeyDown(e:KeyboardEvent):void 
+		override protected function onKeyDown(e:KeyboardEvent):void
 		{
-			super.onKeyDown(e);
-			var c:String = String.fromCharCode(e.charCode);
-			var k:int = e.keyCode;
-			var i:int;
-			if (k == Keyboard.INSERT && e.shiftKey)
-			{
-				onPaste();
-			}
-			
-			else if (String.fromCharCode(e.charCode) == 'z' && e.ctrlKey)
-			{
-				undo();
-				dipatchChange();
-				return;
-			}
-			else if (String.fromCharCode(e.charCode) == 'y' && e.ctrlKey)
-			{
-				redo();
-				dipatchChange();
-				return;
-			}
-			
-			super.onKeyDown(e);
-			
-			if (k == Keyboard.CONTROL || k == Keyboard.SHIFT || e.keyCode==3/*ALT*/ || e.keyCode==Keyboard.ESCAPE)
-				return;
-				
-			var re:RegExp;
-			var pos:int;
-			
-		}
-		
-		protected function onKeyDown(e:KeyboardEvent):void
-		{
+			trace(e);
 			var c:String = String.fromCharCode(e.charCode);
 			var k:int = e.keyCode;
 			var i:int;
@@ -79,7 +49,7 @@ package net.wonderfl.editor.core
 			}
 			
 			
-			if (k == Keyboard.CONTROL || k == Keyboard.SHIFT || e.keyCode==3/*ALT*/ || e.keyCode==Keyboard.ESCAPE)
+			if (k == Keyboard.CONTROL || k == Keyboard.SHIFT || e.keyCode == 3/*ALT*/ || e.keyCode == Keyboard.ESCAPE)
 				return;
 				
 			//debug(e.charCode+' '+e.keyCode);
@@ -249,7 +219,7 @@ package net.wonderfl.editor.core
 				}
 				else
 				{
-					extend selection to full lines
+					//extend selection to full lines
 					var end:int = _text.indexOf(NL, _selEnd-1);
 					if (end == -1) end = _text.length-1;
 					var begin:int = _text.lastIndexOf(NL, _selStart-1)+1;
@@ -284,7 +254,7 @@ package net.wonderfl.editor.core
 				replaceSelection(c);
 				dipatchChange();
 				
-				don't capture CTRL+Key
+				//don't capture CTRL+Key
 				if (e.ctrlKey && !e.altKey) return;
 				captureInput();
 				return;

@@ -4,6 +4,7 @@ package tests
 	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
 	import flash.utils.setTimeout;
+	import net.wonderfl.editor.core.UIFTETextInput;
 	import net.wonderfl.editor.IEditor;
 	import net.wonderfl.editor.LineNumberField;
 	import net.wonderfl.editor.core.UIComponent;
@@ -21,7 +22,7 @@ package tests
 	{
 		private var _errors:Array = [];
 		private var changeRevalIID:int;
-		private var _field:UIFTETextField;
+		private var _field:UIFTETextInput;
 		private var lineNums:LineNumberField;
 		private var _vScroll:TextVScroll;
 		private var _hScroll:TextHScroll;
@@ -33,7 +34,7 @@ package tests
 		public function AS3Editor() 
 		{
 			_this = this;
-			_field = new UIFTETextField;
+			_field = new UIFTETextInput;
 			addChild(_field);
 			
 			_boxWidth = calcFontBox(_field.defaultTextFormat).width;

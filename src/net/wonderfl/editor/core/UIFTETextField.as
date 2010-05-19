@@ -27,7 +27,7 @@ package net.wonderfl.editor.core
 	 */
 	public class UIFTETextField extends FTETextField implements IEditor
 	{
-		private var lastCol:int = 0;		
+		internal var lastCol:int = 0;		
 		private var extChar:int;
 		private var prevMouseUpTime:int = 0;
 		protected var inputTF:TextField;
@@ -88,7 +88,7 @@ package net.wonderfl.editor.core
 			_setSelection(findWordBound(pos, true), findWordBound(pos, false), true);
 		}
 		
-		private function findWordBound(start:int, left:Boolean):int
+		protected function findWordBound(start:int, left:Boolean):int
 		{
 			if (left)
 			{
@@ -196,6 +196,7 @@ package net.wonderfl.editor.core
 		
 		protected function onKeyDown(e:KeyboardEvent):void
 		{
+			trace('super.onKeyDown');
 			var c:String = String.fromCharCode(e.charCode);
 			var k:int = e.keyCode;
 			var i:int;
@@ -472,7 +473,7 @@ package net.wonderfl.editor.core
 			stage.focus = this;
 		}
 		
-		private function captureInput():void
+		protected function captureInput():void
 		{
 			if (stage && stage.focus == this)
 				stage.focus = inputTF;
@@ -490,7 +491,7 @@ package net.wonderfl.editor.core
 			dipatchChange();				
 		}
 		
-		private function saveLastCol():void
+		protected function saveLastCol():void
 		{
 			lastCol = _caret - _text.lastIndexOf(NL, _caret-1) - 1;
 		}

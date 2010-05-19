@@ -165,7 +165,6 @@ package net.wonderfl.editor.core
 			pos = (i < _textLineCache.length) ? _textLineCache[i] : _text.length;
 			lastPos = pos;
 			
-			trace('updateScrollProps : ' + (getTimer() - t) + ' ms');
 			updateVisibleText();
 		}
 		
@@ -217,12 +216,8 @@ package net.wonderfl.editor.core
 			var i0:int = Math.max(_selStart, firstPos);
 			var i1:int = Math.min(_selEnd, lastPos);
 			
-			//trace('getting selStart');
 			var p0:Point = getPointForIndex(i0);
 			var p1:Point;
-			//if (i0 != i1) {
-				//trace('getting selEnd');
-			//}
 			p1 = (i0 == i1) ? p0.clone() : getPointForIndex(i1);
 			var g:Graphics = _selectionShape.graphics;
 			g.clear();
@@ -235,8 +230,6 @@ package net.wonderfl.editor.core
 				{
 					g.drawRect(p0.x, p0.y, _maxWidth - p0.x, boxHeight);
 					var rows:int = (p1.y - p0.y) / boxHeight;// rows >= 1
-					//for (var i:int=1; i<rows; i++)
-						//g.drawRect(1, p0.y + boxHeight * i, _maxWidth, boxHeight);
 					if (rows > 1) {
 						g.drawRect(1, p0.y + boxHeight, _maxWidth, boxHeight * (rows - 1));
 					}
@@ -257,7 +250,7 @@ package net.wonderfl.editor.core
 				checkScrollToCursor();
 			}
 			
-			trace('_setSelection : ' + (getTimer() - t) + ' ms');
+			//trace('_setSelection : ' + (getTimer() - t) + ' ms');
 		}
 		
 		public function updateCaret():void
@@ -620,8 +613,6 @@ package net.wonderfl.editor.core
 					pos = _text.indexOf(NL, pos+1);
 				scrollY -= ct;
 			}
-			
-			trace('checkScrollToCursor costs : ' + (getTimer() - t));
 		}
 		
 		public function gotoLine(line:int):void
@@ -714,7 +705,6 @@ package net.wonderfl.editor.core
 			textLine = _block.firstLine;
 			while (textLine && i++ < lines) textLine = textLine.nextLine;
 			index -= lastNL;
-			trace(<>index : {index}, lines : {lines}</>);
 			if (lines >= 0 && textLine && index < textLine.atomCount)
 				xpos = textLine.getAtomBounds(index).x + textLine.x;
 			else if ($index == _text.length && textLine) {

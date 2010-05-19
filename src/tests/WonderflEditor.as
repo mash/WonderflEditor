@@ -49,7 +49,7 @@ package tests
 			_scaleDownButton.buttonMode = true;
 			_scaleDownButton.tabEnabled = false;
 			_scaleDownButton.addEventListener(MouseEvent.CLICK, function ():void {
-				if (ExternalInterface.available) ExternalInterface.call("Wonderfl.Compiler.scale_down");
+				//if (ExternalInterface.available) ExternalInterface.call("Wonderfl.Compiler.scale_down");
 			});
 			_scaleDownButton.addEventListener(MouseEvent.MOUSE_OVER, function ():void {
 				bm.visible = true;
@@ -58,24 +58,21 @@ package tests
 				bm.visible = false;
 			});
 			
-			
-			
-			
 			addEventListener(Event.ADDED_TO_STAGE, init);
 			
-			if (ExternalInterface.available) {
-				ExternalInterface.addCallback("xi_get_code", js_xi_get_code);
-				ExternalInterface.addCallback("xi_set_error", _editor.setError);
+			//if (ExternalInterface.available) {
+				//ExternalInterface.addCallback("xi_get_code", js_xi_get_code);
+				//ExternalInterface.addCallback("xi_set_error", _editor.setError);
 				//ExternalInterface.addCallback("xi_clear_errors", _editor.clearErrors);
-			}
+			//}
 		}
 		
 		private function compile():void
 		{
-			if (ExternalInterface.available && !_mouseUIFlag) {
-				ExternalInterface.call("Wonderfl.Compiler.edit_complete");
-				_editor.clearErrors();
-			}
+			//if (ExternalInterface.available && !_mouseUIFlag) {
+				//ExternalInterface.call("Wonderfl.Compiler.edit_complete");
+				//_editor.clearErrors();
+			//}
 		}
 		
 		private function js_xi_get_code():String
@@ -106,10 +103,10 @@ package tests
 				_mouseUIFlag = false;
 			});
 			
-			if (ExternalInterface.available) {
-				var code:String = ExternalInterface.call("Wonderfl.Compiler.get_initial_code");
-				_editor.text = (code) ? code : "";
- 			}
+			//if (ExternalInterface.available) {
+				//var code:String = ExternalInterface.call("Wonderfl.Compiler.get_initial_code");
+				//_editor.text = (code) ? code : "";
+ 			//}
 		}
 		
 		private function onResize(e:Event):void 
@@ -117,13 +114,13 @@ package tests
 			var w:int = stage.stageWidth;
 			var h:int = stage.stageHeight;
 			var size:Array;
-			if (ExternalInterface.available) {
-				size = ExternalInterface.call("Wonderfl.Compiler.get_stage_size");
-				if (size) {
-					w = size[0];
-					h = size[1];
-				}
-			}
+			//if (ExternalInterface.available) {
+				//size = ExternalInterface.call("Wonderfl.Compiler.get_stage_size");
+				//if (size) {
+					//w = size[0];
+					//h = size[1];
+				//}
+			//}
 			
 			_editor.width = w;
 			_editor.height = h;
