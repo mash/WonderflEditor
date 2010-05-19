@@ -81,11 +81,18 @@ package tests
 				stage.addEventListener(MouseEvent.MOUSE_MOVE, function ():void {
 					//checkMouse();
 				});
-				//addEventListener(Event.CHANGE, onChange);
+				addEventListener(Event.CHANGE, onChange);
 				//addEventListener(Event.SCROLL, onScroll);
 			});
 		}
 		
+	private function onChange(e:Event):void
+	{
+	//if (triggerAssist())
+		//_autoCompletion.triggerAssist();
+	//else
+			_parser.sourceChanged(text, '');
+	}
 		private function onFieldResize(e:Event):void 
 		{
 			_hScroll.setThumbPercent((_width - lineNums.width - 15) / _field.maxWidth);

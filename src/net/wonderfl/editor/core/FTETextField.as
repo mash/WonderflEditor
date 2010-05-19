@@ -288,8 +288,8 @@ package net.wonderfl.editor.core
 		
 		public function replaceText($startIndex:int, $endIndex:int, $text:String):void
 		{
-			//$text = $text.replace(/\r\n/g, NL);
-			//$text = $text.replace(/\n/g, NL);
+			$text = $text.replace(/\r\n/g, NL);
+			$text = $text.replace(/\n/g, NL);
 			
 			_numLines = $text.split(NL).length;
 			_maxScrollV = Math.max(0, _numLines - visibleRows);
@@ -683,11 +683,12 @@ package net.wonderfl.editor.core
 			return i;
 		}
 		
-		public function getPointForIndex(index:int):Point
+		public function getPointForIndex($index:int):Point
 		{
 			var t:int = getTimer();
 			var pos:int;
 			var lastNL:int = 0;
+			var index:int = $index;
 			
 			// give up providing proper value for these indeces
 			if (index < firstPos) return new Point(cursor.x, -boxHeight);
@@ -695,6 +696,7 @@ package net.wonderfl.editor.core
 			
 			var lines:int = 0;
 			pos = firstPos;
+			//trace(_text, pos);
 			
 			while (true)
 			{
@@ -708,23 +710,20 @@ package net.wonderfl.editor.core
 			var i:int = 0;
 			var textLine:TextLine;
 			var rect:Rectangle;
-			if (lines >= 0) {
-				i = 0;
-				textLine = _block.firstLine;
-				while (textLine && i++ < lines) textLine = textLine.nextLine;
-				lines = index - lastNL;
-				if (lines >= 0 && textLine && lines < textLine.atomCount)
-					xpos = textLine.getAtomBounds(index - lastNL).x + textLine.x;
-				else if (index == _text.length && textLine) {
-					var atomCount:int = index - lastNL - 1;
-					atomCount = (atomCount >= textLine.atomCount) ? atomCount - 1 : atomCount;
-					atomCount = (atomCount < 0) ? 0 : atomCount;
-					rect = textLine.getAtomBounds(atomCount);
-					xpos = rect.x + rect.width + textLine.x;
-				} else
-					calcXposByOriginalMethod("faild @ atomCount");
-			} else 
-				calcXposByOriginalMethod("faild @ numLines");
+			i = 0;
+			textLine = _block.firstLine;
+			while (textLine && i++ < lines) textLine = textLine.nextLine;
+			index -= lastNL;
+			trace(<>index : {index}, lines : {lines}</>);
+			if (lines >= 0 && textLine && index < textLine.atomCount)
+				xpos = textLine.getAtomBounds(index).x + textLine.x;
+			else if ($index == _text.length && textLine) {
+				var atomCount:int = index - 1;
+				atomCount = (atomCount >= textLine.atomCount) ? (textLine.atomCount) - 1 : atomCount;
+				atomCount = (atomCount < 0) ? 0 : atomCount;
+				rect = textLine.getAtomBounds(atomCount);
+				xpos = rect.x + rect.width + textLine.x;
+			}
 			
 			function calcXposByOriginalMethod(msg:String):void {
 				trace('calcXposByOriginalMethod : ' + msg);
