@@ -291,19 +291,6 @@ package net.wonderfl.editor.core
 			$text = $text.replace(/\r\n/g, NL);
 			$text = $text.replace(/\n/g, NL);
 			
-			_numLines = $text.split(NL).length;
-			_maxScrollV = Math.max(0, _numLines - visibleRows);
-			
-			_textLineCache.length = 0;
-			_textLineCache[0] = 0;
-			var pos:int = 0;
-			var i:int = 0;
-			while (true) {
-				pos = $text.indexOf(NL, pos);
-				if (pos == -1) break;
-				_textLineCache[++i] = pos++;
-			}
-			
 			_replaceText($startIndex, $endIndex, $text);
 		}
 		
@@ -312,13 +299,24 @@ package net.wonderfl.editor.core
 			var t:int = getTimer();
 			_text = _text.substr(0, startIndex) + text + _text.substr(endIndex);
 			
+			_numLines = _text.split(NL).length;
+			_maxScrollV = Math.max(0, _numLines - visibleRows);
+			
+			_textLineCache.length = 0;
+			_textLineCache[0] = 0;
+			var pos:int = 0;
+			var i:int = 0;
+			while (true) {
+				pos = _text.indexOf(NL, pos);
+				if (pos == -1) break;
+				_textLineCache[++i] = pos++;
+			}
 			
 			if (text.indexOf(NL) != -1 || startIndex!=endIndex)
 				updateScrollProps();
 			else
 				lastPos += text.length;
 			
-			var i:int;
 			var o:Object;//the run
 			
 				
