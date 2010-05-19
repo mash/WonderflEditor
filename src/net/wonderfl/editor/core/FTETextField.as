@@ -284,7 +284,16 @@ package net.wonderfl.editor.core
 			$text = $text.replace(/\r\n/g, NL);
 			$text = $text.replace(/\n/g, NL);
 			
-			_numLines = $text.split(NL).length;
+			_replaceText($startIndex, $endIndex, $text);
+		}
+		
+		private function _replaceText(startIndex:int, endIndex:int, text:String):void
+		{
+			trace(<>_replaceText startIndex : {startIndex}, endIndex : {endIndex}</>);
+			var t:int = getTimer();
+			_text = _text.substr(0, startIndex) + text + _text.substr(endIndex);
+			
+			_numLines = _text.split(NL).length;
 			_maxScrollV = Math.max(0, _numLines - visibleRows);
 			
 			_textLineCache.length = 0;
@@ -292,29 +301,18 @@ package net.wonderfl.editor.core
 			var pos:int = 0;
 			var i:int = 0;
 			while (true) {
-				pos = $text.indexOf(NL, pos);
+				pos = _text.indexOf(NL, pos);
 				if (pos == -1) break;
 				_textLineCache[++i] = pos++;
 			}
-			
-			_replaceText($startIndex, $endIndex, $text);
-		}
-		
-		private function _replaceText(startIndex:int, endIndex:int, text:String):void
-		{
-			var t:int = getTimer();
-			_text = _text.substr(0, startIndex) + text + _text.substr(endIndex);
-			
 			
 			if (text.indexOf(NL) != -1 || startIndex!=endIndex)
 				updateScrollProps();
 			else
 				lastPos += text.length;
 			
-			var i:int;
 			var o:Object;//the run
 			
-				
 			//1 remove formats for deleted text
 			var delta:int = endIndex - startIndex;
 			for (i=0; i<runs.length; i++)
