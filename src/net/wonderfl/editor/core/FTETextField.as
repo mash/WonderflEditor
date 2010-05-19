@@ -257,7 +257,7 @@ package net.wonderfl.editor.core
 		{
 			cursor.visible = _caret <= lastPos && _caret >= firstPos;
 			cursor.pauseBlink();
-			trace('updateCaret');
+			//trace('updateCaret');
 			var p:Point = getPointForIndex(_caret);
 			cursor.setX(p.x);
 			cursor.y = p.y;
@@ -289,7 +289,6 @@ package net.wonderfl.editor.core
 		
 		private function _replaceText(startIndex:int, endIndex:int, text:String):void
 		{
-			trace(<>_replaceText startIndex : {startIndex}, endIndex : {endIndex}</>);
 			var t:int = getTimer();
 			_text = _text.substr(0, startIndex) + text + _text.substr(endIndex);
 			
@@ -342,7 +341,7 @@ package net.wonderfl.editor.core
 			
 			
 			updateVisibleText();
-			trace('_replaceText costs : ' + (getTimer() - t) + ' ms');
+			CONFIG::benchmark { trace('_replaceText costs : ' + (getTimer() - t) + ' ms'); }
 		}
 		
 		protected var _invalidated:Boolean = false;
@@ -485,9 +484,6 @@ package net.wonderfl.editor.core
 							_maxWidth = w;
 							dispatchEvent(new Event(Event.RESIZE));
 						}
-						//visibleColumns = (width / boxWidth) >> 0;
-						//_maxScrollH = ((w / boxWidth) >> 0) - visibleColumns;
-						trace('width : ' + w);
 					}
 					
 					return (line != null);
