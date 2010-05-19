@@ -109,30 +109,12 @@ package net.wonderfl.editor.core
 			e.stopImmediatePropagation();
 		}
 				
-		//private function onPaste(e:Event=null):void
-		//{
-			//try {
-				//if (!Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) return;
-				//var str:String = Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT) as String;
-				//if (str)
-				//{
-					//replaceSelection(str);
-					//dipatchChange();
-				//}
-			//} catch (e:SecurityError) { };//can't paste
-		//}
-		
 		public function onCopy(e:Event=null):void
 		{
 			if (_selStart != _selEnd)
 				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _text.substring(_selStart, _selEnd));
 		}
-		//private function onCut(e:Event=null):void
-		//{
-			//onCopy();
-			//replaceSelection('');
-			//dipatchChange();
-		//}
+		
 		public function onSelectAll(e:Event):void
 		{
 			_setSelection(0, _text.length, true);
@@ -238,20 +220,6 @@ package net.wonderfl.editor.core
 				//dipatchChange();
 				//return;
 			//}
-			
-			/*if (extChar==0 && e.charCode > 127)
-			{
-				extChar = e.charCode;
-				return;
-			}
-				
-			if (extChar > 0)
-			{
-				c = Util.decodeUTF(e.charCode, extChar);
-				extChar = 0;
-			}*/
-			
-			
 			
 			
 			if (k == Keyboard.CONTROL || k == Keyboard.SHIFT || e.keyCode==3/*ALT*/ || e.keyCode==Keyboard.ESCAPE)
@@ -527,7 +495,7 @@ package net.wonderfl.editor.core
 			lastCol = _caret - _text.lastIndexOf(NL, _caret-1) - 1;
 		}
 		
-		private function dipatchChange():void
+		protected function dipatchChange():void
 		{
 			dispatchEvent(new Event(Event.CHANGE, true, false));
 		}
