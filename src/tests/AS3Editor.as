@@ -1,10 +1,15 @@
-package net.wonderfl.editor 
+package tests 
 {
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
+	import flash.utils.setTimeout;
+	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.LineNumberField;
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.core.UIFTETextField;
+	import net.wonderfl.editor.error.ErrorMessage;
+	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.scroll.TextHScroll;
 	import net.wonderfl.editor.scroll.TextVScroll;
 	import net.wonderfl.editor.utils.calcFontBox;
@@ -12,17 +17,22 @@ package net.wonderfl.editor
 	 * ...
 	 * @author kobayashi-taro
 	 */
-	public class UIFTETextFieldComponent extends UIComponent implements IEditor
+	public class AS3Editor extends UIComponent implements IEditor
 	{
+		private var _errors:Array = [];
 		private var changeRevalIID:int;
 		private var _field:UIFTETextField;
 		private var lineNums:LineNumberField;
 		private var _vScroll:TextVScroll;
 		private var _hScroll:TextHScroll;
 		private var _boxWidth:int;
+		private var _this:AS3Editor;
+		private const CHECK_MOUSE_DURATION:int = 500;
+		private var _parser:ASParserController;
 		
-		public function UIFTETextFieldComponent() 
+		public function AS3Editor() 
 		{
+			_this = this;
 			_field = new UIFTETextField;
 			addChild(_field);
 			
@@ -56,6 +66,24 @@ package net.wonderfl.editor
 			_hScroll.addEventListener(Event.SCROLL, onHScroll);
 			addChild(_vScroll);
 			addChild(_hScroll);
+			
+			
+			addEventListener(Event.ADDED_TO_STAGE, function init(e:Event):void {
+				removeEventListener(Event.ADDED_TO_STAGE, init);
+				_parser = new ASParserController(stage, _this);
+				
+				//_autoCompletion = new AutoCompletion(_this, _ctrl, stage, onAssistComplete);
+				//_autoCompletion.addEventListener(Event.SELECT, codeHintSelectHandler);
+				//addChild(_autoCompletion);
+				//_autoCompletion.deactivate();
+				
+				//setTimeout(checkMouse, CHECK_MOUSE_DURATION);
+				stage.addEventListener(MouseEvent.MOUSE_MOVE, function ():void {
+					//checkMouse();
+				});
+				//addEventListener(Event.CHANGE, onChange);
+				//addEventListener(Event.SCROLL, onScroll);
+			});
 		}
 		
 		private function onFieldResize(e:Event):void 
@@ -97,6 +125,40 @@ package net.wonderfl.editor
 			_vScroll.x = _width - _vScroll.width;
 			_hScroll.y = _field.height;
 			lineNums.height = _field.height;
+		}
+		
+		public function clearErrors():void {
+			_errors.length = 0;
+			setErrorPositions([]);
+			draw();
+			
+		}
+		
+		public function setFontSize($size:int):void {
+			
+		}
+		
+		private function setErrorPositions($errors:Array):void
+		{
+			
+		}
+		
+		public function setError($row:int, $col:int, $message:String):void {
+			_errors.push(new ErrorMessage([$row, $col, $message]));
+			
+			// draw error positions
+			setErrorPositions(_errors.map(
+				function ($error:ErrorMessage, $index:int, $array:Array):int {
+					return $error.row;
+				}
+			));
+			
+			draw();
+		}
+		
+		private function draw():void
+		{
+			
 		}
 		
 		public function copy():void {
@@ -146,5 +208,4 @@ package net.wonderfl.editor
 		}
 		
 	}
-
 }
