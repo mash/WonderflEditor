@@ -1,6 +1,18 @@
 <flex-config>
 	<compiler>
 		<debug>false</debug>
+		<define>
+			<name>CONFIG::benchmark</name>
+			<value>false</value>
+		</define>
+		<define>
+			<name>CONFIG::debug</name>
+			<value>false</value>
+		</define>
+		<define>
+			<name>Thread::debug</name>
+			<value>true</value>
+		</define>
 		<incremental>true</incremental>
 		<source-path>
 			<path-element>.</path-element>

@@ -37,6 +37,7 @@ Author: Victor Dramba
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.external.ExternalInterface;
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
@@ -103,7 +104,7 @@ Author: Victor Dramba
 				status = 'Parse time: ' + (getTimer() - t0) + 'ms ' + parser.tokenCount + ' tokens';
 				parser.applyFormats(editor); // 
 				//cursorMoved(textField.caretIndex);
-				trace('status: ' + status);
+				Thread::debug { trace('status: ' + status);  }
 				dispatchEvent(new Event('status'));
 			});
 			
