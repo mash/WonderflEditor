@@ -498,6 +498,7 @@ package net.wonderfl.editor.core
 		
 		protected function dipatchChange():void
 		{
+			CONFIG::debug { trace('dipatchChange'); }
 			dispatchEvent(new Event(Event.CHANGE, true, false));
 		}
 	}

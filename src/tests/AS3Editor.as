@@ -89,6 +89,7 @@ package tests
 		
 	private function onChange(e:Event):void
 	{
+		CONFIG::debug { trace("AS3Editor.onChange"); }
 	//if (triggerAssist())
 		//_autoCompletion.triggerAssist();
 	//else

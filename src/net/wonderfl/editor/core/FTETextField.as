@@ -305,7 +305,7 @@ package net.wonderfl.editor.core
 				_textLineCache[++i] = pos++;
 			}
 			
-			if (text.indexOf(NL) != -1 || startIndex!=endIndex)
+			if (text.indexOf(NL) != -1 || startIndex != endIndex)
 				updateScrollProps();
 			else
 				lastPos += text.length;

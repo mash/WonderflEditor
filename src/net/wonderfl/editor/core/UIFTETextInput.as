@@ -251,9 +251,6 @@ package net.wonderfl.editor.core
 			else if (e.ctrlKey) return;
 			else if (e.charCode!=0)
 			{
-				replaceSelection(c);
-				dipatchChange();
-				
 				//don't capture CTRL+Key
 				if (e.ctrlKey && !e.altKey) return;
 				captureInput();
