@@ -161,7 +161,6 @@ Author: Victor Dramba
 			if (source && source.charAt(0) == "<" && isMXML(source)) return false;
 			source = source.replace(/\n|\r\n/g, '\r');
 			
-			trace('source changed');
 			
 			t0 = getTimer();
 			parser.load(source, fileName);

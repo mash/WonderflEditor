@@ -52,7 +52,7 @@ package tests
 			_field.addEventListener(Event.RESIZE, onFieldResize);
 			
 			lineNums = new LineNumberField(_field);
-			addChild(lineNums);
+			//addChild(lineNums);
 			lineNums.addEventListener(MouseEvent.MOUSE_DOWN, function(e:MouseEvent):void {
 				_field.onMouseDown(e);
 				stage.addEventListener(MouseEvent.MOUSE_UP, numStageMouseUp);
@@ -89,7 +89,6 @@ package tests
 		
 	private function onChange(e:Event):void
 	{
-		CONFIG::debug { trace("AS3Editor.onChange"); }
 	//if (triggerAssist())
 		//_autoCompletion.triggerAssist();
 	//else

@@ -5,13 +5,15 @@ package net.wonderfl.editor.core
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
+	import net.wonderfl.editor.we_internal;
 	/**
 	 * ...
 	 * @author kobayashi-taro
 	 */
 	public class UIFTETextInput extends UIFTETextField
 	{
-		
+		use namespace we_internal;
+
 		public function UIFTETextInput() 
 		{
 			super();
@@ -22,7 +24,8 @@ package net.wonderfl.editor.core
 		
 		override protected function onKeyDown(e:KeyboardEvent):void
 		{
-			trace(e);
+			_preventDefault = false;
+			trace('onKeyDown _caret : ' + _caret + ' keyCode : ' + e.keyCode);
 			var c:String = String.fromCharCode(e.charCode);
 			var k:int = e.keyCode;
 			var i:int;
@@ -48,12 +51,10 @@ package net.wonderfl.editor.core
 				return;
 			}
 			
-			
 			if (k == Keyboard.CONTROL || k == Keyboard.SHIFT || e.keyCode == 3/*ALT*/ || e.keyCode == Keyboard.ESCAPE)
 				return;
 				
 			//debug(e.charCode+' '+e.keyCode);
-				
 			//var line:TextLine = getLineAt(_caret);
 			var re:RegExp;
 			var pos:int;
@@ -213,6 +214,7 @@ package net.wonderfl.editor.core
 			}
 			else if (k == Keyboard.TAB)
 			{
+				_preventDefault = true;
 				if (_text.substring(_selStart, _selEnd).indexOf(NL) == -1 && !e.shiftKey)
 				{
 					replaceSelection('\t');
@@ -226,21 +228,27 @@ package net.wonderfl.editor.core
 					var str:String = _text.substring(begin, end);
 					
 					if (e.shiftKey)
-						str = str.replace(/\r\s/g, '\r').replace(/^\s/, '');
+						str = str.replace(/\r\s/g, NL).replace(/^\s/, '');
 					else
-						str = '\t' + str.replace(/\r/g, '\r\t');
+						str = '\t' + str.replace(new RegExp(NL, 'g'), NL+'\t');
 					
+					e.preventDefault();
 					replaceText(begin, end, str);
 					_setSelection(begin, begin+str.length+1, true);
 				}
 				dipatchChange();
 			}
+			
 			else if (k == Keyboard.ENTER)
 			{
-				i = _text.lastIndexOf(NL, _caret-1);
-				str = _text.substring(i+1, _caret).match(/^\s*/)[0];
-				if (_text.charAt(_caret-1) == '{') str += '\t';
-				replaceSelection('\r'+str);
+				i = _text.lastIndexOf(NL, _caret); 
+				CONFIG::debug { trace('_caret : ' + _caret + " i : " + i); }
+				str = _text.substring(i + 1, _caret).match(/^\s*/)[0];// str before char
+				if (_text.charAt(_caret - 1) == '{') str += '    ';
+				CONFIG::debug { trace("new str : [" + str + "]"); } 
+				CONFIG::debug { trace(_selStart + ' -> ' + _selEnd); } 
+				_preventDefault = true;
+				replaceSelection(NL+str);
 				dipatchChange();
 			}
 			else if (c == '}' && _text.charAt(_caret-1)=='\t')
@@ -249,7 +257,7 @@ package net.wonderfl.editor.core
 				dipatchChange();
 			}
 			else if (e.ctrlKey) return;
-			else if (e.charCode!=0)
+			else if (e.charCode != 0)
 			{
 				//don't capture CTRL+Key
 				if (e.ctrlKey && !e.altKey) return;

@@ -1,4 +1,4 @@
-package net.wonderfl.editor.core 
+package net.wonderfl.editor.manager 
 {
 	import flash.display.InteractiveObject;
 	import flash.display.Sprite;

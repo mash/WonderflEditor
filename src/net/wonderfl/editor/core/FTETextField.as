@@ -32,6 +32,7 @@ package net.wonderfl.editor.core
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.we_internal;
 	import net.wonderfl.editor.utils.calcFontBox;
 	import net.wonderfl.thread.ThreadTask;
 	import net.wonderfl.thread.ThreadExecuter;
@@ -47,7 +48,7 @@ package net.wonderfl.editor.core
 		protected var _selEnd:int = 0;
 		protected var cursor:ScriptCursor;
 		
-		protected var _text:String = '';
+		we_internal var _text:String = '';
 		
 		public var boxHeight:int = 16;
 		public var boxWidth:int = 12;
@@ -79,12 +80,13 @@ package net.wonderfl.editor.core
 		private var _container:Sprite;
 		private var _scrollYEngine:Sprite = new Sprite;
 		
+		use namespace we_internal;
+		
 		public function FTETextField()
 		{
 			//mouseChildren = false;
 			mouseEnabled = true;
 			buttonMode = true;
-
 			
 			_selectionShape = new Shape;
 			_defaultTextFormat = new TextFormat('Courier New', 12, 0xffffff);
@@ -283,6 +285,8 @@ package net.wonderfl.editor.core
 		{
 			$text = $text.replace(/\r\n/g, NL);
 			$text = $text.replace(/\n/g, NL);
+			$text = $text.replace(/\t/g, '    ');
+			CONFIG::debug { trace(<>replaceText :$startIndex {$startIndex} :$endIndex {$endIndex} :$text [{$text}]</>); }
 			
 			_replaceText($startIndex, $endIndex, $text);
 		}
@@ -347,6 +351,7 @@ package net.wonderfl.editor.core
 		protected var _invalidated:Boolean = false;
 		
 		private function updateVisibleText():void {
+			trace('updateVisibleText');
 			var t:int = getTimer();
 			var line:TextLine;
 			
@@ -391,7 +396,7 @@ package net.wonderfl.editor.core
 					if (killFlag) return false;
 					
 					var tick:int = getTimer();
-					while ((getTimer() - tick) < 10) {
+					while ((getTimer() - tick) < 5) {
 						o = runs[i++];
 						if (o == null) break;
 						if (o.end < firstPos) continue;
@@ -449,8 +454,6 @@ package net.wonderfl.editor.core
 				},
 				function ():Boolean {
 					if (killFlag) return false;
-					if (_invalidated) return false;
-					
 					var tick:int = getTimer();
 					
 					while ((getTimer() - tick) < 6 && !killFlag) {
@@ -468,13 +471,6 @@ package net.wonderfl.editor.core
 						}
 					}
 					
-					if (killFlag) return false;
-					
-					if (_invalidated) {
-						_invalidated = false;
-						line = null;
-						return false;
-					}
 					
 					if (line == null) {
 						w += 8;
@@ -489,30 +485,30 @@ package net.wonderfl.editor.core
 					return (line != null);
 				},
 				function ():Boolean {
-						if (killFlag) return false;
-						//removeEventListener(Event.RENDER, render);
-						var num:int = _textLineContainer.numChildren;
-						var children:Array = [];
-						for (i = 0; i < num; ++i) {
-							children[i] = _textLineContainer.getChildAt(i);
-						}
-						line = _block.firstLine;
-						i = 0;
-						while (line) {
-							if (i < num) {
-								_textLineContainer.removeChild(children[i++]);
-							}
-							_textLineContainer.addChild(line);
-							line = line.nextLine;
-						}
-						
-						while (i < num)
+					if (killFlag) return false;
+					
+					var num:int = _textLineContainer.numChildren;
+					var children:Array = [];
+					for (i = 0; i < num; ++i) {
+						children[i] = _textLineContainer.getChildAt(i);
+					}
+					line = _block.firstLine;
+					i = 0;
+					while (line) {
+						if (i < num) {
 							_textLineContainer.removeChild(children[i++]);
-						
-						_textDecorationContainer.visible = true;
-						children.length = 0;
-						_setSelection(_selStart, _selEnd);
-						dispatchEvent(new Event(Event.SCROLL, true));
+						}
+						_textLineContainer.addChild(line);
+						line = line.nextLine;
+					}
+					
+					while (i < num)	_textLineContainer.removeChild(children[i++]);
+					
+					_textDecorationContainer.visible = true;
+					children.length = 0;
+					_setSelection(_selStart, _selEnd);
+					dispatchEvent(new Event(Event.SCROLL, true));
+					
 					return false;
 				}
 			).run();
@@ -588,6 +584,7 @@ package net.wonderfl.editor.core
 		
 		protected function checkScrollToCursor():void
 		{
+			trace('checkScrollToCursor');
 			var t:int = getTimer();
 			var ct:int, pos:int;
 			if (_caret > lastPos)

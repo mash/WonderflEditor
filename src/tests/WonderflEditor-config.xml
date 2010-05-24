@@ -2,7 +2,7 @@
 	<compiler>
 		<define>
 			<name>CONFIG::benchmark</name>
-			<value>true</value>
+			<value>false</value>
 		</define>
 		<define>
 			<name>Thread::debug</name>

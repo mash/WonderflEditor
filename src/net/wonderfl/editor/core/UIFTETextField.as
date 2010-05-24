@@ -21,6 +21,8 @@ package net.wonderfl.editor.core
 	import flash.utils.setInterval;
 	import flash.utils.setTimeout;
 	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.we_internal;
+	import net.wonderfl.editor.manager.KeyDownProxy;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -36,18 +38,21 @@ package net.wonderfl.editor.core
 		private var _keyTimeOut:uint;
 		private var _keyWatcher:Function;
 		private var _this:UIFTETextField;
+		protected var _preventDefault:Boolean;
+		
+		use namespace we_internal;
 		
 		public function UIFTETextField() 
 		{
 			focusRect = false;
 			
-			inputTF = new TextField;
-			inputTF.type = TextFieldType.INPUT;
-			inputTF.addEventListener(TextEvent.TEXT_INPUT, onInputText);
+			//inputTF = new TextField;
+			//inputTF.type = TextFieldType.INPUT;
+			addEventListener(TextEvent.TEXT_INPUT, onInputText);
 			_this = this;
-			inputTF.addEventListener(KeyboardEvent.KEY_UP, function(e:KeyboardEvent):void {
-				if (stage) stage.focus = _this;
-			});
+			//inputTF.addEventListener(KeyboardEvent.KEY_UP, function(e:KeyboardEvent):void {
+				//if (stage) stage.focus = _this;
+			//});
 			
 			new KeyDownProxy(this, onKeyDown, [Keyboard.DOWN, Keyboard.UP, Keyboard.PAGE_DOWN, Keyboard.PAGE_UP, Keyboard.LEFT, Keyboard.RIGHT]);
 			//addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
@@ -62,10 +67,10 @@ package net.wonderfl.editor.core
 			});
 			
 			
-			addEventListener(FocusEvent.FOCUS_OUT, function(e:FocusEvent):void {
-				if (e.relatedObject != inputTF)
-					cursor.alpha = 0;
-			});
+			//addEventListener(FocusEvent.FOCUS_OUT, function(e:FocusEvent):void {
+				//if (e.relatedObject != inputTF)
+					//cursor.alpha = 0;
+			//});
 			
 			addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
 			
@@ -122,7 +127,7 @@ package net.wonderfl.editor.core
 		
 		public function onMouseDown(e:MouseEvent):void
 		{
-			stage.focus = inputTF;
+			//stage.focus = inputTF;
 			var p:Point = new Point;
 			
 			p.x = mouseX; p.y = mouseY;
@@ -468,6 +473,7 @@ package net.wonderfl.editor.core
 		
 		override public function _setSelection(beginIndex:int, endIndex:int, caret:Boolean = false):void 
 		{
+			trace('_setSelection');
 			super._setSelection(beginIndex, endIndex, caret);
 			
 			stage.focus = this;
@@ -475,13 +481,13 @@ package net.wonderfl.editor.core
 		
 		protected function captureInput():void
 		{
-			if (stage && stage.focus == this)
-				stage.focus = inputTF;
+			//if (stage && stage.focus == this)
+				//stage.focus = inputTF;
 		}
 		
 		private function onInputText(e:TextEvent):void
 		{
-			replaceSelection(e.text);
+			if (!_preventDefault) replaceSelection(e.text);
 			_setSelection(_caret, _caret);
 			//updateCaret();
 			saveLastCol();
@@ -498,7 +504,6 @@ package net.wonderfl.editor.core
 		
 		protected function dipatchChange():void
 		{
-			CONFIG::debug { trace('dipatchChange'); }
 			dispatchEvent(new Event(Event.CHANGE, true, false));
 		}
 	}

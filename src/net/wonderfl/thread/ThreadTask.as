@@ -22,6 +22,9 @@ package net.wonderfl.thread
 		public function kill():void {
 			if (_jobKiller != null)
 				_jobKiller();
+				
+			_slices.length = 0;
+			_currentSlice = null;
 		}
 		/**
 		 * @return false : this job end
@@ -35,11 +38,12 @@ package net.wonderfl.thread
 				_currentSlice = _slices.shift();
 			}
 			
-			if (!_currentSlice()) {
+			var hasNext:Boolean = _currentSlice();
+			if (!hasNext) {
 				_currentSlice = null;
 			}
 			
-			return true;
+			return hasNext || _slices.length;
 		}
 	}
 }
