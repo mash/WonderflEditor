@@ -43,9 +43,9 @@ package net.wonderfl.editor.core
 	[Event(name = 'scroll', type = 'flash.events.Event')]
 	public class FTETextField extends Base implements IEditor
 	{
-		protected var _caret:int;
-		protected var _selStart:int = 0;
-		protected var _selEnd:int = 0;
+		we_internal var _caret:int;
+		we_internal var _selStart:int = 0;
+		we_internal var _selEnd:int = 0;
 		protected var cursor:ScriptCursor;
 		
 		we_internal var _text:String = '';
@@ -66,7 +66,7 @@ package net.wonderfl.editor.core
 		public var visibleColumns:int;
 		private var _maxWidth:int = -1;
 		
-		static protected var NL:String = '\r';
+		static public var NL:String = '\r';
 		
 		//format. very simplified
 		private var runs:Array = [];
@@ -79,6 +79,7 @@ package net.wonderfl.editor.core
 		private var _textDecorationContainer:Sprite = new Sprite;
 		private var _container:Sprite;
 		private var _scrollYEngine:Sprite = new Sprite;
+		private var _charHighlight:CharHighlighter = new CharHighlighter;
 		
 		use namespace we_internal;
 		
@@ -207,7 +208,6 @@ package net.wonderfl.editor.core
 			_selStart = beginIndex;
 			_selEnd = endIndex;
 			
-			
 			if (_selStart > _selEnd)
 			{
 				var tmp:int = _selEnd;
@@ -283,11 +283,10 @@ package net.wonderfl.editor.core
 		
 		public function replaceText($startIndex:int, $endIndex:int, $text:String):void
 		{
-			$text = $text.replace(/\r\n/g, NL);
-			$text = $text.replace(/\n/g, NL);
-			$text = $text.replace(/\t/g, '    ');
-			CONFIG::debug { trace(<>replaceText :$startIndex {$startIndex} :$endIndex {$endIndex} :$text [{$text}]</>); }
-			
+			$text = $text.replace(new RegExp("\r\n", "g"), NL).replace(/\n/g, NL);
+			//$text = $text.replace("\n", NL);
+			$text = $text.replace("\t", '    ');
+			CONFIG::debug { trace(<>replaceText :$startIndex {$startIndex} :$endIndex {$endIndex} :$text [{$text.replace(/ /g, "@").replace(new RegExp(NL, "g"), '|')}]</>); }
 			_replaceText($startIndex, $endIndex, $text);
 		}
 		
@@ -309,8 +308,10 @@ package net.wonderfl.editor.core
 				_textLineCache[++i] = pos++;
 			}
 			
-			if (text.indexOf(NL) != -1 || startIndex != endIndex)
+			if (text.indexOf(NL) != -1 || startIndex != endIndex) {
+				trace('_replaceText : updateScrollProps');
 				updateScrollProps();
+			}
 			else
 				lastPos += text.length;
 			
@@ -343,7 +344,7 @@ package net.wonderfl.editor.core
 				if (o.end >= startIndex) o.end += delta;
 			}
 			
-			
+			trace('_replaceText updateVisibleText()');
 			updateVisibleText();
 			CONFIG::benchmark { trace('_replaceText costs : ' + (getTimer() - t) + ' ms'); }
 		}
@@ -582,9 +583,8 @@ package net.wonderfl.editor.core
 			cursor.setSize(width, boxHeight);
 		}
 		
-		protected function checkScrollToCursor():void
+		we_internal function checkScrollToCursor():void
 		{
-			trace('checkScrollToCursor');
 			var t:int = getTimer();
 			var ct:int, pos:int;
 			if (_caret > lastPos)
@@ -714,6 +714,17 @@ package net.wonderfl.editor.core
 			return new Point(xpos, ypos);
 		}
 		
+		public function highlightChar($index:int):void {
+			if ($index >= _text.length - 2 || $index < 0) return;
+			
+			var p0:Point = getPointForIndex($index);
+			var p1:Point = getPointForIndex($index + 1);
+			
+			_charHighlight.highlight(p0.x, p0.y, p1.x - p0.x, boxHeight);
+			
+			addChild(_charHighlight);
+		}
+		
 		public function set scrollH(value:int):void {
 			//trace('scrollH = ' + value);
 			_scrollH = value;
@@ -746,5 +757,21 @@ package net.wonderfl.editor.core
 		public function undo():void { }
 		public function redo():void { }
 		
+		public function findPreviousMatch($left:String, $right:String, $index:int):int {
+			var i:int = 1, j:int = $index;
+			var lastRightOne:int;
+			var lastLeftOne:int;
+			
+			while (i > 0) {
+				lastLeftOne = _text.lastIndexOf($left, j - 1);
+				lastRightOne = _text.lastIndexOf($right, j - 1);
+				i += (lastRightOne > lastLeftOne) ? 1 : -1;
+				j = (lastLeftOne > lastRightOne) ? lastLeftOne : lastRightOne;
+			}
+			
+			highlightChar(lastLeftOne);
+			
+			return lastLeftOne;
+		}
 	}
 }

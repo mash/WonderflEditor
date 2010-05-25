@@ -29,7 +29,11 @@ package net.wonderfl.editor.core
 	 */
 	public class UIFTETextField extends FTETextField implements IEditor
 	{
-		internal var lastCol:int = 0;		
+		internal var lastCol:int = 0;
+		private static var MATCH:Object = {
+			')' : '(', ']' : '[', '」' : '「', '）' : '（', '｝' : '｛', '】' : '【', '〉' : '〈', '］': '［',
+			'》' : '《', '』' : '『'
+		}
 		private var extChar:int;
 		private var prevMouseUpTime:int = 0;
 		protected var inputTF:TextField;
@@ -55,8 +59,8 @@ package net.wonderfl.editor.core
 			//});
 			
 			new KeyDownProxy(this, onKeyDown, [Keyboard.DOWN, Keyboard.UP, Keyboard.PAGE_DOWN, Keyboard.PAGE_UP, Keyboard.LEFT, Keyboard.RIGHT]);
-			//addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			addEventListener(FocusEvent.KEY_FOCUS_CHANGE, function(e:FocusEvent):void {
+			//addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 				e.preventDefault();
 				e.stopImmediatePropagation();
 			});
@@ -122,6 +126,7 @@ package net.wonderfl.editor.core
 		
 		public function onSelectAll(e:Event):void
 		{
+			trace('select all '+ _text.length);
 			_setSelection(0, _text.length, true);
 		}
 		
@@ -371,73 +376,6 @@ package net.wonderfl.editor.core
 				}
 				if (e.shiftKey) extendSel(false);
 			}
-			//else if (k == Keyboard.BACKSPACE)
-			//{
-				//if (_caret > 0 && _selStart == _selEnd)
-				//{
-					//replaceText(_caret-1, _caret, '');
-					//_caret--;
-				//}
-				//else
-					//replaceSelection('');
-				//dipatchChange();
-			//}
-			//else if (k == Keyboard.DELETE)
-			//{
-				//if (_caret < length && _selStart == _selEnd)
-					//replaceText(_caret, _caret+1, '');
-				//else
-					//replaceSelection('');
-				//dipatchChange();
-			//}
-			//else if (k == Keyboard.TAB)
-			//{
-				//if (_text.substring(_selStart, _selEnd).indexOf(NL) == -1 && !e.shiftKey)
-				//{
-					//replaceSelection('\t');
-				//}
-				//else
-				//{
-					//extend selection to full lines
-					//var end:int = _text.indexOf(NL, _selEnd-1);
-					//if (end == -1) end = _text.length-1;
-					//var begin:int = _text.lastIndexOf(NL, _selStart-1)+1;
-					//var str:String = _text.substring(begin, end);
-					//
-					//if (e.shiftKey)
-						//str = str.replace(/\r\s/g, '\r').replace(/^\s/, '');
-					//else
-						//str = '\t' + str.replace(/\r/g, '\r\t');
-					//
-					//replaceText(begin, end, str);
-					//_setSelection(begin, begin+str.length+1, true);
-				//}
-				//dipatchChange();
-			//}
-			//else if (k == Keyboard.ENTER)
-			//{
-				//i = _text.lastIndexOf(NL, _caret-1);
-				//str = _text.substring(i+1, _caret).match(/^\s*/)[0];
-				//if (_text.charAt(_caret-1) == '{') str += '\t';
-				//replaceSelection('\r'+str);
-				//dipatchChange();
-			//}
-			//else if (c == '}' && _text.charAt(_caret-1)=='\t')
-			//{
-				//replaceText(_caret-1, _caret, '}');
-				//dipatchChange();
-			//}
-			//else if (e.ctrlKey) return;
-			//else if (e.charCode!=0)
-			//{
-				//replaceSelection(c);
-				//dipatchChange();
-				//
-				//don't capture CTRL+Key
-				//if (e.ctrlKey && !e.altKey) return;
-				//captureInput();
-				//return;
-			//}
 			else return;
 
 			if (!e.shiftKey && k!=Keyboard.TAB)
@@ -487,14 +425,21 @@ package net.wonderfl.editor.core
 		
 		private function onInputText(e:TextEvent):void
 		{
-			if (!_preventDefault) replaceSelection(e.text);
+			if (_preventDefault) return;
+			
+			if (e.text in MATCH) {
+				findPreviousMatch(MATCH[e.text], e.text, _caret)
+			}
+			trace('onTextInput : [' + e.text + ']');
+			replaceSelection(e.text);
 			_setSelection(_caret, _caret);
 			//updateCaret();
 			saveLastCol();
 			checkScrollToCursor();
 			e.preventDefault();
-			if (stage) stage.focus = this;
-			dipatchChange();				
+			e.stopImmediatePropagation();
+			//if (stage) stage.focus = this;
+			//dipatchChange();				
 		}
 		
 		protected function saveLastCol():void
@@ -504,6 +449,7 @@ package net.wonderfl.editor.core
 		
 		protected function dipatchChange():void
 		{
+			trace('dispatch change');
 			dispatchEvent(new Event(Event.CHANGE, true, false));
 		}
 	}
