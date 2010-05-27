@@ -14,7 +14,6 @@ package net.wonderfl.editor.core
 	import net.wonderfl.editor.manager.ClipboardManager;
 	import net.wonderfl.editor.manager.EditManager;
 	import net.wonderfl.editor.manager.IKeyboadEventManager;
-	import net.wonderfl.editor.manager.IMEManager;
 	import net.wonderfl.editor.manager.SelectionManager;
 	import net.wonderfl.editor.utils.versionTest;
 	import net.wonderfl.editor.we_internal;
@@ -43,7 +42,8 @@ package net.wonderfl.editor.core
 			_editManager = new EditManager(this);
 			_imeField = new TextField;
 			_imeField.height = boxHeight;
-			addChild(_imeField);
+			_container.addChild(_imeField);
+			_container.addChild(cursor);
 			if (versionTest(10, 1)) {
 				_imeField.type = TextFieldType.DYNAMIC;
 				_imeManager = new IMEClient_10_1(this);
@@ -91,13 +91,13 @@ package net.wonderfl.editor.core
 			else if (c == 'z' && e.ctrlKey)
 			{
 				undo();
-				dipatchChange();
+				dispatchChange();
 				return;
 			}
 			else if (c == 'y' && e.ctrlKey)
 			{
 				redo();
-				dipatchChange();
+				dispatchChange();
 				return;
 			}
 			
@@ -108,7 +108,7 @@ package net.wonderfl.editor.core
 			
 			if (_editManager.keyDownHandler(e)) {
 				_preventDefault = true;
-				dipatchChange();
+				dispatchChange();
 				return;
 			}
 			
@@ -128,7 +128,9 @@ package net.wonderfl.editor.core
 			_setSelection(_caret, _caret);
 			saveLastCol();
 			checkScrollToCursor();
-			e.stopImmediatePropagation();
+			
+			dispatchChange();
+			
 			e.stopPropagation();
 		}
 		
@@ -156,7 +158,7 @@ package net.wonderfl.editor.core
 				if (str)
 				{
 					replaceSelection(str);
-					dipatchChange();
+					dispatchChange();
 				}
 			} catch (e:SecurityError) { };//can't paste
 		}
@@ -165,7 +167,7 @@ package net.wonderfl.editor.core
 		{
 			onCopy();
 			replaceSelection('');
-			dipatchChange();
+			dispatchChange();
 		}
 	}
 

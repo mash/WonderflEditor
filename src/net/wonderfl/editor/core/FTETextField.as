@@ -77,7 +77,7 @@ package net.wonderfl.editor.core
 		protected var _textLineContainer:Sprite = new Sprite;
 		private var _numLines:int;
 		private var _textDecorationContainer:Sprite = new Sprite;
-		private var _container:Sprite;
+		protected var _container:Sprite;
 		private var _scrollYEngine:Sprite = new Sprite;
 		private var _charHighlight:CharHighlighter = new CharHighlighter;
 		
@@ -286,7 +286,6 @@ package net.wonderfl.editor.core
 			$text = $text.replace(new RegExp("\r\n", "g"), NL).replace(/\n/g, NL);
 			//$text = $text.replace("\n", NL);
 			$text = $text.replace("\t", '    ');
-			CONFIG::debug { trace(<>replaceText :$startIndex {$startIndex} :$endIndex {$endIndex} :$text [{$text.replace(/ /g, "@").replace(new RegExp(NL, "g"), '|')}]</>); }
 			_replaceText($startIndex, $endIndex, $text);
 		}
 		
@@ -309,7 +308,6 @@ package net.wonderfl.editor.core
 			}
 			
 			if (text.indexOf(NL) != -1 || startIndex != endIndex) {
-				trace('_replaceText : updateScrollProps');
 				updateScrollProps();
 			}
 			else

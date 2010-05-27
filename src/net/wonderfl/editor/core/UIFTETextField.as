@@ -405,7 +405,7 @@ package net.wonderfl.editor.core
 			lastCol = _caret - _text.lastIndexOf(NL, _caret-1) - 1;
 		}
 		
-		protected function dipatchChange():void
+		protected function dispatchChange():void
 		{
 			trace('dispatch change');
 			dispatchEvent(new Event(Event.CHANGE, true, false));

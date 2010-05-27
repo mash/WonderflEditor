@@ -20,6 +20,7 @@ package tests
 	 */
 	public class AS3Editor extends UIComponent implements IEditor
 	{
+		private const CHECK_MOUSE_DURATION:int = 500;
 		private var _errors:Array = [];
 		private var changeRevalIID:int;
 		private var _field:UIFTETextInput;
@@ -28,7 +29,6 @@ package tests
 		private var _hScroll:TextHScroll;
 		private var _boxWidth:int;
 		private var _this:AS3Editor;
-		private const CHECK_MOUSE_DURATION:int = 500;
 		private var _parser:ASParserController;
 		
 		public function AS3Editor() 
@@ -52,7 +52,7 @@ package tests
 			_field.addEventListener(Event.RESIZE, onFieldResize);
 			
 			lineNums = new LineNumberField(_field);
-			//addChild(lineNums);
+			addChild(lineNums);
 			lineNums.addEventListener(MouseEvent.MOUSE_DOWN, function(e:MouseEvent):void {
 				_field.onMouseDown(e);
 				stage.addEventListener(MouseEvent.MOUSE_UP, numStageMouseUp);
@@ -93,6 +93,8 @@ package tests
 		//_autoCompletion.triggerAssist();
 	//else
 			_parser.sourceChanged(text, '');
+			
+			lineNums.draw();
 	}
 		private function onFieldResize(e:Event):void 
 		{
@@ -153,7 +155,6 @@ package tests
 		
 		public function setError($row:int, $col:int, $message:String):void {
 			_errors.push(new ErrorMessage([$row, $col, $message]));
-			
 			// draw error positions
 			setErrorPositions(_errors.map(
 				function ($error:ErrorMessage, $index:int, $array:Array):int {
