@@ -10,6 +10,7 @@ package tests
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.core.UIFTETextField;
 	import net.wonderfl.editor.error.ErrorMessage;
+	import net.wonderfl.editor.manager.CodeAssistManager;
 	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.scroll.TextHScroll;
 	import net.wonderfl.editor.scroll.TextVScroll;
@@ -24,6 +25,7 @@ package tests
 		private var _errors:Array = [];
 		private var changeRevalIID:int;
 		private var _field:UIFTETextInput;
+		private var _codeAssistManager:CodeAssistManager;
 		private var lineNums:LineNumberField;
 		private var _vScroll:TextVScroll;
 		private var _hScroll:TextHScroll;
@@ -36,6 +38,8 @@ package tests
 			_this = this;
 			_field = new UIFTETextInput;
 			addChild(_field);
+			
+			_codeAssistManager = new CodeAssistManager(_field);
 			
 			_boxWidth = calcFontBox(_field.defaultTextFormat).width;
 			
