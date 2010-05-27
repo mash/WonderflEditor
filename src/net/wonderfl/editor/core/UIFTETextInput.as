@@ -31,6 +31,7 @@ package net.wonderfl.editor.core
 		private var _selectionManager:SelectionManager;
 		private var _clipboardManager:ClipboardManager;
 		private var _imeManager:IKeyboadEventManager;
+		private var _plugins:Vector.<IKeyboadEventManager>;
 		private var _editManager:EditManager;
 		use namespace we_internal;
 
@@ -40,6 +41,9 @@ package net.wonderfl.editor.core
 			
 			_selectionManager = new SelectionManager(this);
 			_editManager = new EditManager(this);
+			
+			_plugins = new Vector.<IKeyboadEventManager>;
+			
 			_imeField = new TextField;
 			_imeField.height = boxHeight;
 			_container.addChild(_imeField);
@@ -56,6 +60,10 @@ package net.wonderfl.editor.core
 			addEventListener(Event.CUT, onCut);
 			addEventListener(Event.PASTE, onPaste);
 			addEventListener(Event.ADDED_TO_STAGE, init);
+		}
+		
+		public function addPlugIn($plugin:IKeyboadEventManager):void {
+			_plugins.push($plugin);
 		}
 		
 		private function init(e:Event):void 
@@ -103,7 +111,13 @@ package net.wonderfl.editor.core
 			
 			if (k == Keyboard.CONTROL || k == Keyboard.SHIFT || e.keyCode == 3/*ALT*/ || e.keyCode == Keyboard.ESCAPE)
 				return;
-				
+			
+			var len:int = _plugins.length;
+			for (i = 0; i < len; ++i) {
+				if (_plugins[i].keyDownHandler(e))
+					return;
+			}
+			
 			cursor.visible = !_imeManager.keyDownHandler(e);
 			
 			if (_editManager.keyDownHandler(e)) {
@@ -114,6 +128,10 @@ package net.wonderfl.editor.core
 			
 			_selectionManager.keyDownHandler(e);
 			//resetIMETFPosition();
+		}
+		
+		public function preventFollowingTextInput():void {
+			_preventDefault = true;
 		}
 		
 		protected function onInputText(e:TextEvent):void

@@ -45,7 +45,7 @@ package net.wonderfl.editor.manager
 	import ro.victordramba.util.vectorToArray;
 	
 	
-	public class CodeAssistManager
+	public class CodeAssistManager implements IKeyboadEventManager
 	{
 		private var menuData:Vector.<String>
 		private var fld:UIFTETextInput;
@@ -59,6 +59,7 @@ package net.wonderfl.editor.manager
 		private var menuRefY:int;
 		private var tooltip:ToolTip;
 		private var tooltipCaret:int;
+		private var _imeMode:Boolean;
 		
 		public function CodeAssistManager(field:UIFTETextInput, ctrl:ASParserController, stage:Stage, onComplete:Function)
 		{
@@ -71,12 +72,12 @@ package net.wonderfl.editor.manager
 			//restore the focus to the textfield, delayed			
 			menu.addEventListener(Event.REMOVED_FROM_STAGE, onMenuRemoved);
 			//menu in action
-			menu.addEventListener(KeyboardEvent.KEY_DOWN, onMenuKey);
+			//menu.addEventListener(KeyboardEvent.KEY_DOWN, onMenuKey);
 			
 			tooltip = new ToolTip;
 			
 			//used to close the tooltip
-			fld.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			//fld.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		}
 		
 		private function filterMenu():Boolean
@@ -87,65 +88,12 @@ package net.wonderfl.editor.manager
 
 			if (a.length == 0) return false;
 			menu.setListData(a);
-			menu.setSelectedIndex(0);
-			
+			menu.selectedIndex = 0;
+		
 			rePositionMenu();
 			return true;
 		}
 		
-		private function onKeyDown(e:KeyboardEvent):void
-		{
-			if (tooltip.isShowing())
-			{
-				if (e.keyCode == Keyboard.ESCAPE || e.keyCode == Keyboard.UP || e.keyCode == Keyboard.DOWN || 
-					String.fromCharCode(e.charCode) == ')' || fld.caretIndex < tooltipCaret)
-					tooltip.disposeToolTip();
-			}
-			
-			if (String.fromCharCode(e.keyCode) == ' ' && e.ctrlKey)
-			{
-				triggerAssist();
-			}
-		}
-		
-		private function onMenuKey(e:KeyboardEvent):void
-		{
-			if (e.charCode != 0)
-			{
-				var c:int = fld.caretIndex;
-				if (e.ctrlKey)
-				{
-					
-				}
-				else if (e.keyCode == Keyboard.BACKSPACE)
-				{
-					fldReplaceText(c-1, c, '');
-					if (menuStr.length > 0)
-					{
-						menuStr = menuStr.substr(0, -1);
-						if (filterMenu()) return;
-					}
-				}
-				else if (e.keyCode == Keyboard.DELETE)
-				{
-					fldReplaceText(c, c+1, '');
-				}
-				else if (e.charCode > 31 && e.charCode < 127)
-				{
-					var ch:String = String.fromCharCode(e.charCode);
-					menuStr += ch.toLowerCase();
-					fldReplaceText(c, c, ch);
-					if (filterMenu()) return;
-				}
-				else if (e.keyCode == Keyboard.ENTER || e.keyCode == Keyboard.TAB)
-				{
-					fldReplaceText(c-menuStr.length, c, menu.getSelectedValue());
-					checkAddImports(menu.getSelectedValue());
-					onComplete();
-				}
-				menu.dispose();
-			}
-		}
 		
 		private function checkAddImports(name:String):void
 		{
@@ -203,8 +151,8 @@ package net.wonderfl.editor.manager
 			menuStr = menuStr.split('').reverse().join('')
 			pos -= menuStr.length + 1;
 			
-			//debug('trigger:'+trigger);
-			//debug('str='+menuStr);
+			debug('trigger:'+trigger);
+			debug('str='+menuStr);
 			
 			menuData = null;
 			var rt:String = trigger.split('').reverse().join('');
@@ -234,21 +182,21 @@ package net.wonderfl.editor.manager
 			showMenu(pos+1);			
 			if (menuStr.length) filterMenu();
 		}
-
 		
 		private function showMenu(index:int):void
 		{
+			debug(this, 'showMenu', index);
 			var p:Point;
 			menu.setListData(vectorToArray(menuData));
-			menu.setSelectedIndex(0);
+			menu.selectedIndex = 0;
 			
 			p = fld.getPointForIndex(index);
-			p.x += fld.scrollH;
+			p.x += fld.x;
 			
 			p = fld.localToGlobal(p);
-			menuRefY = p.y;
+			menuRefY = p.y + fld.boxHeight;
 			
-			menu.show(stage, p.x, 0);
+			menu.show(fld, p.x, p.y);
 			
 			stage.focus = menu;
 			
@@ -265,7 +213,104 @@ package net.wonderfl.editor.manager
 		}
 		
 		private function debug(...args):void {
-			CONFIG::debug { trace('CodeAssistManager :: ' + args); }
+			CONFIG::debug { trace('  CodeAssistManager :: ' + args); }
+		}
+		
+		/* INTERFACE net.wonderfl.editor.manager.IKeyboadEventManager */
+		
+		public function get imeMode():Boolean
+		{
+			return _imeMode;
+		}
+		
+		public function keyDownHandler($event:KeyboardEvent):Boolean
+		{
+			_imeMode = false;
+			debug('onKeyDown');
+			if (tooltip.isShowing())
+			{
+				if ($event.keyCode == Keyboard.ESCAPE || $event.keyCode == Keyboard.UP || $event.keyCode == Keyboard.DOWN || 
+					String.fromCharCode($event.charCode) == ')' || fld.caretIndex < tooltipCaret)
+					tooltip.disposeToolTip();
+			}
+			
+			if (String.fromCharCode($event.keyCode) == ' ' && $event.ctrlKey)
+			{
+				triggerAssist();
+			}
+			
+			if (menu.parent) {
+				return onMenuKey($event);
+			}
+			
+			return false;
+		}
+		
+		private function onMenuKey($event:KeyboardEvent):Boolean
+		{
+			var res:Boolean = true;
+			if ($event.charCode != 0)
+			{
+				var c:int = fld.caretIndex;
+				if ($event.ctrlKey)
+				{
+					debug('onMenuKey : CTRL + ' + String.fromCharCode($event.charCode));
+					switch (String.fromCharCode($event.charCode)) {
+					case 'n':
+						menu.selectedIndex++;
+						return true;
+					case 'p':
+						menu.selectedIndex--;
+						return true;
+					default :
+						break;
+					}
+				}
+				else if ($event.keyCode == Keyboard.BACKSPACE)
+				{
+					//fldReplaceText(c-1, c, '');
+					if (menuStr.length > 0)
+					{
+						menuStr = menuStr.substr(0, -1);
+						if (filterMenu()) return true;
+					}
+				}
+				else if ($event.keyCode == Keyboard.DELETE)
+				{
+					//fldReplaceText(c, c+1, '');
+				}
+				else if ($event.charCode > 31 && $event.charCode < 127)
+				{
+					var ch:String = String.fromCharCode($event.charCode);
+					menuStr += ch.toLowerCase();
+					//fldReplaceText(c, c, ch);
+					if (filterMenu()) return true;
+				}
+				else if ($event.keyCode == Keyboard.ENTER || $event.keyCode == Keyboard.TAB)
+				{
+					fldReplaceText(c - menuStr.length, c, menu.getSelectedValue());
+					checkAddImports(menu.getSelectedValue());
+					fld.preventFollowingTextInput();
+					onComplete();
+				} else
+					res = false;
+					
+				menu.dispose();
+			} else {
+				switch ($event.keyCode) {
+				case Keyboard.DOWN:
+					menu.selectedIndex++;
+					break;
+				case Keyboard.UP:
+					menu.selectedIndex--;
+					break;
+				default:
+					res = false;
+					break;
+				}
+			}
+			
+			return res;
 		}
 
 	}

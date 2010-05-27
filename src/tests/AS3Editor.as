@@ -81,6 +81,7 @@ package tests
 			
 			_parser = new ASParserController(stage, _this);
 			_codeAssistManager = new CodeAssistManager(_field, _parser, stage, onComplete);
+			_field.addPlugIn(_codeAssistManager);
 			
 			//_autoCompletion = new AutoCompletion(_this, _ctrl, stage, onAssistComplete);
 			//_autoCompletion.addEventListener(Event.SELECT, codeHintSelectHandler);
