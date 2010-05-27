@@ -101,18 +101,6 @@ package net.wonderfl.editor.manager
 			}
 		}
 		
-		//private function handleRightParenthesis($event:KeyboardEvent):void {
-			//trace('right parenthesis : ' + $event);
-			//_field.highlightChar(findPreviousMatch('(', ')', _caret));
-			//_field.replaceSelection(')');
-		//}
-		//
-		//private function handleRightBracket($event:KeyboardEvent):void {
-			//trace('right bracket: ' + $event);
-			//_field.highlightChar(findPreviousMatch('[', ']', _caret));
-			//_field.replaceSelection(']');
-		//}
-		
 		private function handleTabKey($event:KeyboardEvent):void
 		{
 			if (_text.substring(_selStart, _selEnd).indexOf(FTETextField.NL) == -1 && !$event.shiftKey)
@@ -135,21 +123,6 @@ package net.wonderfl.editor.manager
 				_field.setSelection(begin, begin + str.length + 1);
 			}
 		}
-		
-		//public function findPreviousMatch($left:String, $right:String, $index:int):int {
-			//var i:int = 1, j:int = $index;
-			//var lastRightOne:int;
-			//var lastLeftOne:int;
-			//
-			//while (i > 0) {
-				//lastLeftOne = _text.lastIndexOf($left, j - 1);
-				//lastRightOne = _text.lastIndexOf($right, j - 1);
-				//i += (lastRightOne > lastLeftOne) ? 1 : -1;
-				//j = (lastLeftOne > lastRightOne) ? lastLeftOne : lastRightOne;
-			//}
-			//
-			//return lastLeftOne;
-		//}
 	}
 
 }

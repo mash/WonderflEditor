@@ -41,7 +41,7 @@ package net.wonderfl.editor.core
 	
 	[Event(name = 'resize', type = 'flash.events.Event')]
 	[Event(name = 'scroll', type = 'flash.events.Event')]
-	public class FTETextField extends Base implements IEditor
+	public class FTETextField extends UIComponent implements IEditor
 	{
 		we_internal var _caret:int;
 		we_internal var _selStart:int = 0;
@@ -74,7 +74,7 @@ package net.wonderfl.editor.core
 		private var _defaultTextFormat:TextFormat;
 		private var _block:TextBlock;
 		private var _textLineCache:Vector.<uint> = new Vector.<uint>;
-		private var _textLineContainer:Sprite = new Sprite;
+		protected var _textLineContainer:Sprite = new Sprite;
 		private var _numLines:int;
 		private var _textDecorationContainer:Sprite = new Sprite;
 		private var _container:Sprite;
@@ -91,13 +91,13 @@ package net.wonderfl.editor.core
 			
 			_selectionShape = new Shape;
 			_defaultTextFormat = new TextFormat('Courier New', 12, 0xffffff);
-			//for each (var fnt:Font in Font.enumerateFonts(true))
-				//if (fnt.fontName == 'ＭＳ Ｐゴシック')
-				//{
-					//_defaultTextFormat.font = fnt.fontName;
-					//_defaultTextFormat.size = 12;
-					//break;
-				//}
+			for each (var fnt:Font in Font.enumerateFonts(true))
+				if (fnt.fontName == 'ＭＳ Ｐゴシック')
+				{
+					_defaultTextFormat.font = fnt.fontName;
+					_defaultTextFormat.size = 12;
+					break;
+				}
 			//
 			var rect:Rectangle = calcFontBox(_defaultTextFormat);
 			boxHeight = rect.height;
@@ -476,7 +476,7 @@ package net.wonderfl.editor.core
 					if (line == null) {
 						w += 8;
 						
-						w = (w < width) ? width : w;
+						w = (w < _width) ? _width : w;
 						if (_maxWidth < w) {
 							_maxWidth = w;
 							dispatchEvent(new Event(Event.RESIZE));
@@ -511,7 +511,8 @@ package net.wonderfl.editor.core
 					dispatchEvent(new Event(Event.SCROLL, true));
 					
 					return false;
-				}
+				},
+				drawComplete
 			).run();
 			
 			function replaceURLString():void {
@@ -536,6 +537,8 @@ package net.wonderfl.editor.core
 				}
 			}
 		}
+		
+		protected function drawComplete():Boolean { return false; }
 		
 		private function killTasks():void
 		{
@@ -580,7 +583,7 @@ package net.wonderfl.editor.core
 			super.updateSize();
 			visibleRows = (height / boxHeight) >> 0;
 			updateScrollProps();
-			cursor.setSize(width, boxHeight);
+			cursor.setSize(_width, boxHeight);
 		}
 		
 		we_internal function checkScrollToCursor():void

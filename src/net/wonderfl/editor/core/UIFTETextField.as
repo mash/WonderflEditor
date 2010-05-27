@@ -30,13 +30,8 @@ package net.wonderfl.editor.core
 	public class UIFTETextField extends FTETextField implements IEditor
 	{
 		internal var lastCol:int = 0;
-		private static var MATCH:Object = {
-			')' : '(', ']' : '[', '」' : '「', '）' : '（', '｝' : '｛', '】' : '【', '〉' : '〈', '］': '［',
-			'》' : '《', '』' : '『'
-		}
 		private var extChar:int;
 		private var prevMouseUpTime:int = 0;
-		protected var inputTF:TextField;
 		private var _downKey:int = -1;
 		private var _keyIntervalID:uint;
 		private var _keyTimeOut:uint;
@@ -48,15 +43,10 @@ package net.wonderfl.editor.core
 		
 		public function UIFTETextField() 
 		{
+			super();
 			focusRect = false;
 			
-			//inputTF = new TextField;
-			//inputTF.type = TextFieldType.INPUT;
-			addEventListener(TextEvent.TEXT_INPUT, onInputText);
 			_this = this;
-			//inputTF.addEventListener(KeyboardEvent.KEY_UP, function(e:KeyboardEvent):void {
-				//if (stage) stage.focus = _this;
-			//});
 			
 			new KeyDownProxy(this, onKeyDown, [Keyboard.DOWN, Keyboard.UP, Keyboard.PAGE_DOWN, Keyboard.PAGE_UP, Keyboard.LEFT, Keyboard.RIGHT]);
 			addEventListener(FocusEvent.KEY_FOCUS_CHANGE, function(e:FocusEvent):void {
@@ -70,16 +60,9 @@ package net.wonderfl.editor.core
 				cursor.alpha = 1;
 			});
 			
-			
-			//addEventListener(FocusEvent.FOCUS_OUT, function(e:FocusEvent):void {
-				//if (e.relatedObject != inputTF)
-					//cursor.alpha = 0;
-			//});
-			
 			addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
 			
 			
-			//addEventListener(Event.CUT, onCut);
 			addEventListener(Event.COPY, onCopy);
 			//addEventListener(Event.PASTE, onPaste);
 			addEventListener(Event.SELECT_ALL, onSelectAll);
@@ -132,7 +115,6 @@ package net.wonderfl.editor.core
 		
 		public function onMouseDown(e:MouseEvent):void
 		{
-			//stage.focus = inputTF;
 			var p:Point = new Point;
 			
 			p.x = mouseX; p.y = mouseY;
@@ -417,30 +399,6 @@ package net.wonderfl.editor.core
 			stage.focus = this;
 		}
 		
-		protected function captureInput():void
-		{
-			//if (stage && stage.focus == this)
-				//stage.focus = inputTF;
-		}
-		
-		private function onInputText(e:TextEvent):void
-		{
-			if (_preventDefault) return;
-			
-			if (e.text in MATCH) {
-				findPreviousMatch(MATCH[e.text], e.text, _caret)
-			}
-			trace('onTextInput : [' + e.text + ']');
-			replaceSelection(e.text);
-			_setSelection(_caret, _caret);
-			//updateCaret();
-			saveLastCol();
-			checkScrollToCursor();
-			e.preventDefault();
-			e.stopImmediatePropagation();
-			//if (stage) stage.focus = this;
-			//dipatchChange();				
-		}
 		
 		protected function saveLastCol():void
 		{

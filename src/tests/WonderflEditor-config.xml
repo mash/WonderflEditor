@@ -12,6 +12,10 @@
 			<name>CONFIG::debug</name>
 			<value>true</value>
 		</define>
+		<define>
+			<name>CONFIG::IME</name>
+			<value>true</value>
+		</define>
 		<debug>true</debug>
 		<incremental>true</incremental>
 		<source-path>
