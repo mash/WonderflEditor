@@ -88,6 +88,7 @@ package ro.minibuilder.asparser
 		{
 			//debug('get missing imports');
 			
+			// should treat internal classes
 			//find the scope
 			var t:Token = tokenizer.tokenByPos(pos);
 			if (!t) return null;

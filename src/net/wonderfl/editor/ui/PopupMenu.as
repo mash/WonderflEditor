@@ -54,7 +54,7 @@ package net.wonderfl.editor.ui
 				line = _factory.createTextLine(line, TextLine.MAX_LINE_WIDTH);
 				if (line == null || (i + _scrollPos) >= _data.length) break;
 				w = (w < line.width) ? line.width : w;
-				line.y = 15 * ++i;
+				line.y = 15 * ++i - 2;
 				line.x = 2;
 				addChild(line);
 			}
@@ -105,9 +105,14 @@ package net.wonderfl.editor.ui
 		
 		override protected function updateSize():void 
 		{
+			graphics.clear();
 			graphics.beginFill(0xff0000);
 			graphics.drawRect(0, 0, _width, _height);
+			graphics.endFill();
 			
+			graphics.beginFill(0xffffff);
+			graphics.drawRect(0, 15 * (_selectedIndex - _scrollPos), _width, 15);
+			graphics.endFill();
 		}
 	}
 }

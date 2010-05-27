@@ -194,7 +194,7 @@ package net.wonderfl.editor.manager
 			p.x += fld.x;
 			
 			p = fld.localToGlobal(p);
-			menuRefY = p.y + fld.boxHeight;
+			menuRefY = p.y;
 			
 			menu.show(fld, p.x, p.y);
 			
@@ -226,7 +226,6 @@ package net.wonderfl.editor.manager
 		public function keyDownHandler($event:KeyboardEvent):Boolean
 		{
 			_imeMode = false;
-			debug('onKeyDown');
 			if (tooltip.isShowing())
 			{
 				if ($event.keyCode == Keyboard.ESCAPE || $event.keyCode == Keyboard.UP || $event.keyCode == Keyboard.DOWN || 
