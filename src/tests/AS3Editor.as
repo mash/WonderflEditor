@@ -15,6 +15,7 @@ package tests
 	import net.wonderfl.editor.scroll.TextHScroll;
 	import net.wonderfl.editor.scroll.TextVScroll;
 	import net.wonderfl.editor.utils.calcFontBox;
+	import ro.minibuilder.main.editor.Location;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -39,7 +40,6 @@ package tests
 			_field = new UIFTETextInput;
 			addChild(_field);
 			
-			_codeAssistManager = new CodeAssistManager(_field);
 			
 			_boxWidth = calcFontBox(_field.defaultTextFormat).width;
 			
@@ -73,33 +73,42 @@ package tests
 			addChild(_hScroll);
 			
 			
-			addEventListener(Event.ADDED_TO_STAGE, function init(e:Event):void {
-				removeEventListener(Event.ADDED_TO_STAGE, init);
-				_parser = new ASParserController(stage, _this);
-				
-				//_autoCompletion = new AutoCompletion(_this, _ctrl, stage, onAssistComplete);
-				//_autoCompletion.addEventListener(Event.SELECT, codeHintSelectHandler);
-				//addChild(_autoCompletion);
-				//_autoCompletion.deactivate();
-				
-				//setTimeout(checkMouse, CHECK_MOUSE_DURATION);
-				stage.addEventListener(MouseEvent.MOUSE_MOVE, function ():void {
-					//checkMouse();
-				});
-				addEventListener(Event.CHANGE, onChange);
-				//addEventListener(Event.SCROLL, onScroll);
-			});
+			addEventListener(Event.ADDED_TO_STAGE, init);
 		}
 		
-	private function onChange(e:Event):void
-	{
-	//if (triggerAssist())
-		//_autoCompletion.triggerAssist();
-	//else
-			_parser.sourceChanged(text, '');
+		private function init(e:Event):void {
+			removeEventListener(Event.ADDED_TO_STAGE, init);
 			
+			_parser = new ASParserController(stage, _this);
+			_codeAssistManager = new CodeAssistManager(_field, _parser, stage, onComplete);
+			
+			//_autoCompletion = new AutoCompletion(_this, _ctrl, stage, onAssistComplete);
+			//_autoCompletion.addEventListener(Event.SELECT, codeHintSelectHandler);
+			//addChild(_autoCompletion);
+			//_autoCompletion.deactivate();
+			
+			//setTimeout(checkMouse, CHECK_MOUSE_DURATION);
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, function ():void {
+				//checkMouse();
+			});
+			addEventListener(Event.CHANGE, onChange);
+			//addEventListener(Event.SCROLL, onScroll);
+		}
+		
+		private function onComplete():void
+		{
+			
+		}
+		
+		private function onChange(e:Event):void
+		{
+			if (triggerAssist())
+				_codeAssistManager.triggerAssist();
+			else
+				_parser.sourceChanged(text, '');
+				
 			lineNums.draw();
-	}
+		}
 		private function onFieldResize(e:Event):void 
 		{
 			_hScroll.setThumbPercent((_width - lineNums.width - 15) / _field.maxWidth);
@@ -168,6 +177,28 @@ package tests
 			
 			draw();
 		}
+		
+		
+		protected function triggerAssist():Boolean
+		{
+			var str:String = text.substring(Math.max(0, _field.caretIndex-10), _field.caretIndex);
+			str = str.split('').reverse().join('');
+			return (/^(?:\(|\:|\.|\s+sa\b|\swen\b|\ssdnetxe)/.test(str))
+		}
+		
+		public function loadSource(source:String, filePath:String):void
+		{
+			text = source.replace(/(\n|\r\n)/g, '\r');
+			//fileName = filePath;
+			//ctrl.sourceChanged(text, fileName);
+			_parser.sourceChanged(_field.text, '');
+		}
+		
+		public function findDefinition():Location
+		{
+			return _parser.findDefinition(_field.caretIndex);
+		}
+		
 		
 		private function draw():void
 		{

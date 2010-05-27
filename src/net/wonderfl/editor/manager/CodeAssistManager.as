@@ -39,25 +39,28 @@ package net.wonderfl.editor.manager
 	import flash.ui.Keyboard;
 	import flash.utils.setTimeout;
 	import net.wonderfl.editor.core.UIFTETextInput;
-	import net.wonderfl.editor.popup.PopupMenu;
-	
-	import ro.minibuilder.asparser.Controller;
+	import net.wonderfl.editor.minibuilder.ASParserController;
+	import net.wonderfl.editor.ui.PopupMenu;
+	import net.wonderfl.editor.ui.ToolTip;
 	import ro.victordramba.util.vectorToArray;
+	
 	
 	public class CodeAssistManager
 	{
 		private var menuData:Vector.<String>
 		private var fld:UIFTETextInput;
 		private var menu:PopupMenu;
-		private var ctrl:Controller;
+		private var ctrl:ASParserController;
 		private var onComplete:Function;
 		private var stage:Stage;
 		
 		private var menuStr:String;
 		
+		private var menuRefY:int;
+		private var tooltip:ToolTip;
 		private var tooltipCaret:int;
 		
-		public function CodeAssistManager(field:UIFTETextInput, ctrl:Controller, stage:Stage, onComplete:Function)
+		public function CodeAssistManager(field:UIFTETextInput, ctrl:ASParserController, stage:Stage, onComplete:Function)
 		{
 			fld = field;
 			this.ctrl = ctrl;
@@ -70,7 +73,7 @@ package net.wonderfl.editor.manager
 			//menu in action
 			menu.addEventListener(KeyboardEvent.KEY_DOWN, onMenuKey);
 			
-			tooltip = new JToolTip;
+			tooltip = new ToolTip;
 			
 			//used to close the tooltip
 			fld.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
@@ -179,8 +182,6 @@ package net.wonderfl.editor.manager
 		{
 			setTimeout(function():void {
 				stage.focus = fld;
-				//???
-				FocusManager.getManager(stage).setFocusOwner(fld);
 			}, 1);
 		}
 		
@@ -222,7 +223,7 @@ package net.wonderfl.editor.manager
 					var p:Point = fld.getPointForIndex(fld.caretIndex-1);
 					p = fld.localToGlobal(p);
 					tooltip.showToolTip();
-					tooltip.moveLocationRelatedTo(new IntPoint(p.x, p.y));
+					tooltip.moveLocationRelatedTo(p.x, p.y);
 					tooltipCaret = fld.caretIndex;
 					return;
 				}
@@ -234,7 +235,6 @@ package net.wonderfl.editor.manager
 			if (menuStr.length) filterMenu();
 		}
 
-		private var menuRefY:int;
 		
 		private function showMenu(index:int):void
 		{
@@ -251,18 +251,21 @@ package net.wonderfl.editor.manager
 			menu.show(stage, p.x, 0);
 			
 			stage.focus = menu;
-			FocusManager.getManager(stage).setFocusOwner(menu);
 			
 			rePositionMenu();
 		}
 		
 		private function rePositionMenu():void
 		{
-			var menuH:int = Math.min(8, menu.getModel().getSize()) * 17;
+			var menuH:int = Math.min(8, menu.data.length) * 17;
 			if (menuRefY +15 + menuH > stage.stageHeight)
 				menu.setY(menuRefY - menuH - 2);
 			else
 				menu.setY(menuRefY + 15);
+		}
+		
+		private function debug(...args):void {
+			CONFIG::debug { trace('CodeAssistManager :: ' + args); }
 		}
 
 	}

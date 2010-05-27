@@ -26,31 +26,30 @@ Author: Victor Dramba
  * The code is provided "as is" without warranty of any kind.
  */
 
-package ro.minibuilder.asparser
+package net.wonderfl.editor.minibuilder
 {
-	import com.victordramba.console.debug;
-	import ro.minibuilder.main.editor.Location;
 	import __AS3__.vec.Vector;
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.net.FileReference;
-	import flash.net.SharedObject;
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
-	import flash.utils.setTimeout;
-	
-	import ro.minibuilder.main.editor.ScriptAreaComponent;
+	import net.wonderfl.editor.IEditor;
+	import ro.minibuilder.asparser.Field;
+	import ro.minibuilder.asparser.Parser;
+	import ro.minibuilder.asparser.TypeDB;
+	import ro.minibuilder.main.editor.Location;
 	import ro.minibuilder.swcparser.SWFParser;
 	import ro.victordramba.thread.ThreadEvent;
 	import ro.victordramba.thread.ThreadsController;
+	
 
 	[Event(type="flash.events.Event", name="change")]
 	
 
 
 
-	public class Controller extends EventDispatcher
+	public class ASParserController extends EventDispatcher
 	{
 		[Embed(source="../../../../../assets/globals.amf", mimeType="application/octet-stream")]
 		private static var GlobalTypesAsset:Class;
@@ -70,17 +69,17 @@ package ro.minibuilder.asparser
 		//public var scopeInfo:Array/*of String*/
 		//public var typeInfo:Array/*of String*/
 		
-		private var fld:ScriptAreaComponent;
+		private var fld:IEditor;
 		
-		function Controller(stage:Stage, textField:ScriptAreaComponent)
+		public function ASParserController(stage:Stage, textField:IEditor)
 		{
 			fld = textField;
 			//TODO refactor, Controller should probably be a singleton
 			if (!tc)
 			{
 				tc = new ThreadsController(stage);
-				//TypeDB.setDB('global', TypeDB.formByteArray(new GlobalTypesAsset));
-				//TypeDB.setDB('playerglobal', TypeDB.formByteArray(new PlayerglobalAsset));
+				TypeDB.setDB('global', TypeDB.fromByteArray(new GlobalTypesAsset));
+				TypeDB.setDB('playerglobal', TypeDB.fromByteArray(new PlayerglobalAsset));
 			}
 			parser = new Parser;
 			
@@ -114,17 +113,17 @@ package ro.minibuilder.asparser
 			so.data.typeDB = parser.getTypeData();
 			so.flush();*/
 			
-			var file:FileReference = new FileReference;
-			var ret:ByteArray = parser.getTypeData();
-			file.save(ret, 'globals.amf');
+			//var file:FileReference = new FileReference;
+			//var ret:ByteArray = parser.getTypeData();
+			//file.save(ret, 'globals.amf');
 			
 		}
 		
 		public function restoreTypeDB():void
 		{
-			throw new Error('restoreTypeDB not supported');
-			var so:SharedObject = SharedObject.getLocal('ascc-type');
-			TypeDB.setDB('restored', so.data.typeDB);
+			//throw new Error('restoreTypeDB not supported');
+			//var so:SharedObject = SharedObject.getLocal('ascc-type');
+			//TypeDB.setDB('restored', so.data.typeDB);
 		}
 		
 		/*public function addTypeDB(typeDB:TypeDB, name:String):void
@@ -192,6 +191,10 @@ package ro.minibuilder.asparser
 				}
 			}
 			return new Location(null, field.pos);
+		}
+		
+		private function debug(...args):void {
+			CONFIG::debug { trace('ASParserController :: ' + args); }
 		}
 	}
 }
