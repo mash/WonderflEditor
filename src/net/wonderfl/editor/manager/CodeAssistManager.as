@@ -1,4 +1,15 @@
 /* license section
+The code of this class is mostly taken from the
+Flash MiniBuilder's 
+
+ro.minibuilder.main.editor.AssisMenu
+
+all the changes can be seen as git log.
+
+May, 2010
+Taro KOBAYASHI
+
+The Flash MiniBuilder's license goes like following : 
 
 Flash MiniBuilder is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,7 +48,7 @@ package ro.minibuilder.main.editor
 	import ro.victordramba.util.vectorToArray;
 	import com.victordramba.console.debug;
 	
-	public class AssistMenu
+	public class CodeAssistManager
 	{
 		private var menuData:Vector.<String>
 		private var fld:ScriptAreaComponent;
@@ -51,7 +62,7 @@ package ro.minibuilder.main.editor
 		private var tooltip:JToolTip;
 		private var tooltipCaret:int;
 		
-		public function AssistMenu(field:ScriptAreaComponent, ctrl:Controller, stage:Stage, onComplete:Function)
+		public function CodeAssistManager(field:ScriptAreaComponent, ctrl:Controller, stage:Stage, onComplete:Function)
 		{
 			fld = field;
 			this.ctrl = ctrl;
