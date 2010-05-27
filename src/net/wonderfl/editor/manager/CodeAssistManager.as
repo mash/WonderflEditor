@@ -30,56 +30,45 @@ Author: Victor Dramba
 */
 
 
-package ro.minibuilder.main.editor
+package net.wonderfl.editor.manager
 {
-	import __AS3__.vec.Vector;
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.geom.Point;
 	import flash.ui.Keyboard;
 	import flash.utils.setTimeout;
-	
-	import org.aswing.FocusManager;
-	import org.aswing.JToolTip;
-	import org.aswing.geom.IntPoint;
+	import net.wonderfl.editor.core.UIFTETextInput;
+	import net.wonderfl.editor.popup.PopupMenu;
 	
 	import ro.minibuilder.asparser.Controller;
 	import ro.victordramba.util.vectorToArray;
-	import com.victordramba.console.debug;
 	
 	public class CodeAssistManager
 	{
 		private var menuData:Vector.<String>
-		private var fld:ScriptAreaComponent;
-		private var menu:ScrollPopupMenu;
+		private var fld:UIFTETextInput;
+		private var menu:PopupMenu;
 		private var ctrl:Controller;
 		private var onComplete:Function;
 		private var stage:Stage;
 		
 		private var menuStr:String;
 		
-		private var tooltip:JToolTip;
 		private var tooltipCaret:int;
 		
-		public function CodeAssistManager(field:ScriptAreaComponent, ctrl:Controller, stage:Stage, onComplete:Function)
+		public function CodeAssistManager(field:UIFTETextInput, ctrl:Controller, stage:Stage, onComplete:Function)
 		{
 			fld = field;
 			this.ctrl = ctrl;
 			this.onComplete = onComplete;
 			this.stage = stage;
 
-			menu = new ScrollPopupMenu;
+			menu = new PopupMenu;
 			//restore the focus to the textfield, delayed			
 			menu.addEventListener(Event.REMOVED_FROM_STAGE, onMenuRemoved);
 			//menu in action
 			menu.addEventListener(KeyboardEvent.KEY_DOWN, onMenuKey);
-			/*menu.addEventListener(MouseEvent.DOUBLE_CLICK, function(e:Event):void {
-				var c:int = fld.caretIndex;
-				fldReplaceText(c-menuStr.length, c, menu.getSelectedValue());
-				ctrl.sourceChanged(fld.text);
-				menu.dispose();
-			})*/
 			
 			tooltip = new JToolTip;
 			
@@ -112,9 +101,6 @@ package ro.minibuilder.main.editor
 			
 			if (String.fromCharCode(e.keyCode) == ' ' && e.ctrlKey)
 			{
-				/*menuData = ctrl.getAllOptions();
-				if (menuData && menuData.length)
-					showMenu(fld.caretIndex);*/
 				triggerAssist();
 			}
 		}
@@ -262,7 +248,6 @@ package ro.minibuilder.main.editor
 			p = fld.localToGlobal(p);
 			menuRefY = p.y;
 			
-			//menu.show(stage, p.x, p.y + 15);
 			menu.show(stage, p.x, 0);
 			
 			stage.focus = menu;
