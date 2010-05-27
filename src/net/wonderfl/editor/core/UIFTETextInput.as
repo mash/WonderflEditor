@@ -48,7 +48,6 @@ package net.wonderfl.editor.core
 				_imeField.type = TextFieldType.DYNAMIC;
 				_imeManager = new IMEClient_10_1(this);
 			} else {
-				trace('10.0');
 				_imeField.type = TextFieldType.INPUT;
 				_imeManager = new IMEClient_10_0(this);
 			}
@@ -124,6 +123,7 @@ package net.wonderfl.editor.core
 			if (e.text in MATCH) {
 				findPreviousMatch(MATCH[e.text], e.text, _caret)
 			}
+			
 			replaceSelection(e.text);
 			_setSelection(_caret, _caret);
 			saveLastCol();
@@ -135,12 +135,16 @@ package net.wonderfl.editor.core
 		override protected function drawComplete():Boolean 
 		{
 			resetIMETFPosition();
+			
 			return false;
 		}
 		
 		public function resetIMETFPosition():void {
-            _imeField.x = cursor.getX() - 2;
-            _imeField.y = cursor.y - 2;
+			if (_imeManager.imeMode) {
+				var point:Point = getPointForIndex(_caret);
+				_imeField.x = point.x - 2;
+				_imeField.y = point.y - 2;
+			}
 		}
 		
 		

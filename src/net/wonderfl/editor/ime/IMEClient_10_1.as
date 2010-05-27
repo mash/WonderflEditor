@@ -19,6 +19,7 @@ package net.wonderfl.editor.ime
 		private var _selectionAnchorIndex:int;
 		private var _selectionActiveIndex:int;
 		private var _imeLength:int;
+		private var _prevAnchorIndex:int;
 		
 		public function IMEClient_10_1($field:UIFTETextInput) 
 		{
@@ -26,6 +27,9 @@ package net.wonderfl.editor.ime
 			
 			_imeField.background = true;
 			_imeField.backgroundColor = 0xCC6666;
+			_imeField.mouseEnabled = false;
+			_imeField.mouseWheelEnabled = false;
+			_imeField.tabEnabled = false;
 			_imeField.width = _imeField.height = 0;
 			
 			_field.addEventListener(IMEEvent["IME_START_COMPOSITION"], imeStartComposition);
@@ -50,6 +54,7 @@ package net.wonderfl.editor.ime
 		
 		override public function keyDownHandler($event:KeyboardEvent):Boolean
 		{
+			log(<>keyCode : {$event.keyCode}</>);
 			return _imeLength > 0;
 		}
 		
@@ -85,28 +90,46 @@ package net.wonderfl.editor.ime
 		public function updateComposition(text:String, attributes:Vector.<CompositionAttributeRange>, compositionStartIndex:int, compositionEndIndex:int):void
 		{
 			_imeLength = text.length;
-			_selectionAnchorIndex = compositionStartIndex;
 			var len:int = attributes.length;
 			var attr:CompositionAttributeRange;
 			log(<>text : {text}, start : {compositionStartIndex}, end : {compositionEndIndex}</>);
 			var textRuns:Array = [];
+			var selectionFound:Boolean = false;
 			for (var i:int = 0; i < len; ++i) 
 			{
 				attr = attributes[i];
 				log(<>i : {i}, relativeStart : {attr.relativeStart}, relativeEnd : {attr.relativeEnd}</>);
 				//
 				var run:String = text.substring(attr.relativeStart, attr.relativeEnd);
-				if (compositionStartIndex == attr.relativeStart) {
-					run = '<u>' + run + '</u>';
-					_selectionActiveIndex = attr.relativeEnd;
-				}
+				if (compositionStartIndex == attr.relativeStart)
+					setSelection();
 				textRuns.push(run);
 			}
+			
+			if (!selectionFound) {
+				for (i = 0; i < len; ++i) {
+					attr = attributes[i];
+					if (attr.relativeStart == _prevAnchorIndex) {
+						run = textRuns[i];
+						setSelection();
+						textRuns[i] = run;
+					}
+				}
+			}
+			
+			_prevAnchorIndex = _selectionAnchorIndex;
 			
 			var face:String = _field.defaultTextFormat.font;
 			_imeField.htmlText = '<font color="#ffffff" face="' + face + '">' + textRuns.join('') + '</font>';
 			_imeField.width = _imeField.textWidth + 4;
 			_imeField.height = _imeField.textHeight + 4;
+			
+			function setSelection():void {
+				run = '<u>' + run + '</u>';
+				_selectionActiveIndex = attr.relativeEnd;
+				_selectionAnchorIndex = compositionStartIndex;
+				selectionFound = true;
+			}
 		}
 		
 		// called when the user has confirmed the word

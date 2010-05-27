@@ -14,7 +14,7 @@
 		</define>
 		<define>
 			<name>CONFIG::IME</name>
-			<value>true</value>
+			<value>false</value>
 		</define>
 		<debug>true</debug>
 		<incremental>true</incremental>

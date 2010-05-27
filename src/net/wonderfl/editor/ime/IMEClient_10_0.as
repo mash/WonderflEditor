@@ -18,21 +18,20 @@ package net.wonderfl.editor.ime
 		{
 			super($field);
 			
-			_imeField.width = 0;
-			_imeField.height = 0;
 			_imeField.addEventListener(TextEvent.TEXT_INPUT, onIMEInput);
 		}
 		
 		private function onIMEInput(e:Event):void 
 		{
 			_imeField.text = '';
+			_field.resetIMETFPosition();
+			e.preventDefault();
 		}
 		
 		override public function keyDownHandler($event:KeyboardEvent):Boolean
 		{
             if (IME.enabled && IME.conversionMode != "ALPHANUMERIC_HALF") {
                 if (!_imeMode) {
-					trace('== IME MODE ON ==');
 					_field.resetIMETFPosition();
                     _imeMode = true;
                     _imeField.text = '';
@@ -40,9 +39,8 @@ package net.wonderfl.editor.ime
                     if (_field.stage.focus != _imeField) _field.stage.focus = _imeField;
                 }
             } else if (_imeMode) {
-				trace('== IME MODE OFF ==');
                 _imeMode = false;
-                   _imeField.text = '';
+                _imeField.text = '';
                 _imeField.visible = false;
                 _field.stage.focus = _field;
             }
