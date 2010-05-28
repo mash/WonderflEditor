@@ -442,7 +442,7 @@ package ro.minibuilder.asparser
 		{
 			//can we find a better way to set the scope?
 			//we set the scope to be able to deal with private/protected, etc access
-			for (tokenScopeClass = scope; tokenScopeClass.fieldType!='class' && tokenScopeClass.parent; tokenScopeClass=tokenScopeClass.parent);
+			for (tokenScopeClass = scope; tokenScopeClass.fieldType != 'class' && tokenScopeClass.parent; tokenScopeClass = tokenScopeClass.parent) { }
 			if (tokenScopeClass.fieldType != 'class') tokenScopeClass = null;
 		}
 	}

@@ -94,11 +94,11 @@ package ro.minibuilder.asparser
 					//skip string literals
 					if (ch == '"' || ch == "'")
 					{
-						while (text.charAt(--i) != ch || text.charAt(i-1) == '\\');
+						while (text.charAt(--i) != ch || text.charAt(i - 1) == '\\') { }
 					}
 					if (ch == '/' && text.charAt(i-1) == '*')
 					{
-						while (!(text.charAt(--i) == '*' && text.charAt(i-1) == '/')); 
+						while (!(text.charAt(--i) == '*' && text.charAt(i - 1) == '/')) { }
 					}
 					else if (ch == ')') level ++;
 					else if (ch == '(') level --;

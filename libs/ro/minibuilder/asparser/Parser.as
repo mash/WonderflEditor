@@ -65,7 +65,7 @@ package ro.minibuilder.asparser
 			source = source.replace(/(\n|\r\n)/g, '\r');
 			var parser:Parser = new Parser;
 			parser.load(source, fileName);
-			while(parser.runSlice());
+			while (parser.runSlice()) { }
 			setTimeout(onComplete, 1);
 		}
 		
