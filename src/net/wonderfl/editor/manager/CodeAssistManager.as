@@ -42,6 +42,7 @@ package net.wonderfl.editor.manager
 	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.ui.PopupMenu;
 	import net.wonderfl.editor.ui.ToolTip;
+	import ro.minibuilder.asparser.Field;
 	import ro.victordramba.util.vectorToArray;
 	
 	
@@ -61,6 +62,7 @@ package net.wonderfl.editor.manager
 		private var tooltipCaret:int;
 		private var _imeMode:Boolean;
 		private var _menuActive:Boolean;
+		private var _selectedFunctionDefinition:Field;
 		
 		public function CodeAssistManager(field:UIFTETextInput, ctrl:ASParserController, stage:Stage, onComplete:Function)
 		{
@@ -81,12 +83,12 @@ package net.wonderfl.editor.manager
 		
 		private function filterMenu():Boolean
 		{
-			var a:Array = vectorToArray(menuData.filter(menuFilterCallback));
+			var a:Array = menuData ? vectorToArray(menuData.filter(menuFilterCallback)) : [];
 
 			if (a.length == 0) return false;
-			menu.setListData(a);
+			menu.setListData(a.sort());
 			menu.selectedIndex = 0;
-		
+			
 			rePositionMenu();
 			return true;
 		}
@@ -104,7 +106,7 @@ package net.wonderfl.editor.manager
 				var missing:Vector.<String> = ctrl.getMissingImports(name, caret-name.length);
 				if (missing)
 				{
-					var sumChars:int = 0;
+					var sumChars:int = 0
 					for (var i:int=0; i<missing.length; i++)
 					{
 						//TODO make a better regexp
@@ -140,9 +142,8 @@ package net.wonderfl.editor.manager
 			_menuActive = true;
 			var pos:int = fld.caretIndex;
 			//look back for last trigger
-			var tmp:String = fld.text.substring(Math.max(0, pos-100), pos).split('').reverse().join('');
+			var tmp:String = fld.text.substring(Math.max(0, pos - 100), pos).split('').reverse().join('');
 			var m:Array = tmp.match(/^(\w*?)\s*(\:|\.|\(|\bsa\b|\bwen\b)/);
-			debug('trigger mat='+(m?m[0]:'')+' 100='+tmp);
 			var trigger:String = m ? m[2] : '';
 			if (tooltip.isShowing() && trigger=='(') trigger = '';
 			if (m) menuStr = m[1];
@@ -154,9 +155,6 @@ package net.wonderfl.editor.manager
 			menuStr = menuStr.split('').reverse().join('')
 			pos -= menuStr.length + 1;
 			
-			debug('trigger:'+trigger);
-			debug('str='+menuStr);
-			
 			menuData = null;
 			var rt:String = trigger.split('').reverse().join('');
 			if (rt == 'new' || rt == 'as' || rt == 'is' || rt == ':' || rt == 'extends' || rt == 'implements')
@@ -167,17 +165,7 @@ package net.wonderfl.editor.manager
 				menuData = ctrl.getAllOptions(pos);
 			else if (trigger == '(')
 			{
-				var fd:String = ctrl.getFunctionDetails(pos);
-				if (fd)
-				{
-					tooltip.setTipText(fd);
-					var p:Point = fld.getPointForIndex(fld.caretIndex-1);
-					p = fld.localToGlobal(p);
-					tooltip.showToolTip();
-					tooltip.moveLocationRelatedTo(p.x, p.y);
-					tooltipCaret = fld.caretIndex;
-					return;
-				}
+				if (showToolTip(pos)) return;
 			}
 				
 			if (!menuData || menuData.length == 0) {
@@ -185,23 +173,47 @@ package net.wonderfl.editor.manager
 				return;
 			}
 			
-			showMenu(pos);			
-			if (menuStr.length) filterMenu();
+			
+			filterMenu();
 		}
 		
-		private function showMenu(index:int):void
-		{
-			debug(this, 'showMenu', index);
-			var p:Point;
-			menu.setListData(vectorToArray(menuData));
-			menu.selectedIndex = 0;
+		
+		private function showToolTip(pos:int):Boolean {
+			var fd:Field = ctrl.getFunctionDetails(pos);
+			debug('funciton definition : ' + fd);
+			if (fd)
+			{
+				var lastLeft:int = fld.text.lastIndexOf('(', fld.caretIndex);
+				var source:String = fld.text.substring(fd.pos, lastLeft);
+				
+				// if the function is the function currently
+				// editing do not show the tool tip
+				if (source == fd.name) return false;
+				
+				var a:Vector.<String> = new Vector.<String>;
+				var par:Field;
+				for each (par in fd.params.toArray())
+				{
+					var str:String = par.name;
+					if (par.type) str += ':'+par.type.type;
+					if (par.defaultValue) str += '='+par.defaultValue;
+					a.push(str);
+				}
+				//rest
+				if (fd.hasRestParams)
+					a[a.length-1] = '...'+par.name;
+				
+				// TODO highlight current argument
+				_selectedFunctionDefinition = fd;
+				tooltip.setTipText('function ' + fd.name + '(' + a.join(', ') + ')'+(fd.type ? ':'+fd.type.type : ''));
+				tooltip.showToolTip();
+				var p:Point = fld.getPointForIndex(lastLeft);
+				tooltip.moveLocationRelatedTo(p.x, p.y + fld.boxHeight);
+				tooltipCaret = fld.caretIndex;
+				return true;
+			}
 			
-			
-			p = fld.cursorPosition;
-			menu.show(fld, p.x, p.y + fld.boxHeight);
-			//stage.focus = menu;
-			
-			rePositionMenu();
+			return false;
 		}
 		
 		private function rePositionMenu():void
@@ -226,9 +238,17 @@ package net.wonderfl.editor.manager
 			_imeMode = false;
 			if (tooltip.isShowing())
 			{
-				if ($event.keyCode == Keyboard.ESCAPE || $event.keyCode == Keyboard.UP || $event.keyCode == Keyboard.DOWN || 
-					String.fromCharCode($event.charCode) == ')' || fld.caretIndex < tooltipCaret)
+				if ($event.keyCode == Keyboard.ESCAPE || $event.keyCode == Keyboard.UP || $event.keyCode == Keyboard.DOWN || fld.caretIndex < tooltipCaret) {
 					tooltip.disposeToolTip();
+					_selectedFunctionDefinition = null;
+				} else {
+					var lastLeft:int = fld.text.lastIndexOf('(', fld.caretIndex);
+					var lastRight:int = fld.text.lastIndexOf(')', fld.caretIndex);
+					if (lastLeft < lastRight) {
+						_selectedFunctionDefinition = null;
+						tooltip.disposeToolTip();
+					}
+				}
 			}
 			
 			if (String.fromCharCode($event.keyCode) == ' ' && $event.ctrlKey)
@@ -242,7 +262,7 @@ package net.wonderfl.editor.manager
 			
 			return false;
 		}
-		
+	
 		private function onMenuKey($event:KeyboardEvent):Boolean
 		{
 			var res:Boolean = true;
@@ -251,7 +271,6 @@ package net.wonderfl.editor.manager
 				var c:int = fld.caretIndex;
 				if ($event.ctrlKey)
 				{
-					debug('onMenuKey : CTRL + ' + String.fromCharCode($event.charCode));
 					switch (String.fromCharCode($event.charCode)) {
 					case 'n' :
 						menu.selectedIndex++;
@@ -285,7 +304,11 @@ package net.wonderfl.editor.manager
 					var ch:String = String.fromCharCode($event.charCode);
 					menuStr += ch.toLowerCase();
 					//fldReplaceText(c, c, ch);
-					if (filterMenu()) return true;
+					if (filterMenu()) {
+						return true;
+					} else {
+						_menuActive = false;
+					}
 				}
 				else if ($event.keyCode == Keyboard.ENTER || $event.keyCode == Keyboard.TAB)
 				{

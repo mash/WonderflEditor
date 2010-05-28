@@ -82,7 +82,6 @@ package net.wonderfl.editor.core
 		
 		override protected function onKeyDown(e:KeyboardEvent):void
 		{
-			//resetIMETFPosition();
 			_preventDefault = false;
 //			trace('onKeyDown _caret : ' + _caret + ' keyCode : ' + e.keyCode + <>_selStart : {_selStart} _selEnd : {_selEnd}</>);
 			var c:String = String.fromCharCode(e.charCode);
@@ -131,7 +130,6 @@ package net.wonderfl.editor.core
 			}
 			
 			_selectionManager.keyDownHandler(e);
-			//resetIMETFPosition();
 		}
 		
 		public function preventFollowingTextInput():void {

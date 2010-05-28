@@ -8,6 +8,7 @@ package net.wonderfl.editor.ui
 	import flash.text.engine.TextElement;
 	import flash.text.engine.TextLine;
 	import net.wonderfl.editor.core.UIComponent;
+	import net.wonderfl.editor.utils.removeAllChildren;
 	import net.wonderfl.editor.utils.removeFromParent;
 	/**
 	 * ...
@@ -20,6 +21,8 @@ package net.wonderfl.editor.ui
 		private var _selectedIndex:int;
 		private var _scrollPos:int = 0;
 		private var _factory:TextBlock;
+		private const BACKGROUND_COLOR:uint = 0xe4e4e4;
+		private const SELECT_COLOR:uint = 0xCC6666;
 		
 		public function PopupMenu() 
 		{
@@ -33,7 +36,7 @@ package net.wonderfl.editor.ui
 		
 		private function draw():void
 		{
-			while (numChildren) removeChildAt(0);
+			removeAllChildren(this);
 			
 			var end:int = _scrollPos + MAX_ENTRIES;
 			end = (end >= _data.length) ? _data.length : end;
@@ -41,7 +44,7 @@ package net.wonderfl.editor.ui
 			_factory.content = new GroupElement(Vector.<ContentElement>(
 				_data.slice(_scrollPos, end).map(function ($item:String, $index:int, $array:Array):TextElement {
 					elf = elf.clone();
-					elf.color = ($index == _selectedIndex - _scrollPos) ? 0 : 0xffffff;
+					elf.color = 0;
 					var result:TextElement = new TextElement($item + '\n', elf);
 					return result;
 				})
@@ -111,11 +114,11 @@ package net.wonderfl.editor.ui
 		override protected function updateSize():void 
 		{
 			graphics.clear();
-			graphics.beginFill(0xff0000);
+			graphics.beginFill(BACKGROUND_COLOR);
 			graphics.drawRect(0, 0, _width, _height);
 			graphics.endFill();
 			
-			graphics.beginFill(0xffffff);
+			graphics.beginFill(SELECT_COLOR);
 			graphics.drawRect(0, 15 * (_selectedIndex - _scrollPos), _width, 15);
 			graphics.endFill();
 		}

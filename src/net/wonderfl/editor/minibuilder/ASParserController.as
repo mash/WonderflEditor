@@ -151,7 +151,7 @@ package net.wonderfl.editor.minibuilder
 			return parser.newResolver().getMemberList(fld.text, index);
 		}
 		
-		public function getFunctionDetails(index:int):String
+		public function getFunctionDetails(index:int):Field
 		{
 			return parser.newResolver().getFunctionDetails(fld.text, index);
 		}

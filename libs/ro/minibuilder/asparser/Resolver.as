@@ -197,12 +197,11 @@ package ro.minibuilder.asparser
 			return a;
 		}
 		
-		public function getFunctionDetails(text:String, pos:int):String
+		public function getFunctionDetails(text:String, pos:int):Field
 		{
 			resolve(text, pos);
 			var field:Field = resolvedRef;
 			
-			//debug(field);
 			
 			//we didn't find it
 			if (!field || field.fieldType!='function') return null;
@@ -221,7 +220,8 @@ package ro.minibuilder.asparser
 			if (field.hasRestParams)
 				a[a.length-1] = '...'+par.name;
 			
-			return 'function ' + field.name + '(' + a.join(', ') + ')'+(field.type ? ':'+field.type.type : ''); 
+				
+			return field;
 		}
 		
 		/**

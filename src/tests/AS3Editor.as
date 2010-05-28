@@ -151,7 +151,6 @@ package tests
 			_errors.length = 0;
 			setErrorPositions([]);
 			draw();
-			
 		}
 		
 		public function setFontSize($size:int):void {
@@ -175,10 +174,10 @@ package tests
 			draw();
 		}
 		
-		
 		protected function triggerAssist():Boolean
 		{
-			var str:String = text.substring(Math.max(0, _field.caretIndex-10), _field.caretIndex);
+			// refactor
+			var str:String = text.substring(Math.max(0, _field.caretIndex-30), _field.caretIndex);
 			str = str.split('').reverse().join('');
 			return (/^(?:\(|\:|\.|\ssa\b|\swen\b|\ssdnetxe)/.test(str))
 		}

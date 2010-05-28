@@ -16,12 +16,14 @@ package net.wonderfl.editor.ui
 		private var _elf:ElementFormat;
 		private var _isShowing:Boolean = false;
 		private var _factory:TextBlock;
+		private const BACKGROUND_COLOR:uint = 0x99cee4;
 		
 		public function ToolTip() 
 		{
 			_factory = new TextBlock;
 			_elf = new ElementFormat;
-			_elf.color = 0xffffff;
+			_elf.color = 0;
+			
 			updateSize();
 			visible = false;
 		}
@@ -37,11 +39,12 @@ package net.wonderfl.editor.ui
 		
 		public function setTipText($text:String):void {
 			removeAllChildren(this);
+			
 			_factory.content = new TextElement($text, _elf.clone());
 			var line:TextLine = _factory.createTextLine();
 			line.y = line.height;
 			addChild(line);
-			setSize(line.width, line.height);
+			setSize(line.width, line.height + 4);
 		}
 		
 		public function showToolTip():void {
@@ -61,7 +64,7 @@ package net.wonderfl.editor.ui
 		override protected function updateSize():void 
 		{
 			graphics.clear();
-			graphics.beginFill(0xff);
+			graphics.beginFill(BACKGROUND_COLOR);
 			graphics.drawRect(0, 0, _width, _height);
 			graphics.endFill();
 		}
