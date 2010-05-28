@@ -32,6 +32,7 @@ package net.wonderfl.editor.core
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.utils.removeAllChildren;
 	import net.wonderfl.editor.we_internal;
 	import net.wonderfl.editor.utils.calcFontBox;
 	import net.wonderfl.thread.ThreadTask;
@@ -128,6 +129,10 @@ package net.wonderfl.editor.core
 		public function get length():int
 		{
 			return _text.length;
+		}
+		
+		public function get cursorPosition():Point {
+			return new Point(cursor.getX(), cursor.y);
 		}
 		
 		public function set scrollY(value:int):void
@@ -283,6 +288,7 @@ package net.wonderfl.editor.core
 		
 		public function replaceText($startIndex:int, $endIndex:int, $text:String):void
 		{
+			$text ||= "";
 			$text = $text.replace(new RegExp("\r\n", "g"), NL).replace(/\n/g, NL);
 			//$text = $text.replace("\n", NL);
 			$text = $text.replace("\t", '    ');
@@ -342,8 +348,12 @@ package net.wonderfl.editor.core
 				if (o.end >= startIndex) o.end += delta;
 			}
 			
-			trace('_replaceText updateVisibleText()');
-			updateVisibleText();
+			if (startIndex == 0 && endIndex == length && text == '') {
+				removeAllChildren(_textDecorationContainer);
+				removeAllChildren(_textLineContainer);
+			} else {
+				updateVisibleText();
+			}
 			CONFIG::benchmark { trace('_replaceText costs : ' + (getTimer() - t) + ' ms'); }
 		}
 		

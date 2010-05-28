@@ -83,10 +83,6 @@ package tests
 			_codeAssistManager = new CodeAssistManager(_field, _parser, stage, onComplete);
 			_field.addPlugIn(_codeAssistManager);
 			
-			//_autoCompletion = new AutoCompletion(_this, _ctrl, stage, onAssistComplete);
-			//_autoCompletion.addEventListener(Event.SELECT, codeHintSelectHandler);
-			//addChild(_autoCompletion);
-			//_autoCompletion.deactivate();
 			
 			//setTimeout(checkMouse, CHECK_MOUSE_DURATION);
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, function ():void {
@@ -184,7 +180,7 @@ package tests
 		{
 			var str:String = text.substring(Math.max(0, _field.caretIndex-10), _field.caretIndex);
 			str = str.split('').reverse().join('');
-			return (/^(?:\(|\:|\.|\s+sa\b|\swen\b|\ssdnetxe)/.test(str))
+			return (/^(?:\(|\:|\.|\ssa\b|\swen\b|\ssdnetxe)/.test(str))
 		}
 		
 		public function loadSource(source:String, filePath:String):void

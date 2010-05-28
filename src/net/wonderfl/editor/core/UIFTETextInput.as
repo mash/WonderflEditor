@@ -109,7 +109,7 @@ package net.wonderfl.editor.core
 				return;
 			}
 			
-			if (k == Keyboard.CONTROL || k == Keyboard.SHIFT || e.keyCode == 3/*ALT*/ || e.keyCode == Keyboard.ESCAPE)
+			if (k == Keyboard.CONTROL || k == Keyboard.SHIFT || e.keyCode == 3/*ALT*/)
 				return;
 			
 			var len:int = _plugins.length;
@@ -117,6 +117,10 @@ package net.wonderfl.editor.core
 				if (_plugins[i].keyDownHandler(e))
 					return;
 			}
+			
+			// to treat escape in some plug-ins
+			if (e.keyCode == Keyboard.ESCAPE)
+				return;
 			
 			cursor.visible = !_imeManager.keyDownHandler(e);
 			

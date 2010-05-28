@@ -124,7 +124,7 @@ package tests
 			
 			_editor.width = w;
 			_editor.height = h;
-			_scaleDownButton.x = w - _scaleDownButton.width;
+			_scaleDownButton.x = w - _scaleDownButton.width - 15;
 			_scaleDownButton.visible = (w > 465 || h > 465);
 		}
 	}

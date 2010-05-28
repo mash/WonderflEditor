@@ -64,13 +64,18 @@ package net.wonderfl.editor.ui
 		}
 		
 		public function set selectedIndex($index:int):void {
-			_selectedIndex = $index;
-			
-			if (_scrollPos + MAX_ENTRIES < $index) {
-				var temp:int = $index - MAX_ENTRIES;
+			if (_scrollPos + MAX_ENTRIES <= $index) {
+				var temp:int = $index - MAX_ENTRIES + 1;
 				temp = (temp < 0) ? 0 : temp;
 				_scrollPos = temp;
 			}
+			
+			$index %= _data.length;
+			if ($index < 0) {
+				$index += _data.length;
+			}
+			
+			_selectedIndex = $index;
 			_scrollPos = (_scrollPos > $index) ? $index : _scrollPos;
 			
 			draw();

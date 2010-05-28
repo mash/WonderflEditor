@@ -60,6 +60,7 @@ package net.wonderfl.editor.manager
 		private var tooltip:ToolTip;
 		private var tooltipCaret:int;
 		private var _imeMode:Boolean;
+		private var _menuActive:Boolean;
 		
 		public function CodeAssistManager(field:UIFTETextInput, ctrl:ASParserController, stage:Stage, onComplete:Function)
 		{
@@ -75,16 +76,12 @@ package net.wonderfl.editor.manager
 			//menu.addEventListener(KeyboardEvent.KEY_DOWN, onMenuKey);
 			
 			tooltip = new ToolTip;
-			
-			//used to close the tooltip
-			//fld.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			fld.addChild(tooltip);
 		}
 		
 		private function filterMenu():Boolean
 		{
-			var a:Array = [];
-			for each (var s:String in menuData)
-				if (s.toLowerCase().indexOf(menuStr.toLowerCase())==0) a.push(s);
+			var a:Array = vectorToArray(menuData.filter(menuFilterCallback));
 
 			if (a.length == 0) return false;
 			menu.setListData(a);
@@ -92,6 +89,10 @@ package net.wonderfl.editor.manager
 		
 			rePositionMenu();
 			return true;
+		}
+		
+		private function menuFilterCallback($item:String, $index:int, $vec:Vector.<String>):Boolean {
+			return (new RegExp('^' + menuStr.split('').join('.*'), 'i')).test($item);
 		}
 		
 		
@@ -109,11 +110,12 @@ package net.wonderfl.editor.manager
 						//TODO make a better regexp
 						var pos:int = fld.text.lastIndexOf('package ', fld.caretIndex);
 						pos = fld.text.indexOf('{', pos) + 1;
-						var imp:String = '\n\t'+(i>0?'//':'')+'import '+missing[i] + '.' + name + ';';
+						var imp:String = '\r    '+(i>0?'//':'')+'import '+missing[i] + '.' + name + ';';
 						sumChars += imp.length;
 						fld.replaceText(pos, pos, imp);
 					}
-					fld.setSelection(caret+sumChars, caret+sumChars);
+					fld.setSelection(caret + sumChars, caret + sumChars);
+					fld.parent.dispatchEvent(new Event(Event.CHANGE));
 				}
 			}
 		}
@@ -135,6 +137,7 @@ package net.wonderfl.editor.manager
 		
 		public function triggerAssist():void
 		{
+			_menuActive = true;
 			var pos:int = fld.caretIndex;
 			//look back for last trigger
 			var tmp:String = fld.text.substring(Math.max(0, pos-100), pos).split('').reverse().join('');
@@ -177,9 +180,12 @@ package net.wonderfl.editor.manager
 				}
 			}
 				
-			if (!menuData || menuData.length==0) return;
+			if (!menuData || menuData.length == 0) {
+				_menuActive = false;
+				return;
+			}
 			
-			showMenu(pos+1);			
+			showMenu(pos);			
 			if (menuStr.length) filterMenu();
 		}
 		
@@ -190,26 +196,18 @@ package net.wonderfl.editor.manager
 			menu.setListData(vectorToArray(menuData));
 			menu.selectedIndex = 0;
 			
-			p = fld.getPointForIndex(index);
-			p.x += fld.x;
 			
-			p = fld.localToGlobal(p);
-			menuRefY = p.y;
-			
-			menu.show(fld, p.x, p.y);
-			
-			stage.focus = menu;
+			p = fld.cursorPosition;
+			menu.show(fld, p.x, p.y + fld.boxHeight);
+			//stage.focus = menu;
 			
 			rePositionMenu();
 		}
 		
 		private function rePositionMenu():void
 		{
-			var menuH:int = Math.min(8, menu.data.length) * 17;
-			if (menuRefY +15 + menuH > stage.stageHeight)
-				menu.setY(menuRefY - menuH - 2);
-			else
-				menu.setY(menuRefY + 15);
+			var p:Point = fld.cursorPosition;
+			menu.show(fld, p.x, p.y + fld.boxHeight);
 		}
 		
 		private function debug(...args):void {
@@ -238,7 +236,7 @@ package net.wonderfl.editor.manager
 				triggerAssist();
 			}
 			
-			if (menu.parent) {
+			if (_menuActive) {
 				return onMenuKey($event);
 			}
 			
@@ -255,10 +253,10 @@ package net.wonderfl.editor.manager
 				{
 					debug('onMenuKey : CTRL + ' + String.fromCharCode($event.charCode));
 					switch (String.fromCharCode($event.charCode)) {
-					case 'n':
+					case 'n' :
 						menu.selectedIndex++;
 						return true;
-					case 'p':
+					case 'p' :
 						menu.selectedIndex--;
 						return true;
 					default :
@@ -271,12 +269,16 @@ package net.wonderfl.editor.manager
 					if (menuStr.length > 0)
 					{
 						menuStr = menuStr.substr(0, -1);
-						if (filterMenu()) return true;
+						if (filterMenu()) return false;
+					} else {
+						_menuActive = false;
 					}
 				}
-				else if ($event.keyCode == Keyboard.DELETE)
+				else if ($event.keyCode == Keyboard.DELETE || $event.keyCode == Keyboard.ESCAPE)
 				{
 					//fldReplaceText(c, c+1, '');
+					_menuActive = false;
+					res = false;
 				}
 				else if ($event.charCode > 31 && $event.charCode < 127)
 				{
@@ -290,6 +292,7 @@ package net.wonderfl.editor.manager
 					fldReplaceText(c - menuStr.length, c, menu.getSelectedValue());
 					checkAddImports(menu.getSelectedValue());
 					fld.preventFollowingTextInput();
+					_menuActive = false;
 					onComplete();
 				} else
 					res = false;
