@@ -38,6 +38,7 @@ package net.wonderfl.editor.manager
 	import flash.geom.Point;
 	import flash.ui.Keyboard;
 	import flash.utils.setTimeout;
+	import net.wonderfl.editor.core.FTETextField;
 	import net.wonderfl.editor.core.UIFTETextInput;
 	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.ui.PopupMenu;
@@ -218,7 +219,10 @@ package net.wonderfl.editor.manager
 		
 		private function rePositionMenu():void
 		{
-			var p:Point = fld.cursorPosition;
+			var i:int = fld.caretIndex;
+			if (fld.text.charAt(i) == FTETextField.NL) --i;
+			var p:Point = fld.getPointForIndex(i);
+			
 			menu.show(fld, p.x, p.y + fld.boxHeight);
 		}
 		

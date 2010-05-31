@@ -735,7 +735,7 @@ package net.wonderfl.editor.core
 			
 			while (true)
 			{
-				pos = _text.indexOf(NL, pos)+1;
+				pos = _text.indexOf(NL, pos) + 1;
 				if (pos == 0 || pos > index) break;
 				lines++;
 				lastNL = pos;
@@ -756,13 +756,10 @@ package net.wonderfl.editor.core
 				atomCount = (atomCount >= textLine.atomCount) ? (textLine.atomCount) - 1 : atomCount;
 				atomCount = (atomCount < 0) ? 0 : atomCount;
 				rect = textLine.getAtomBounds(atomCount);
+				trace($index, rect);
 				xpos = rect.x + rect.width + textLine.x;
 			}
 			
-			function calcXposByOriginalMethod(msg:String):void {
-				trace('calcXposByOriginalMethod : ' + msg);
-				xpos = cursor.x;
-			}
 			//xpos = x;
 			return new Point(xpos, ypos);
 		}
