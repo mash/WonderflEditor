@@ -158,9 +158,12 @@ package net.wonderfl.editor.manager
 			
 			menuData = null;
 			var rt:String = trigger.split('').reverse().join('');
-			if (rt == 'new' || rt == 'as' || rt == 'is' || rt == ':' || rt == 'extends' || rt == 'implements')
+			if (rt == 'new' || rt == 'as' || rt == 'is' || rt == 'extends' || rt == 'implements')
 				menuData = ctrl.getTypeOptions();
-			else if (trigger == '.')
+			else if (rt == ':') {
+				var lastColon:int = fld.text.lastIndexOf(':', fld.caretIndex - 1);
+				
+			} else if (trigger == '.')
 				menuData = ctrl.getMemberList(pos);
 			else if (trigger == '')
 				menuData = ctrl.getAllOptions(pos);

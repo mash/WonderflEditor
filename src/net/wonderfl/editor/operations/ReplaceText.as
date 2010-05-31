@@ -15,6 +15,7 @@ package net.wonderfl.editor.operations {
 			text = $text;
 		}
 		
+		CONFIG::debug
 		public function toString():String {
 			return <>start : {startIndex}, end : {endIndex}, text : {text}</>;
 		}

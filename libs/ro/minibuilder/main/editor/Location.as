@@ -11,5 +11,9 @@ package ro.minibuilder.main.editor
 			this.pos = pos;
 			this.path = path;
 		}
+		
+		public function toString():String {
+			return <>[ro.minibuilder.main.editor.Location path : {path}, pos : {pos}]</>
+		}
 	}
 }

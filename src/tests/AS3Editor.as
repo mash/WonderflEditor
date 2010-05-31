@@ -13,6 +13,7 @@ package tests
 	import net.wonderfl.editor.core.UIFTETextField;
 	import net.wonderfl.editor.error.ErrorMessage;
 	import net.wonderfl.editor.manager.CodeAssistManager;
+	import net.wonderfl.editor.manager.EditorHotkeyManager;
 	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.scroll.TextHScroll;
 	import net.wonderfl.editor.scroll.TextVScroll;
@@ -28,6 +29,7 @@ package tests
 		private var changeRevalIID:int;
 		private var _field:UIFTETextInput;
 		private var _codeAssistManager:CodeAssistManager;
+		private var _editorHotkeyManager:EditorHotkeyManager;
 		private var lineNums:LineNumberField;
 		private var _vScroll:TextVScroll;
 		private var _hScroll:TextHScroll;
@@ -58,6 +60,7 @@ package tests
 			_field.addEventListener(Event.RESIZE, onFieldResize);
 			_field.addEventListener(EditorEvent.UNDO, hideCodeAssists);
 			_field.addEventListener(EditorEvent.REDO, hideCodeAssists);
+			
 			
 			lineNums = new LineNumberField(_field);
 			addChild(lineNums);
@@ -90,6 +93,8 @@ package tests
 			
 			_parser = new ASParserController(stage, _this);
 			_codeAssistManager = new CodeAssistManager(_field, _parser, stage, onComplete);
+			_editorHotkeyManager = new EditorHotkeyManager(_field, _parser);
+			_field.addPlugIn(_editorHotkeyManager);
 			_field.addPlugIn(_codeAssistManager);
 			
 			
