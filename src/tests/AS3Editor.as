@@ -140,8 +140,7 @@ package tests
 		
 		override protected function updateSize():void 
 		{
-			_field.height = _height - _hScroll.height;
-			_field.width = _width - lineNums.width - _vScroll.width;
+			_field.setSize(_width - lineNums.width - _vScroll.width, _height - _hScroll.height); 
 			_vScroll.height = _height;
 			_hScroll.width = _width;
 			_vScroll.x = _width - _vScroll.width;

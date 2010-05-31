@@ -611,10 +611,12 @@ package net.wonderfl.editor.core
 		
 		override protected function updateSize():void
 		{
-			super.updateSize();
 			visibleRows = (height / boxHeight) >> 0;
 			updateScrollProps();
 			cursor.setSize(_width, boxHeight);
+			graphics.beginFill(0);
+			graphics.drawRect(0, 0, _width, _height);
+			graphics.endFill();
 		}
 		
 		we_internal function checkScrollToCursor():void
@@ -804,6 +806,7 @@ package net.wonderfl.editor.core
 		{
 			_replaceText(0, 0, '');
 		}
+		
 		
 		public function findPreviousMatch($left:String, $right:String, $index:int):int {
 			var i:int = 1, j:int = $index;
