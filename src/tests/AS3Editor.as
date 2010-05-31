@@ -6,6 +6,7 @@ package tests
 	import flash.events.MouseEvent;
 	import flash.utils.setTimeout;
 	import net.wonderfl.editor.core.UIFTETextInput;
+	import net.wonderfl.editor.events.EditorEvent;
 	import net.wonderfl.editor.IEditor;
 	import net.wonderfl.editor.LineNumberField;
 	import net.wonderfl.editor.core.UIComponent;
@@ -55,6 +56,8 @@ package tests
 			
 			_field.addEventListener(Event.SCROLL, onTextScroll);
 			_field.addEventListener(Event.RESIZE, onFieldResize);
+			_field.addEventListener(EditorEvent.UNDO, hideCodeAssists);
+			_field.addEventListener(EditorEvent.REDO, hideCodeAssists);
 			
 			lineNums = new LineNumberField(_field);
 			addChild(lineNums);
@@ -75,6 +78,11 @@ package tests
 			
 			
 			addEventListener(Event.ADDED_TO_STAGE, init);
+		}
+		
+		public function hideCodeAssists(e:EditorEvent):void 
+		{
+			_codeAssistManager.cancelAssist();
 		}
 		
 		private function init(e:Event):void {

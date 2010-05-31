@@ -217,6 +217,11 @@ package net.wonderfl.editor.manager
 			return false;
 		}
 		
+		public function cancelAssist():void {
+			menu.dispose();
+			tooltip.disposeToolTip();
+		}
+		
 		private function rePositionMenu():void
 		{
 			var i:int = fld.caretIndex;

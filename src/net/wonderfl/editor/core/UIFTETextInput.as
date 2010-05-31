@@ -9,6 +9,7 @@ package net.wonderfl.editor.core
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	import flash.ui.Keyboard;
+	import net.wonderfl.editor.events.EditorEvent;
 	import net.wonderfl.editor.ime.IMEClient_10_0;
 	import net.wonderfl.editor.ime.IMEClient_10_1;
 	import net.wonderfl.editor.manager.ClipboardManager;
@@ -22,6 +23,8 @@ package net.wonderfl.editor.core
 	 * ...
 	 * @author kobayashi-taro
 	 */
+	[Event(name = 'undo', type = 'net.wonderfl.editor.events.EditorEvent')]
+	[Event(name = 'redo', type = 'net.wonderfl.editor.events.EditorEvent')]
 	public class UIFTETextInput extends UIFTETextField
 	{
 		private static var MATCH:Object = {
@@ -145,10 +148,12 @@ package net.wonderfl.editor.core
 		
 		public function undo():void {
 			_historyManager.undo();
+			dispatchEvent(new EditorEvent(EditorEvent.UNDO));
 		}
 		
 		public function redo():void {
 			_historyManager.redo();
+			dispatchEvent(new EditorEvent(EditorEvent.REDO));
 		}
 		
 		public function preventFollowingTextInput():void {
