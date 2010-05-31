@@ -1,5 +1,6 @@
 package tests 
 {
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
@@ -23,7 +24,6 @@ package tests
 	public class AS3Editor extends UIComponent implements IEditor
 	{
 		private const CHECK_MOUSE_DURATION:int = 500;
-		private var _errors:Array = [];
 		private var changeRevalIID:int;
 		private var _field:UIFTETextInput;
 		private var _codeAssistManager:CodeAssistManager;
@@ -33,6 +33,7 @@ package tests
 		private var _boxWidth:int;
 		private var _this:AS3Editor;
 		private var _parser:ASParserController;
+		private var _errorEngine:Sprite = new Sprite;
 		
 		public function AS3Editor() 
 		{
@@ -148,30 +149,30 @@ package tests
 		}
 		
 		public function clearErrors():void {
-			_errors.length = 0;
-			setErrorPositions([]);
-			draw();
+			_field.clearErrorMessages();
+			startDrawingErrors();
 		}
 		
 		public function setFontSize($size:int):void {
 			
 		}
 		
-		private function setErrorPositions($errors:Array):void
-		{
-			
+	
+		public function setError($row:int, $col:int, $message:String):void {
+			_field.addErrorMessage(new ErrorMessage([$row, $col, $message]));
+			startDrawingErrors();
 		}
 		
-		public function setError($row:int, $col:int, $message:String):void {
-			_errors.push(new ErrorMessage([$row, $col, $message]));
-			// draw error positions
-			setErrorPositions(_errors.map(
-				function ($error:ErrorMessage, $index:int, $array:Array):int {
-					return $error.row;
-				}
-			));
-			
-			draw();
+		private function startDrawingErrors():void {
+			if (!_errorEngine.hasEventListener(Event.ENTER_FRAME))
+				_errorEngine.addEventListener(Event.ENTER_FRAME, drawError);
+		}
+		
+		private function drawError(e:Event):void 
+		{
+			trace('draw error');
+			_errorEngine.removeEventListener(Event.ENTER_FRAME, drawError);
+			_field.applyFormatRuns();
 		}
 		
 		protected function triggerAssist():Boolean
@@ -193,12 +194,6 @@ package tests
 		public function findDefinition():Location
 		{
 			return _parser.findDefinition(_field.caretIndex);
-		}
-		
-		
-		private function draw():void
-		{
-			
 		}
 		
 		public function copy():void {

@@ -1,6 +1,10 @@
 <flex-config>
 	<compiler>
 		<define>
+			<name>CONFIG::release</name>
+			<value>false</value>
+		</define>
+		<define>
 			<name>CONFIG::benchmark</name>
 			<value>false</value>
 		</define>

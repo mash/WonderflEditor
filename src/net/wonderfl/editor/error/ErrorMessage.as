@@ -7,7 +7,6 @@
 	 */
 	public class ErrorMessage
 	{
-		public var rect:Rectangle = new Rectangle;
 		private var _row:int;
 		private var _column:int;
 		private var _message:String;

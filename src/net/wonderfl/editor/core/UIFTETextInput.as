@@ -95,7 +95,6 @@ package net.wonderfl.editor.core
 		override protected function onKeyDown(e:KeyboardEvent):void
 		{
 			_preventDefault = false;
-//			trace('onKeyDown _caret : ' + _caret + ' keyCode : ' + e.keyCode + <>_selStart : {_selStart} _selEnd : {_selEnd}</>);
 			var c:String = String.fromCharCode(e.charCode);
 			var k:int = e.keyCode;
 			var i:int;

@@ -29,8 +29,6 @@ package net.wonderfl.editor.manager
 			undo.prev = _undoStack;
 			_undoStack = undo;
 			
-			trace('   undo :: ' + undo);
-			
 			// clear redo stack
 			var next:ReplaceText;
 			for (var replace:ReplaceText = _redoStack; replace; replace = next) {
@@ -51,7 +49,6 @@ package net.wonderfl.editor.manager
 		}
 		
 		private function applyOperation($operationStackName:String, $inverseStackName:String):void {
-			trace("HistoryManager.applyOperation > $operationStackName : " + $operationStackName + ", $inverseStackName : " + $inverseStackName);
 			if (this[$operationStackName] == null) return;
 			
 			// push inverse operation stack

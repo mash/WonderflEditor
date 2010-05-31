@@ -31,6 +31,7 @@ package net.wonderfl.editor.core
 	import flash.utils.clearTimeout;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
+	import net.wonderfl.editor.error.ErrorMessage;
 	import net.wonderfl.editor.IEditor;
 	import net.wonderfl.editor.utils.removeAllChildren;
 	import net.wonderfl.editor.we_internal;
@@ -78,6 +79,8 @@ package net.wonderfl.editor.core
 		protected var _textLineContainer:Sprite = new Sprite;
 		private var _numLines:int;
 		private var _textDecorationContainer:Sprite = new Sprite;
+		private var _errorMessageContainer:Sprite = new Sprite;
+		private var _errorMessages:Vector.<ErrorMessage> = new Vector.<ErrorMessage>;
 		protected var _container:Sprite;
 		private var _scrollYEngine:Sprite = new Sprite;
 		private var _charHighlight:CharHighlighter = new CharHighlighter;
@@ -106,6 +109,7 @@ package net.wonderfl.editor.core
 			addChild(_container = new Sprite);
 			
 			_container.addChild(_textDecorationContainer);
+			_container.addChild(_errorMessageContainer);
 			_container.addChild(_selectionShape);
 			_container.addChild(_textLineContainer);
 			//_textDecorationContainer.mouseChildren = _textDecorationContainer.mouseEnabled = false;
@@ -120,6 +124,13 @@ package net.wonderfl.editor.core
 			_container.addChild(cursor);
 		}
 		
+		public function clearErrorMessages():void {
+			_errorMessages.length = 0;
+		}
+		
+		public function addErrorMessage($message:ErrorMessage):void {
+			_errorMessages.push($message);
+		}
 		
 		public function get defaultTextFormat():TextFormat
 		{
@@ -524,6 +535,30 @@ package net.wonderfl.editor.core
 					
 					return false;
 				},
+				function ():Boolean {
+					if (killFlag) return false;
+					
+					removeAllChildren(_errorMessageContainer);
+					
+					var i:int;
+					var len:int = _errorMessages.length;
+					var message:ErrorMessage;
+					var shp:Shape;
+					for (i = 0; i < len; ++i) {
+						message = _errorMessages[i];
+						if (message.row < _scrollY) continue;
+						if (message.row >= _scrollY + visibleRows) break;
+						
+						shp = new Shape;
+						shp.graphics.beginFill(0x5d2917);
+						shp.graphics.drawRect(0, 0, _width, boxHeight);
+						shp.graphics.endFill();
+						shp.y = (message.row - _scrollY) * boxHeight;
+						_errorMessageContainer.addChild(shp);
+					}
+					
+					return false;
+				},
 				drawComplete
 			).run();
 			
@@ -619,6 +654,12 @@ package net.wonderfl.editor.core
 					pos = _text.indexOf(NL, pos+1);
 				scrollY -= ct;
 			}
+			
+			
+		}
+		
+		we_internal function countNewLinesBefore($index:int):int {
+			
 		}
 		
 		public function gotoLine(line:int):void
