@@ -50,7 +50,7 @@ package tests
 			_scaleDownButton.buttonMode = true;
 			_scaleDownButton.tabEnabled = false;
 			_scaleDownButton.addEventListener(MouseEvent.CLICK, function ():void {
-				CONFIG::release {
+				CONFIG::useExternalInterface {
 					if (ExternalInterface.available) ExternalInterface.call("Wonderfl.Compiler.scale_down");
 				}
 			});
@@ -63,7 +63,7 @@ package tests
 			
 			addEventListener(Event.ADDED_TO_STAGE, init);
 			
-			CONFIG::release {
+			CONFIG::useExternalInterface {
 				if (ExternalInterface.available) {
 					ExternalInterface.addCallback("xi_get_code", js_xi_get_code);
 					ExternalInterface.addCallback("xi_set_error", _editor.setError);
@@ -74,7 +74,7 @@ package tests
 		
 		private function compile():void
 		{
-			CONFIG::release {
+			CONFIG::useExternalInterface {
 				if (ExternalInterface.available && !_mouseUIFlag) {
 					ExternalInterface.call("Wonderfl.Compiler.edit_complete");
 					_editor.clearErrors();
@@ -110,7 +110,7 @@ package tests
 				_mouseUIFlag = false;
 			});
 			
-			CONFIG::release {
+			CONFIG::useExternalInterface {
 				if (ExternalInterface.available) {
 					var code:String = ExternalInterface.call("Wonderfl.Compiler.get_initial_code");
 					_editor.text = (code) ? code : "";
@@ -123,7 +123,7 @@ package tests
 			var w:int = stage.stageWidth;
 			var h:int = stage.stageHeight;
 			var size:Array;
-			CONFIG::release {
+			CONFIG::useExternalInterface {
 				if (ExternalInterface.available) {
 					size = ExternalInterface.call("Wonderfl.Compiler.get_stage_size");
 					if (size) {

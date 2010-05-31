@@ -1,8 +1,8 @@
 <flex-config>
 	<compiler>
 		<define>
-			<name>CONFIG::release</name>
-			<value>true</value>
+			<name>CONFIG::useExternalInterface</name>
+			<value>false</value>
 		</define>
 		<define>
 			<name>CONFIG::benchmark</name>
