@@ -34,6 +34,7 @@ package tests
 			addChild(_editor = new AS3Editor);
 			
 			_editor.addEventListener(Event.CHANGE, function ():void {
+				trace(arguments);
 				_compileTimer = setTimeout(compile, 1500);
 			});
 			

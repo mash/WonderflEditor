@@ -106,6 +106,7 @@ package tests
 				_parser.sourceChanged(text, '');
 				
 			lineNums.draw();
+			_field.clearErrorMessages();
 		}
 		private function onFieldResize(e:Event):void 
 		{
@@ -170,7 +171,6 @@ package tests
 		
 		private function drawError(e:Event):void 
 		{
-			trace('draw error');
 			_errorEngine.removeEventListener(Event.ENTER_FRAME, drawError);
 			_field.applyFormatRuns();
 		}

@@ -32,6 +32,7 @@ package net.wonderfl.editor.core
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 	import net.wonderfl.editor.error.ErrorMessage;
+	import net.wonderfl.editor.error.ErrorMessageLayer;
 	import net.wonderfl.editor.IEditor;
 	import net.wonderfl.editor.utils.removeAllChildren;
 	import net.wonderfl.editor.we_internal;
@@ -79,9 +80,8 @@ package net.wonderfl.editor.core
 		protected var _textLineContainer:Sprite = new Sprite;
 		private var _numLines:int;
 		private var _textDecorationContainer:Sprite = new Sprite;
-		private var _errorMessageContainer:Sprite = new Sprite;
-		private var _errorMessages:Vector.<ErrorMessage> = new Vector.<ErrorMessage>;
-		protected var _container:Sprite;
+		private var _errorLayer:ErrorMessageLayer;
+		we_internal var _container:Sprite;
 		private var _scrollYEngine:Sprite = new Sprite;
 		private var _charHighlight:CharHighlighter = new CharHighlighter;
 		
@@ -93,6 +93,7 @@ package net.wonderfl.editor.core
 			mouseEnabled = true;
 			buttonMode = true;
 			
+			_errorLayer = new ErrorMessageLayer(this);
 			_selectionShape = new Shape;
 			_defaultTextFormat = new TextFormat('Courier New', 12, 0xffffff);
 			for each (var fnt:Font in Font.enumerateFonts(true))
@@ -109,7 +110,7 @@ package net.wonderfl.editor.core
 			addChild(_container = new Sprite);
 			
 			_container.addChild(_textDecorationContainer);
-			_container.addChild(_errorMessageContainer);
+			_container.addChild(_errorLayer);
 			_container.addChild(_selectionShape);
 			_container.addChild(_textLineContainer);
 			//_textDecorationContainer.mouseChildren = _textDecorationContainer.mouseEnabled = false;
@@ -125,11 +126,11 @@ package net.wonderfl.editor.core
 		}
 		
 		public function clearErrorMessages():void {
-			_errorMessages.length = 0;
+			_errorLayer.clearErrorMessages();
 		}
 		
 		public function addErrorMessage($message:ErrorMessage):void {
-			_errorMessages.push($message);
+			_errorLayer.addErrorMessage($message);
 		}
 		
 		public function get defaultTextFormat():TextFormat
@@ -538,24 +539,7 @@ package net.wonderfl.editor.core
 				function ():Boolean {
 					if (killFlag) return false;
 					
-					removeAllChildren(_errorMessageContainer);
-					
-					var i:int;
-					var len:int = _errorMessages.length;
-					var message:ErrorMessage;
-					var shp:Shape;
-					for (i = 0; i < len; ++i) {
-						message = _errorMessages[i];
-						if (message.row < _scrollY) continue;
-						if (message.row >= _scrollY + visibleRows) break;
-						
-						shp = new Shape;
-						shp.graphics.beginFill(0x5d2917);
-						shp.graphics.drawRect(0, 0, _width, boxHeight);
-						shp.graphics.endFill();
-						shp.y = (message.row - _scrollY) * boxHeight;
-						_errorMessageContainer.addChild(shp);
-					}
+					_errorLayer.render();
 					
 					return false;
 				},
@@ -635,31 +619,42 @@ package net.wonderfl.editor.core
 		
 		we_internal function checkScrollToCursor():void
 		{
-			var t:int = getTimer();
-			var ct:int, pos:int;
+			var result:Object;
 			if (_caret > lastPos)
 			{
-				//let's count NL between lastPos and caret
-				for (ct=0, pos=lastPos; pos!=-1 && pos < _caret; ct++)
-					pos = _text.indexOf(NL, pos+1);
-				
-				scrollY += ct;
+				result = countNewLines(_caret, lastPos);
+				scrollY += result.numNewLines;
 			}
 			
 			//TODO similar
 			if (_caret < firstPos)
 			{
-				//now count NL between firstPos and caret
-				for (ct=0, pos=_caret; pos!=-1 && pos<firstPos; ct++)
-					pos = _text.indexOf(NL, pos+1);
-				scrollY -= ct;
+				result = countNewLines(_caret, firstPos);
+				scrollY -= result.numNewLines;
 			}
 			
-			
+			var maxCols:int = Math.ceil(_maxWidth / boxWidth);
+			var currentCols:int = (cursor.getX() / boxWidth) >> 0;
+			var numCols:int = (_width / boxWidth) >> 0;
+			numCols -= 2;
+			var scroll:int;
+			if (currentCols > _scrollH + numCols) {
+				scroll += numCols;
+				scrollH = (scroll > maxCols) ? maxCols : scroll;
+			} else if (currentCols < _scrollH) {
+				scroll -= numCols;
+				scrollH = (scroll < 0) ? 0 : scroll;
+			}
 		}
 		
-		we_internal function countNewLinesBefore($index:int):int {
-			
+		we_internal function countNewLines($begin:int, $end:int):Object {
+			for (var ct:int = 0, pos:int = $begin; pos != -1 && pos < $end; ct++)
+				pos = _text.indexOf(NL, pos + 1);
+				
+			return {
+				numNewLines : ct,
+				lastNewLinePos : pos
+			};
 		}
 		
 		public function gotoLine(line:int):void

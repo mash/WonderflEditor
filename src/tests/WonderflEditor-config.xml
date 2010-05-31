@@ -2,7 +2,7 @@
 	<compiler>
 		<define>
 			<name>CONFIG::release</name>
-			<value>false</value>
+			<value>true</value>
 		</define>
 		<define>
 			<name>CONFIG::benchmark</name>
