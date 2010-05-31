@@ -295,8 +295,7 @@ package net.wonderfl.editor.core
 			_replaceText($startIndex, $endIndex, $text);
 		}
 		
-		private function _replaceText(startIndex:int, endIndex:int, text:String):void
-		{
+		we_internal function __replaceText(startIndex:int, endIndex:int, text:String):void {
 			var t:int = getTimer();
 			_text = _text.substr(0, startIndex) + text + _text.substr(endIndex);
 			
@@ -357,10 +356,15 @@ package net.wonderfl.editor.core
 			CONFIG::benchmark { trace('_replaceText costs : ' + (getTimer() - t) + ' ms'); }
 		}
 		
+		protected function _replaceText(startIndex:int, endIndex:int, text:String):void
+		{
+			we_internal::__replaceText(startIndex, endIndex, text);
+		}
+		
 		protected var _invalidated:Boolean = false;
 		
 		private function updateVisibleText():void {
-			trace('updateVisibleText');
+			CONFIG::benchmark { trace('updateVisibleText'); }
 			var t:int = getTimer();
 			var line:TextLine;
 			
@@ -764,9 +768,6 @@ package net.wonderfl.editor.core
 		{
 			_replaceText(0, 0, '');
 		}
-		
-		public function undo():void { }
-		public function redo():void { }
 		
 		public function findPreviousMatch($left:String, $right:String, $index:int):int {
 			var i:int = 1, j:int = $index;

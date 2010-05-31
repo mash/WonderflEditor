@@ -13,6 +13,7 @@ package net.wonderfl.editor.core
 	import net.wonderfl.editor.ime.IMEClient_10_1;
 	import net.wonderfl.editor.manager.ClipboardManager;
 	import net.wonderfl.editor.manager.EditManager;
+	import net.wonderfl.editor.manager.HistoryManager;
 	import net.wonderfl.editor.manager.IKeyboadEventManager;
 	import net.wonderfl.editor.manager.SelectionManager;
 	import net.wonderfl.editor.utils.versionTest;
@@ -30,6 +31,7 @@ package net.wonderfl.editor.core
 		we_internal var _imeField:TextField;
 		private var _selectionManager:SelectionManager;
 		private var _clipboardManager:ClipboardManager;
+		private var _historyManager:HistoryManager;
 		private var _imeManager:IKeyboadEventManager;
 		private var _plugins:Vector.<IKeyboadEventManager>;
 		private var _editManager:EditManager;
@@ -41,6 +43,7 @@ package net.wonderfl.editor.core
 			
 			_selectionManager = new SelectionManager(this);
 			_editManager = new EditManager(this);
+			_historyManager = new HistoryManager(this);  
 			
 			_plugins = new Vector.<IKeyboadEventManager>;
 			
@@ -79,6 +82,15 @@ package net.wonderfl.editor.core
 			});
 			stage.focus = this;
 		}
+		
+		override protected function _replaceText(startIndex:int, endIndex:int, text:String):void
+		{
+			if (startIndex != endIndex || text.length > 0)
+				_historyManager.pushReplaceOperation(startIndex, endIndex, text);
+			
+			super._replaceText(startIndex, endIndex, text);
+		}
+
 		
 		override protected function onKeyDown(e:KeyboardEvent):void
 		{
@@ -130,6 +142,14 @@ package net.wonderfl.editor.core
 			}
 			
 			_selectionManager.keyDownHandler(e);
+		}
+		
+		public function undo():void {
+			_historyManager.undo();
+		}
+		
+		public function redo():void {
+			_historyManager.redo();
 		}
 		
 		public function preventFollowingTextInput():void {

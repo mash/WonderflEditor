@@ -393,7 +393,6 @@ package net.wonderfl.editor.core
 		
 		override public function _setSelection(beginIndex:int, endIndex:int, caret:Boolean = false):void 
 		{
-			trace('_setSelection');
 			super._setSelection(beginIndex, endIndex, caret);
 			
 			stage.focus = this;
