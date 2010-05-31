@@ -80,7 +80,7 @@ package net.wonderfl.editor.core
 			_setSelection(findWordBound(pos, true), findWordBound(pos, false), true);
 		}
 		
-		protected function findWordBound(start:int, left:Boolean):int
+		public function findWordBound(start:int, left:Boolean):int
 		{
 			if (left)
 			{

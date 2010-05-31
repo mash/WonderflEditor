@@ -32,6 +32,9 @@ package net.wonderfl.editor.manager
 			var result:Boolean = true;
 			
 			switch($event.keyCode) {
+			case Keyboard.F3:
+				searchWord($event.shiftKey);
+				break;
 			case Keyboard.F4:
 				if ($event.shiftKey)
 					gotoPreviousPosition();
@@ -44,6 +47,50 @@ package net.wonderfl.editor.manager
 			}
 			
 			return result;
+		}
+		
+		private function searchWord($reverse:Boolean):void
+		{
+			var word:String;
+			var start:int;
+			var end:int;
+			var temp:int;
+			if (_field.selectionBeginIndex != _field.selectionEndIndex) {
+				start = _field.selectionBeginIndex;
+				end = _field.selectionEndIndex;
+				
+				if (end < start) {
+					temp = end;
+					end = start;
+					start = temp;
+				}
+				
+			} else {
+				start = _field.findWordBound(_field.caretIndex, true);
+				end = _field.findWordBound(_field.caretIndex, false);
+			}
+			word = _field.text.substring(start, end);
+			
+			var pos:int;
+			if ($reverse) {
+				pos = _field.text.lastIndexOf(word, start - 1);
+				if (pos > -1) {
+					_field.setSelection(pos, pos + word.length);
+				} else {
+					pos = _field.text.lastIndexOf(word, _field.length);
+					if (pos > - 1)
+						_field.setSelection(pos, pos + word.length);
+				}
+			} else {
+				pos = _field.text.indexOf(word, end + 1);
+				if (pos > -1) {
+					_field.setSelection(pos, pos + word.length);
+				} else {
+					pos = _field.text.indexOf(word, 0);
+					if (pos > - 1)
+						_field.setSelection(pos, pos + word.length);
+				}
+			}
 		}
 		
 		private function gotoPreviousPosition():void

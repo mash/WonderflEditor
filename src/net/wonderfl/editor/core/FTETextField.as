@@ -624,7 +624,7 @@ package net.wonderfl.editor.core
 			var result:Object;
 			if (_caret > lastPos)
 			{
-				result = countNewLines(_caret, lastPos);
+				result = countNewLines(lastPos, _caret);
 				scrollY += result.numNewLines;
 			}
 			
