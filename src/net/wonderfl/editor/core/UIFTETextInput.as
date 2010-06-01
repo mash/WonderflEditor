@@ -94,6 +94,7 @@ package net.wonderfl.editor.core
 			if (startIndex != endIndex || text.length > 0)
 				_historyManager.pushReplaceOperation(startIndex, endIndex, text);
 			
+			if (LiveCoding.isLive) _livecoding.pushReplaceText(startIndex, endIndex, text);
 				
 			super._replaceText(startIndex, endIndex, text);
 		}
@@ -180,6 +181,14 @@ package net.wonderfl.editor.core
 			dispatchChange();
 			
 			e.stopPropagation();
+		}
+		
+		override public function _setSelection(beginIndex:int, endIndex:int, caret:Boolean = false):void 
+		{
+			super._setSelection(beginIndex, endIndex, caret);
+			
+			if (LiveCoding.isLive) _livecoding.pushCurrentSelection(beginIndex, endIndex);
+			
 		}
 		
 		override protected function drawComplete():Boolean 

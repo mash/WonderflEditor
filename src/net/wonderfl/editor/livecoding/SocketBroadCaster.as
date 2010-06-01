@@ -58,7 +58,7 @@ package net.wonderfl.editor.livecoding{
         }
 
         private function call( method :String, args :Object ) :void {
-            logger("[call]method: "+method+" args: ",args);
+           // logger("[call]method: "+method+" args: ",args);
 
             var obj  :Object = { method : method, args : args };
             var json :String = JSON.encode( obj );

@@ -156,7 +156,7 @@ package tests
 		
 		override protected function updateSize():void 
 		{
-			_liveCodingController.width = _width;
+			_liveCodingController.width = _width - _vScroll.width;
 			_field.setSize(_width - lineNums.width - _vScroll.width, _height - _hScroll.height - _liveCodingController.height); 
 			_field.y = _liveCodingController.height;
 			_vScroll.height = _height;
