@@ -12,7 +12,7 @@ package net.wonderfl.editor
 	 * ...
 	 * @author kobayashi-taro
 	 */
-	public class UIFTETextFieldComponent extends UIComponent implements IEditor
+	public class AS3Viewer extends UIComponent implements IEditor
 	{
 		private var changeRevalIID:int;
 		private var _field:UIFTETextField;
@@ -21,7 +21,7 @@ package net.wonderfl.editor
 		private var _hScroll:TextHScroll;
 		private var _boxWidth:int;
 		
-		public function UIFTETextFieldComponent() 
+		public function AS3Viewer() 
 		{
 			_field = new UIFTETextField;
 			addChild(_field);

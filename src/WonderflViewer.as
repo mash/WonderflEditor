@@ -9,29 +9,24 @@
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
-	import flash.geom.Transform;
 	import flash.net.FileReference;
 	import flash.net.navigateToURL;
 	import flash.net.URLRequest;
 	import flash.system.Capabilities;
-	import flash.system.Security;
 	import flash.ui.ContextMenu;
-	import flash.ui.ContextMenuClipboardItems;
 	import flash.ui.ContextMenuItem;
-	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
-	import jp.psyark.utils.callLater;
 	import jp.psyark.utils.CodeUtil;
 	import jp.psyark.utils.StringComparator;
-	import net.wonderfl.editor.minibuilder.ASParserController;
+	import net.wonderfl.editor.AS3Viewer;
 	import net.wonderfl.editor.core.UIComponent;
-	import net.wonderfl.editor.UIFTETextFieldComponent;
 	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingEvent;
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
 	import net.wonderfl.editor.livecoding.SocketBroadCaster;
 	import net.wonderfl.editor.livecoding.ViewerInfoPanel;
+	import net.wonderfl.editor.minibuilder.ASParserController;
 	import org.libspark.ui.SWFWheel;
 	/**
 	 * ...
@@ -52,7 +47,7 @@
 		[Embed(source = '../assets/btn_smallscreen_o.jpg')]
 		private var _image_over_:Class;
 		
-		private var _viewer:UIFTETextFieldComponent;
+		private var _viewer:AS3Viewer;
 		private var _ctrl:ASParserController;
 		private var _scaleDownButton:Sprite;
 		private var broadcaster:SocketBroadCaster = new SocketBroadCaster;
@@ -96,7 +91,7 @@
 				bm.visible = false;
 			});
 			
-			_viewer = new UIFTETextFieldComponent;
+			_viewer = new AS3Viewer;
 			_viewer.addEventListener(Event.COMPLETE, onColoringComplete);
 			addChild(_viewer);
 			addChild(_scaleDownButton);
@@ -305,7 +300,6 @@
 		private function onClosed():void
 		{
 			trace('on closed');
-			//_viewer.hideCaret();
 			_infoPanel.stop();
 			if (_infoPanel.parent) _infoPanel.parent.removeChild(_infoPanel);
 			_isLive = false;
