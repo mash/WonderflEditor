@@ -176,7 +176,10 @@ package tests
 			
 		}
 		
-	
+		public function onSWFReloaded():void {
+			_field.onSWFReloaded();
+		}
+		
 		public function setError($row:int, $col:int, $message:String):void {
 			_field.addErrorMessage(new ErrorMessage([$row, $col, $message]));
 			startDrawingErrors();

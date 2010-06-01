@@ -72,6 +72,7 @@ package tests
 					ExternalInterface.addCallback("xi_get_code", js_xi_get_code);
 					ExternalInterface.addCallback("xi_set_error", _editor.setError);
 					ExternalInterface.addCallback("xi_clear_errors", _editor.clearErrors);
+					ExternalInterface.addCallback("xi_swf_reloaded", _editor.onSWFReloaded);
 				}
 			}
 		}

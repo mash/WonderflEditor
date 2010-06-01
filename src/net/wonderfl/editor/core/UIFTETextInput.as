@@ -98,7 +98,24 @@ package net.wonderfl.editor.core
 				
 			super._replaceText(startIndex, endIndex, text);
 		}
-
+		
+		override public function set scrollY(value:int):void 
+		{
+			super.scrollY = value;
+			
+			if (LiveCoding.isLive) _livecoding.pushScrollV(value);
+		}
+		
+		override public function set scrollH(value:int):void 
+		{
+			super.scrollH = value;
+			
+			if (LiveCoding.isLive) _livecoding.pushScrollH(value);
+		}
+		
+		public function onSWFReloaded():void {
+			if (LiveCoding.isLive) _livecoding.pushSWFReloaded();
+		}
 		
 		override protected function onKeyDown(e:KeyboardEvent):void
 		{

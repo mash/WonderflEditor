@@ -49,7 +49,6 @@ package net.wonderfl.editor
 			
 			while (numChildren)	removeChildAt(0);
 			
-			var box:Rectangle = calcFontBox(_defaultTextFormat);
 			var rows:int = _fte.visibleRows;
 			var start:int = _scrollY;
 			var end:int = start + rows;
@@ -80,11 +79,10 @@ package net.wonderfl.editor
 				line = getChildAt(0) as TextLine;
 				while (line) {
 					line.x = w - line.textWidth;
-					line.y = box.height * i++ - 2;
+					line.y = _fte.boxHeight * i++ - 2;
 					line = line.nextLine;
 				}
 			}
-			
 			
 			w += 6;
 			if (_fte.x != w) {
@@ -92,7 +90,7 @@ package net.wonderfl.editor
 				
 				dispatchEvent(new Event(Event.RESIZE));
 			}
-			_height = i * box.height - 2;
+			//_height = i * _fte.boxHeight - 2;
 			
 			graphics.clear();
 			graphics.beginFill(0);
