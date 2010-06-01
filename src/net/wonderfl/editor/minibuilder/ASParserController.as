@@ -35,6 +35,7 @@ package net.wonderfl.editor.minibuilder
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.utils.isMXML;
 	import ro.minibuilder.asparser.Field;
 	import ro.minibuilder.asparser.Parser;
 	import ro.minibuilder.asparser.TypeDB;
@@ -136,14 +137,19 @@ package net.wonderfl.editor.minibuilder
 			TypeDB.setDB(fileName, SWFParser.parse(swfData));
 		}
 		
-		public function sourceChanged(source:String, fileName:String):void
+		public function sourceChanged(source:String, fileName:String):Boolean
 		{
+			if (source && source.charAt(0) == "<" && isMXML(source)) return false;
+			source = source.replace(/\n|\r\n/g, '\r');
+			
 			t0 = getTimer();
 			parser.load(source, fileName);
 			if (tc.isRunning(parser))
 				tc.kill(parser);
 			tc.run(parser);
 			status = 'Processing ...';
+			
+			return true;
 		}
 		
 		public function getMemberList(index:int):Vector.<String>
