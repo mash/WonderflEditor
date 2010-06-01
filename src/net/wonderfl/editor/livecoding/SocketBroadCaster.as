@@ -120,12 +120,12 @@ package net.wonderfl.editor.livecoding{
 
         // to notify the end of live coding
         public function close():void {
-            socket.close();
+			if (socket.connected) socket.close();
         }
 
         private function logger(... args):void {
 			CONFIG::debug {
-				trace.apply(null, (["[SocketBroadCaster]"]).concat(args));
+				//trace.apply(null, (["[SocketBroadCaster]"]).concat(args));
 			}
         }
     }

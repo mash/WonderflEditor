@@ -366,6 +366,8 @@
 		
 		private function onReplaceText($beginIndex:int, $endIndex:int, $newText:String):void 
 		{
+			if ($beginIndex == $endIndex && $newText.length == 0) return;
+			
 			_parser.slowDownParser();
 			_source = _source.substring(0, $beginIndex) + $newText + substring($endIndex);
 			_viewer.text = _source;
@@ -378,6 +380,9 @@
 		
 		private function onSetSelection($selectionBeginIndex:int, $selectionEndIndex:int):void
 		{
+			if (_viewer.selectionBeginIndex == $selectionBeginIndex && _viewer.selectionEndIndex == $selectionEndIndex)
+				return;
+			
 			_parser.slowDownParser();
 			_ignoreSelection = false;
 			_viewer.setSelection($selectionBeginIndex, $selectionEndIndex);
