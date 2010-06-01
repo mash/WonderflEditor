@@ -34,7 +34,7 @@
 	 */
 	public class WonderflViewer extends UIComponent
 	{
-		private static const TICK:int = 80;
+		private static const TICK:int = 33;
 		private static const COPY:String = 'Copy (C-c)';
 		private static const SELECT_ALL:String = 'Select All (C-a)';
 		private static const SAVE:String = 'Save (C-s)';
@@ -370,7 +370,8 @@
 			
 			_parser.slowDownParser();
 			_source = _source.substring(0, $beginIndex) + $newText + substring($endIndex);
-			_viewer.text = _source;
+			//_viewer.text = _source;
+			_viewer.onReplaceText($beginIndex, $endIndex, $newText);
 			_selectionObject = {
 				index : $endIndex + $newText.length
 			}
@@ -383,9 +384,8 @@
 			if (_viewer.selectionBeginIndex == $selectionBeginIndex && _viewer.selectionEndIndex == $selectionEndIndex)
 				return;
 			
-			_parser.slowDownParser();
 			_ignoreSelection = false;
-			_viewer.setSelection($selectionBeginIndex, $selectionEndIndex);
+			_viewer.onSetSelection($selectionBeginIndex, $selectionEndIndex);
 			_selectionObject = {
 				index : $selectionEndIndex
 			};

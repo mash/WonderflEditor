@@ -34,6 +34,7 @@ package net.wonderfl.editor.core
 	import net.wonderfl.editor.error.ErrorMessage;
 	import net.wonderfl.editor.error.ErrorMessageLayer;
 	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.operations.SetSelection;
 	import net.wonderfl.editor.utils.removeAllChildren;
 	import net.wonderfl.editor.we_internal;
 	import net.wonderfl.editor.utils.calcFontBox;
@@ -214,6 +215,13 @@ package net.wonderfl.editor.core
 			replaceText(_text.length, _text.length, text);
 		}
 		
+		public function set setSelectionPromise(value:SetSelection):void {
+			if (ThreadExecuter.running)
+				_setSelectionPromise = value;
+			else 
+				_setSelection(value.beginIndex, value.endIndex, true);
+		}
+		
 		public function setSelection(beginIndex:int, endIndex:int):void
 		{
 			_setSelection(beginIndex, endIndex, true);
@@ -373,7 +381,7 @@ package net.wonderfl.editor.core
 			we_internal::__replaceText(startIndex, endIndex, text);
 		}
 		
-		protected var _invalidated:Boolean = false;
+		private var _setSelectionPromise:SetSelection = null;
 		
 		private function updateVisibleText():void {
 			CONFIG::benchmark { trace('updateVisibleText'); }
@@ -406,7 +414,6 @@ package net.wonderfl.editor.core
 				function ():Boolean {
 					elements = new Vector.<ContentElement>;
 					
-					_invalidated = false;
 					killFlag = false;
 					i = 0;
 					len = runs.length;
@@ -539,6 +546,10 @@ package net.wonderfl.editor.core
 				function ():Boolean {
 					if (killFlag) return false;
 					
+					if (_setSelectionPromise) {
+						_setSelection(_setSelectionPromise.beginIndex, _setSelectionPromise.endIndex);
+						_setSelectionPromise = null;
+					}
 					_errorLayer.render();
 					
 					return false;

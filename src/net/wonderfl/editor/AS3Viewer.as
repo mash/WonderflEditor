@@ -5,6 +5,7 @@ package net.wonderfl.editor
 	import flash.events.MouseEvent;
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.core.UIFTETextField;
+	import net.wonderfl.editor.operations.SetSelection;
 	import net.wonderfl.editor.scroll.TextHScroll;
 	import net.wonderfl.editor.scroll.TextVScroll;
 	import net.wonderfl.editor.utils.calcFontBox;
@@ -126,9 +127,15 @@ package net.wonderfl.editor
 			_field.clearFormatRuns();
 		}
 		
-		public function setSelection($selectionBeginIndex:int, $selectionEndIndex:int):void {
-			_field.setSelection($selectionBeginIndex, $selectionEndIndex);
+		public function onReplaceText($beginIndex:int, $endIndex:int, $newText:String):void 
+		{
+			_field.replaceText($beginIndex, $endIndex, $newText);
 		}
+		
+		public function onSetSelection($selectionBeginIndex:int, $selectionEndIndex:int):void {
+			_field.setSelectionPromise = new SetSelection($selectionBeginIndex, $selectionEndIndex);
+		}
+		
 		
 		public function get text():String {
 			return _field.text;
