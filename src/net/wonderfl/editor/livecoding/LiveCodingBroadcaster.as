@@ -64,6 +64,8 @@
 		{
 			if (_onMemberUpdate != null)
 				_onMemberUpdate(e);
+				
+			sendCurrentText();
 		}
 		
 		private function execute(e:Event):void 
@@ -102,7 +104,7 @@
 		}
 		
 		private function checkCount():void {
-			if (++_commandCount == 299) sendCurrentText();
+			if (++_commandCount == 499) sendCurrentText();
 		}
 		
 		public function closeLiveCoding():void
