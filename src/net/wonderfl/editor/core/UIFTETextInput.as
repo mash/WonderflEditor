@@ -12,6 +12,7 @@ package net.wonderfl.editor.core
 	import net.wonderfl.editor.events.EditorEvent;
 	import net.wonderfl.editor.ime.IMEClient_10_0;
 	import net.wonderfl.editor.ime.IMEClient_10_1;
+	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.manager.ClipboardManager;
 	import net.wonderfl.editor.manager.EditManager;
 	import net.wonderfl.editor.manager.HistoryManager;
@@ -38,12 +39,12 @@ package net.wonderfl.editor.core
 		private var _imeManager:IKeyboadEventManager;
 		private var _plugins:Vector.<IKeyboadEventManager>;
 		private var _editManager:EditManager;
+		private var _livecoding:LiveCoding;
 		use namespace we_internal;
 
 		public function UIFTETextInput() 
 		{
 			super();
-			
 			_selectionManager = new SelectionManager(this);
 			_editManager = new EditManager(this);
 			_historyManager = new HistoryManager(this);  
@@ -76,6 +77,8 @@ package net.wonderfl.editor.core
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			
+			_livecoding = LiveCoding.getInstance();
+			
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, function ():void {
 				if (stage.focus != _imeField && _imeManager.imeMode) {
 					trace('focus -> _imeField');
@@ -91,6 +94,7 @@ package net.wonderfl.editor.core
 			if (startIndex != endIndex || text.length > 0)
 				_historyManager.pushReplaceOperation(startIndex, endIndex, text);
 			
+				
 			super._replaceText(startIndex, endIndex, text);
 		}
 

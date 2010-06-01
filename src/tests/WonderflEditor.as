@@ -10,6 +10,8 @@ package tests
 	import flash.external.ExternalInterface;
 	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
+	import net.wonderfl.editor.livecoding.LiveCoding;
+	import net.wonderfl.editor.livecoding.LiveCodingSettings;
 	
 	//import net.wonderfl.editor.WonderflEditor;
 	
@@ -31,7 +33,9 @@ package tests
 		
 		public function WonderflEditor() 
 		{
+			new LiveCoding;
 			addChild(_editor = new AS3Editor);
+			LiveCoding.editor = _editor;
 			
 			_editor.addEventListener(Event.CHANGE, function ():void {
 				trace(arguments);
@@ -91,6 +95,9 @@ package tests
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			
+			if (loaderInfo.parameters)
+				LiveCodingSettings.setUpParameters(loaderInfo.parameters);
+				
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);

@@ -163,6 +163,7 @@ package net.wonderfl.editor.manager
 			else if (rt == ':') {
 				var lastColon:int = fld.text.lastIndexOf(':', fld.caretIndex - 1);
 				
+				menuData = ctrl.getTypeOptions();
 			} else if (trigger == '.')
 				menuData = ctrl.getMemberList(pos);
 			else if (trigger == '')

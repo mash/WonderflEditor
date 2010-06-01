@@ -12,6 +12,7 @@ package tests
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.core.UIFTETextField;
 	import net.wonderfl.editor.error.ErrorMessage;
+	import net.wonderfl.editor.livecoding.LiveCodingControllerView;
 	import net.wonderfl.editor.manager.CodeAssistManager;
 	import net.wonderfl.editor.manager.EditorHotkeyManager;
 	import net.wonderfl.editor.minibuilder.ASParserController;
@@ -37,6 +38,7 @@ package tests
 		private var _this:AS3Editor;
 		private var _parser:ASParserController;
 		private var _errorEngine:Sprite = new Sprite;
+		private var _liveCodingController:LiveCodingControllerView;
 		
 		public function AS3Editor() 
 		{
@@ -78,6 +80,7 @@ package tests
 			_hScroll.addEventListener(Event.SCROLL, onHScroll);
 			addChild(_vScroll);
 			addChild(_hScroll);
+			addChild(_liveCodingController = new LiveCodingControllerView);
 			
 			
 			addEventListener(Event.ADDED_TO_STAGE, init);
@@ -94,8 +97,8 @@ package tests
 			_parser = new ASParserController(stage, _this);
 			_codeAssistManager = new CodeAssistManager(_field, _parser, stage, onComplete);
 			_editorHotkeyManager = new EditorHotkeyManager(_field, _parser);
-			_field.addPlugIn(_editorHotkeyManager);
 			_field.addPlugIn(_codeAssistManager);
+			_field.addPlugIn(_editorHotkeyManager);
 			
 			
 			//setTimeout(checkMouse, CHECK_MOUSE_DURATION);
@@ -153,12 +156,15 @@ package tests
 		
 		override protected function updateSize():void 
 		{
-			_field.setSize(_width - lineNums.width - _vScroll.width, _height - _hScroll.height); 
+			_liveCodingController.width = _width;
+			_field.setSize(_width - lineNums.width - _vScroll.width, _height - _hScroll.height - _liveCodingController.height); 
+			_field.y = _liveCodingController.height;
 			_vScroll.height = _height;
 			_hScroll.width = _width;
 			_vScroll.x = _width - _vScroll.width;
-			_hScroll.y = _field.height;
+			_hScroll.y = _field.height + _liveCodingController.height;
 			lineNums.height = _field.height;
+			lineNums.y = _liveCodingController.height;
 		}
 		
 		public function clearErrors():void {

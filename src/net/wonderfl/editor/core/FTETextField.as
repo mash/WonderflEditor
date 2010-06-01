@@ -297,11 +297,10 @@ package net.wonderfl.editor.core
 			_defaultTextFormat = value;
 		}
 		
-		
 		public function replaceText($startIndex:int, $endIndex:int, $text:String):void
 		{
 			$text ||= "";
-			$text = $text.replace(new RegExp("\r\n", "g"), NL).replace(/\n/g, NL);
+			$text = $text.replace(new RegExp("\r\n", "gm"), NL).replace(/\n/gm, NL);
 			//$text = $text.replace("\n", NL);
 			$text = $text.replace("\t", '    ');
 			_replaceText($startIndex, $endIndex, $text);

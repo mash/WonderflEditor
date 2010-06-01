@@ -2,7 +2,7 @@
 	<compiler>
 		<define>
 			<name>CONFIG::useExternalInterface</name>
-			<value>false</value>
+			<value>true</value>
 		</define>
 		<define>
 			<name>CONFIG::benchmark</name>
