@@ -55,7 +55,7 @@ package ro.victordramba.thread
 			this.stage = stage;
 		}
 		
-		private function onUIEvent(e:Event):void
+		public function onUIEvent(e:Event):void
 		{
 			uiEvent = true;
 			clearTimeout(endUIID);

@@ -341,7 +341,7 @@
 				var command:Object;
 				
 				while (getTimer() - t < TICK) {
-					if (_commandList.length == 0) break;
+					if (_commandList.length == 0) return;
 					
 					command = _commandList.shift();
 					command.method.apply(null, command.args);
@@ -366,6 +366,7 @@
 		
 		private function onReplaceText($beginIndex:int, $endIndex:int, $newText:String):void 
 		{
+			_parser.slowDownParser();
 			_source = _source.substring(0, $beginIndex) + $newText + substring($endIndex);
 			_viewer.text = _source;
 			_selectionObject = {
@@ -377,9 +378,8 @@
 		
 		private function onSetSelection($selectionBeginIndex:int, $selectionEndIndex:int):void
 		{
-			//JSLog.logToConsole('viewer: onSetSelection', $selectionBeginIndex, $selectionEndIndex);
+			_parser.slowDownParser();
 			_ignoreSelection = false;
-			//callLater(_viewer.setSelection, [$selectionBeginIndex, $selectionEndIndex]);
 			_viewer.setSelection($selectionBeginIndex, $selectionEndIndex);
 			_selectionObject = {
 				index : $selectionEndIndex
@@ -388,7 +388,6 @@
 		
 		private function onSendCurrentText($text:String):void 
 		{
-			//JSLog.logToConsole('viewer: onSendCurrentText ', $text);
 			_viewer.text = _source = $text;
 			onChange(null);
 		}		
