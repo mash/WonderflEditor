@@ -120,6 +120,10 @@ package net.wonderfl.editor.minibuilder
 			
 		}
 		
+		public function slowDownParser():void {
+			tc.onUIEvent(null);
+		}
+		
 		public function restoreTypeDB():void
 		{
 			//throw new Error('restoreTypeDB not supported');

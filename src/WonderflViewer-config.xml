@@ -1,13 +1,13 @@
 <flex-config>
 	<compiler>
-		<debug>false</debug>
+		<debug>true</debug>
 		<define>
 			<name>CONFIG::benchmark</name>
 			<value>false</value>
 		</define>
 		<define>
 			<name>CONFIG::debug</name>
-			<value>false</value>
+			<value>true</value>
 		</define>
 		<define>
 			<name>Thread::debug</name>

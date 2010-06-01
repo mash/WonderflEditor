@@ -9,29 +9,24 @@
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
-	import flash.geom.Transform;
 	import flash.net.FileReference;
 	import flash.net.navigateToURL;
 	import flash.net.URLRequest;
 	import flash.system.Capabilities;
-	import flash.system.Security;
 	import flash.ui.ContextMenu;
-	import flash.ui.ContextMenuClipboardItems;
 	import flash.ui.ContextMenuItem;
-	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
-	import jp.psyark.utils.callLater;
 	import jp.psyark.utils.CodeUtil;
 	import jp.psyark.utils.StringComparator;
-	import net.wonderfl.editor.minibuilder.ASParserController;
+	import net.wonderfl.editor.AS3Viewer;
 	import net.wonderfl.editor.core.UIComponent;
-	import net.wonderfl.editor.UIFTETextFieldComponent;
 	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingEvent;
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
 	import net.wonderfl.editor.livecoding.SocketBroadCaster;
 	import net.wonderfl.editor.livecoding.ViewerInfoPanel;
+	import net.wonderfl.editor.minibuilder.ASParserController;
 	import org.libspark.ui.SWFWheel;
 	/**
 	 * ...
@@ -39,7 +34,7 @@
 	 */
 	public class WonderflViewer extends UIComponent
 	{
-		private static const TICK:int = 6;
+		private static const TICK:int = 33;
 		private static const COPY:String = 'Copy (C-c)';
 		private static const SELECT_ALL:String = 'Select All (C-a)';
 		private static const SAVE:String = 'Save (C-s)';
@@ -52,8 +47,8 @@
 		[Embed(source = '../assets/btn_smallscreen_o.jpg')]
 		private var _image_over_:Class;
 		
-		private var _viewer:UIFTETextFieldComponent;
-		private var _ctrl:ASParserController;
+		private var _viewer:AS3Viewer;
+		private var _parser:ASParserController;
 		private var _scaleDownButton:Sprite;
 		private var broadcaster:SocketBroadCaster = new SocketBroadCaster;
 		private var _source:String ='';
@@ -96,12 +91,12 @@
 				bm.visible = false;
 			});
 			
-			_viewer = new UIFTETextFieldComponent;
+			_viewer = new AS3Viewer;
 			_viewer.addEventListener(Event.COMPLETE, onColoringComplete);
 			addChild(_viewer);
 			addChild(_scaleDownButton);
 			
-			_ctrl = new ASParserController(stage, _viewer);
+			_parser = new ASParserController(stage, _viewer);
 			
 			_viewer.addEventListener(Event.CHANGE, onChange);
 
@@ -305,7 +300,6 @@
 		private function onClosed():void
 		{
 			trace('on closed');
-			//_viewer.hideCaret();
 			_infoPanel.stop();
 			if (_infoPanel.parent) _infoPanel.parent.removeChild(_infoPanel);
 			_isLive = false;
@@ -347,7 +341,7 @@
 				var command:Object;
 				
 				while (getTimer() - t < TICK) {
-					if (_commandList.length == 0) break;
+					if (_commandList.length == 0) return;
 					
 					command = _commandList.shift();
 					command.method.apply(null, command.args);
@@ -357,7 +351,7 @@
 		
 		private function onChange(e:Event):void 
 		{
-			var parserRunning:Boolean = _ctrl.sourceChanged(_source, '');
+			var parserRunning:Boolean = _parser.sourceChanged(_source, '');
 			
 			if (!parserRunning)
 				_viewer.text = _source;
@@ -372,21 +366,26 @@
 		
 		private function onReplaceText($beginIndex:int, $endIndex:int, $newText:String):void 
 		{
-			//JSLog.logToConsole('viewer: onReplaceText', $beginIndex, $endIndex, $newText.length);
+			if ($beginIndex == $endIndex && $newText.length == 0) return;
+			
+			_parser.slowDownParser();
 			_source = _source.substring(0, $beginIndex) + $newText + substring($endIndex);
-			_viewer.text = _source;
+			//_viewer.text = _source;
+			_viewer.onReplaceText($beginIndex, $endIndex, $newText);
 			_selectionObject = {
 				index : $endIndex + $newText.length
 			}
 			onChange(null);
+			_viewer.updateLineNumbers();
 		}
 		
 		private function onSetSelection($selectionBeginIndex:int, $selectionEndIndex:int):void
 		{
-			//JSLog.logToConsole('viewer: onSetSelection', $selectionBeginIndex, $selectionEndIndex);
+			if (_viewer.selectionBeginIndex == $selectionBeginIndex && _viewer.selectionEndIndex == $selectionEndIndex)
+				return;
+			
 			_ignoreSelection = false;
-			//callLater(_viewer.setSelection, [$selectionBeginIndex, $selectionEndIndex]);
-			_viewer.setSelection($selectionBeginIndex, $selectionEndIndex);
+			_viewer.onSetSelection($selectionBeginIndex, $selectionEndIndex);
 			_selectionObject = {
 				index : $selectionEndIndex
 			};
@@ -394,7 +393,6 @@
 		
 		private function onSendCurrentText($text:String):void 
 		{
-			//JSLog.logToConsole('viewer: onSendCurrentText ', $text);
 			_viewer.text = _source = $text;
 			onChange(null);
 		}		
