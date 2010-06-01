@@ -34,7 +34,7 @@ package net.wonderfl.editor
 			});
 			
 			addEventListener(FocusEvent.KEY_FOCUS_CHANGE, function(e:Event):void {
-				e.preventDefault();
+				e.preventDefault();	
 			});
 			
 			_field.addEventListener(Event.SCROLL, onTextScroll);

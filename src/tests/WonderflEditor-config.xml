@@ -1,24 +1,33 @@
 <flex-config>
 	<compiler>
-		<debug>false</debug>
+		<define>
+			<name>CONFIG::useExternalInterface</name>
+			<value>true</value>
+		</define>
 		<define>
 			<name>CONFIG::benchmark</name>
 			<value>false</value>
 		</define>
 		<define>
-			<name>CONFIG::debug</name>
+			<name>Thread::debug</name>
 			<value>false</value>
 		</define>
 		<define>
-			<name>Thread::debug</name>
+			<name>CONFIG::debug</name>
 			<value>true</value>
 		</define>
+		<define>
+			<name>CONFIG::IME</name>
+			<value>false</value>
+		</define>
+		<debug>true</debug>
 		<incremental>true</incremental>
 		<source-path>
-			<path-element>.</path-element>
-			<path-element>../libs</path-element>
+			<path-element>..</path-element>
+			<path-element>../../libs</path-element>
 		</source-path>
 	</compiler>
+	<output>../WonderflEditor.swf</output>
 	<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
 	<default-frame-rate>30</default-frame-rate>
 	<default-background-color>0</default-background-color>

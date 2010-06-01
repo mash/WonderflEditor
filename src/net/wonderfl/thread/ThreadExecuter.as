@@ -17,7 +17,7 @@ package net.wonderfl.thread
 		
 		public static function addTask($killer:Function, ...$jobslices:Array):Class {
 			_que.push(new ThreadTask($jobslices, $killer));
-			trace('job added : ' + _que.length);
+			Thread::debug { trace('job added : ' + _que.length); }
 			
 			return ThreadExecuter;
 		}
@@ -61,7 +61,7 @@ package net.wonderfl.thread
 					}
 					
 					_currentJob = _que.shift();
-					trace(_que.length + ' jobs left');
+					Thread::debug { trace(_que.length + ' jobs left'); }
 				}
 				
 				if (!_currentJob.runSlice()) {
@@ -72,7 +72,7 @@ package net.wonderfl.thread
 		
 		
 		private static function terminate():void {
-			trace('job complete');
+			Thread::debug { trace('job complete'); }
 			_engine.removeEventListener(Event.ENTER_FRAME, executer);
 			_currentJob = null;
 			_que.length = 0;

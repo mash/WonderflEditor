@@ -31,7 +31,11 @@ package net.wonderfl.editor.core
 	import flash.utils.clearTimeout;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
+	import net.wonderfl.editor.error.ErrorMessage;
+	import net.wonderfl.editor.error.ErrorMessageLayer;
 	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.utils.removeAllChildren;
+	import net.wonderfl.editor.we_internal;
 	import net.wonderfl.editor.utils.calcFontBox;
 	import net.wonderfl.thread.ThreadTask;
 	import net.wonderfl.thread.ThreadExecuter;
@@ -40,14 +44,14 @@ package net.wonderfl.editor.core
 	
 	[Event(name = 'resize', type = 'flash.events.Event')]
 	[Event(name = 'scroll', type = 'flash.events.Event')]
-	public class FTETextField extends Base implements IEditor
+	public class FTETextField extends UIComponent implements IEditor
 	{
-		protected var _caret:int;
-		protected var _selStart:int = 0;
-		protected var _selEnd:int = 0;
+		we_internal var _caret:int;
+		we_internal var _selStart:int = 0;
+		we_internal var _selEnd:int = 0;
 		protected var cursor:ScriptCursor;
 		
-		protected var _text:String = '';
+		we_internal var _text:String = '';
 		
 		public var boxHeight:int = 16;
 		public var boxWidth:int = 12;
@@ -65,7 +69,7 @@ package net.wonderfl.editor.core
 		public var visibleColumns:int;
 		private var _maxWidth:int = -1;
 		
-		static protected var NL:String = '\r';
+		static public var NL:String = '\r';
 		
 		//format. very simplified
 		private var runs:Array = [];
@@ -73,28 +77,32 @@ package net.wonderfl.editor.core
 		private var _defaultTextFormat:TextFormat;
 		private var _block:TextBlock;
 		private var _textLineCache:Vector.<uint> = new Vector.<uint>;
-		private var _textLineContainer:Sprite = new Sprite;
+		protected var _textLineContainer:Sprite = new Sprite;
 		private var _numLines:int;
 		private var _textDecorationContainer:Sprite = new Sprite;
-		private var _container:Sprite;
+		private var _errorLayer:ErrorMessageLayer;
+		we_internal var _container:Sprite;
 		private var _scrollYEngine:Sprite = new Sprite;
+		private var _charHighlight:CharHighlighter = new CharHighlighter;
+		
+		use namespace we_internal;
 		
 		public function FTETextField()
 		{
 			//mouseChildren = false;
 			mouseEnabled = true;
 			buttonMode = true;
-
 			
+			_errorLayer = new ErrorMessageLayer(this);
 			_selectionShape = new Shape;
 			_defaultTextFormat = new TextFormat('Courier New', 12, 0xffffff);
-			//for each (var fnt:Font in Font.enumerateFonts(true))
-				//if (fnt.fontName == 'ＭＳ Ｐゴシック')
-				//{
-					//_defaultTextFormat.font = fnt.fontName;
-					//_defaultTextFormat.size = 12;
-					//break;
-				//}
+			for each (var fnt:Font in Font.enumerateFonts(true))
+				if (fnt.fontName == 'ＭＳ Ｐゴシック')
+				{
+					_defaultTextFormat.font = fnt.fontName;
+					_defaultTextFormat.size = 12;
+					break;
+				}
 			//
 			var rect:Rectangle = calcFontBox(_defaultTextFormat);
 			boxHeight = rect.height;
@@ -102,6 +110,7 @@ package net.wonderfl.editor.core
 			addChild(_container = new Sprite);
 			
 			_container.addChild(_textDecorationContainer);
+			_container.addChild(_errorLayer);
 			_container.addChild(_selectionShape);
 			_container.addChild(_textLineContainer);
 			//_textDecorationContainer.mouseChildren = _textDecorationContainer.mouseEnabled = false;
@@ -116,6 +125,13 @@ package net.wonderfl.editor.core
 			_container.addChild(cursor);
 		}
 		
+		public function clearErrorMessages():void {
+			_errorLayer.clearErrorMessages();
+		}
+		
+		public function addErrorMessage($message:ErrorMessage):void {
+			_errorLayer.addErrorMessage($message);
+		}
 		
 		public function get defaultTextFormat():TextFormat
 		{
@@ -125,6 +141,10 @@ package net.wonderfl.editor.core
 		public function get length():int
 		{
 			return _text.length;
+		}
+		
+		public function get cursorPosition():Point {
+			return new Point(cursor.getX(), cursor.y);
 		}
 		
 		public function set scrollY(value:int):void
@@ -165,7 +185,6 @@ package net.wonderfl.editor.core
 			pos = (i < _textLineCache.length) ? _textLineCache[i] : _text.length;
 			lastPos = pos;
 			
-			trace('updateScrollProps : ' + (getTimer() - t) + ' ms');
 			updateVisibleText();
 		}
 		
@@ -206,7 +225,6 @@ package net.wonderfl.editor.core
 			_selStart = beginIndex;
 			_selEnd = endIndex;
 			
-			
 			if (_selStart > _selEnd)
 			{
 				var tmp:int = _selEnd;
@@ -217,12 +235,8 @@ package net.wonderfl.editor.core
 			var i0:int = Math.max(_selStart, firstPos);
 			var i1:int = Math.min(_selEnd, lastPos);
 			
-			//trace('getting selStart');
 			var p0:Point = getPointForIndex(i0);
 			var p1:Point;
-			//if (i0 != i1) {
-				//trace('getting selEnd');
-			//}
 			p1 = (i0 == i1) ? p0.clone() : getPointForIndex(i1);
 			var g:Graphics = _selectionShape.graphics;
 			g.clear();
@@ -235,8 +249,6 @@ package net.wonderfl.editor.core
 				{
 					g.drawRect(p0.x, p0.y, _maxWidth - p0.x, boxHeight);
 					var rows:int = (p1.y - p0.y) / boxHeight;// rows >= 1
-					//for (var i:int=1; i<rows; i++)
-						//g.drawRect(1, p0.y + boxHeight * i, _maxWidth, boxHeight);
 					if (rows > 1) {
 						g.drawRect(1, p0.y + boxHeight, _maxWidth, boxHeight * (rows - 1));
 					}
@@ -257,14 +269,14 @@ package net.wonderfl.editor.core
 				checkScrollToCursor();
 			}
 			
-			trace('_setSelection : ' + (getTimer() - t) + ' ms');
+			//trace('_setSelection : ' + (getTimer() - t) + ' ms');
 		}
 		
 		public function updateCaret():void
 		{
 			cursor.visible = _caret <= lastPos && _caret >= firstPos;
 			cursor.pauseBlink();
-			trace('updateCaret');
+			//trace('updateCaret');
 			var p:Point = getPointForIndex(_caret);
 			cursor.setX(p.x);
 			cursor.y = p.y;
@@ -285,17 +297,17 @@ package net.wonderfl.editor.core
 			_defaultTextFormat = value;
 		}
 		
-		
 		public function replaceText($startIndex:int, $endIndex:int, $text:String):void
 		{
-			$text = $text.replace(/\r\n/g, NL);
-			$text = $text.replace(/\n/g, NL);
-			
+
+			$text ||= "";
+			$text = $text.replace(new RegExp("\r\n", "gm"), NL).replace(/\n/gm, NL);
+			//$text = $text.replace("\n", NL);
+			$text = $text.replace("\t", '    ');
 			_replaceText($startIndex, $endIndex, $text);
 		}
 		
-		private function _replaceText(startIndex:int, endIndex:int, text:String):void
-		{
+		we_internal function __replaceText(startIndex:int, endIndex:int, text:String):void {
 			var t:int = getTimer();
 			_text = _text.substr(0, startIndex) + text + _text.substr(endIndex);
 			
@@ -312,14 +324,14 @@ package net.wonderfl.editor.core
 				_textLineCache[++i] = pos++;
 			}
 			
-			if (text.indexOf(NL) != -1 || startIndex!=endIndex)
+			if (text.indexOf(NL) != -1 || startIndex != endIndex) {
 				updateScrollProps();
+			}
 			else
 				lastPos += text.length;
 			
 			var o:Object;//the run
 			
-				
 			//1 remove formats for deleted text
 			var delta:int = endIndex - startIndex;
 			for (i=0; i<runs.length; i++)
@@ -347,14 +359,24 @@ package net.wonderfl.editor.core
 				if (o.end >= startIndex) o.end += delta;
 			}
 			
-			
-			updateVisibleText();
-			trace('_replaceText costs : ' + (getTimer() - t) + ' ms');
+			if (startIndex == 0 && endIndex == length && text == '') {
+				removeAllChildren(_textDecorationContainer);
+				removeAllChildren(_textLineContainer);
+			} else {
+				updateVisibleText();
+			}
+			CONFIG::benchmark { trace('_replaceText costs : ' + (getTimer() - t) + ' ms'); }
+		}
+		
+		protected function _replaceText(startIndex:int, endIndex:int, text:String):void
+		{
+			we_internal::__replaceText(startIndex, endIndex, text);
 		}
 		
 		protected var _invalidated:Boolean = false;
 		
 		private function updateVisibleText():void {
+			CONFIG::benchmark { trace('updateVisibleText'); }
 			var t:int = getTimer();
 			var line:TextLine;
 			
@@ -399,7 +421,7 @@ package net.wonderfl.editor.core
 					if (killFlag) return false;
 					
 					var tick:int = getTimer();
-					while ((getTimer() - tick) < 10) {
+					while ((getTimer() - tick) < 5) {
 						o = runs[i++];
 						if (o == null) break;
 						if (o.end < firstPos) continue;
@@ -457,8 +479,6 @@ package net.wonderfl.editor.core
 				},
 				function ():Boolean {
 					if (killFlag) return false;
-					if (_invalidated) return false;
-					
 					var tick:int = getTimer();
 					
 					while ((getTimer() - tick) < 6 && !killFlag) {
@@ -476,56 +496,54 @@ package net.wonderfl.editor.core
 						}
 					}
 					
-					if (killFlag) return false;
-					
-					if (_invalidated) {
-						_invalidated = false;
-						line = null;
-						return false;
-					}
 					
 					if (line == null) {
 						w += 8;
 						
-						w = (w < width) ? width : w;
+						w = (w < _width) ? _width : w;
 						if (_maxWidth < w) {
 							_maxWidth = w;
 							dispatchEvent(new Event(Event.RESIZE));
 						}
-						//visibleColumns = (width / boxWidth) >> 0;
-						//_maxScrollH = ((w / boxWidth) >> 0) - visibleColumns;
-						trace('width : ' + w);
 					}
 					
 					return (line != null);
 				},
 				function ():Boolean {
-						if (killFlag) return false;
-						//removeEventListener(Event.RENDER, render);
-						var num:int = _textLineContainer.numChildren;
-						var children:Array = [];
-						for (i = 0; i < num; ++i) {
-							children[i] = _textLineContainer.getChildAt(i);
-						}
-						line = _block.firstLine;
-						i = 0;
-						while (line) {
-							if (i < num) {
-								_textLineContainer.removeChild(children[i++]);
-							}
-							_textLineContainer.addChild(line);
-							line = line.nextLine;
-						}
-						
-						while (i < num)
+					if (killFlag) return false;
+					
+					var num:int = _textLineContainer.numChildren;
+					var children:Array = [];
+					for (i = 0; i < num; ++i) {
+						children[i] = _textLineContainer.getChildAt(i);
+					}
+					line = _block.firstLine;
+					i = 0;
+					while (line) {
+						if (i < num) {
 							_textLineContainer.removeChild(children[i++]);
-						
-						_textDecorationContainer.visible = true;
-						children.length = 0;
-						_setSelection(_selStart, _selEnd);
-						dispatchEvent(new Event(Event.SCROLL, true));
+						}
+						_textLineContainer.addChild(line);
+						line = line.nextLine;
+					}
+					
+					while (i < num)	_textLineContainer.removeChild(children[i++]);
+					
+					_textDecorationContainer.visible = true;
+					children.length = 0;
+					_setSelection(_selStart, _selEnd);
+					dispatchEvent(new Event(Event.SCROLL, true));
+					
 					return false;
-				}
+				},
+				function ():Boolean {
+					if (killFlag) return false;
+					
+					_errorLayer.render();
+					
+					return false;
+				},
+				drawComplete
 			).run();
 			
 			function replaceURLString():void {
@@ -550,6 +568,8 @@ package net.wonderfl.editor.core
 				}
 			}
 		}
+		
+		protected function drawComplete():Boolean { return false; }
 		
 		private function killTasks():void
 		{
@@ -591,35 +611,52 @@ package net.wonderfl.editor.core
 		
 		override protected function updateSize():void
 		{
-			super.updateSize();
 			visibleRows = (height / boxHeight) >> 0;
 			updateScrollProps();
-			cursor.setSize(width, boxHeight);
+			cursor.setSize(_width, boxHeight);
+			graphics.beginFill(0);
+			graphics.drawRect(0, 0, _width, _height);
+			graphics.endFill();
 		}
 		
-		protected function checkScrollToCursor():void
+		we_internal function checkScrollToCursor():void
 		{
-			var t:int = getTimer();
-			var ct:int, pos:int;
+			var result:Object;
 			if (_caret > lastPos)
 			{
-				//let's count NL between lastPos and caret
-				for (ct=0, pos=lastPos; pos!=-1 && pos < _caret; ct++)
-					pos = _text.indexOf(NL, pos+1);
-				
-				scrollY += ct;
+				result = countNewLines(lastPos, _caret);
+				scrollY += result.numNewLines;
 			}
 			
 			//TODO similar
 			if (_caret < firstPos)
 			{
-				//now count NL between firstPos and caret
-				for (ct=0, pos=_caret; pos!=-1 && pos<firstPos; ct++)
-					pos = _text.indexOf(NL, pos+1);
-				scrollY -= ct;
+				result = countNewLines(_caret, firstPos);
+				scrollY -= result.numNewLines;
 			}
 			
-			trace('checkScrollToCursor costs : ' + (getTimer() - t));
+			var maxCols:int = Math.ceil(_maxWidth / boxWidth);
+			var currentCols:int = (cursor.getX() / boxWidth) >> 0;
+			var numCols:int = (_width / boxWidth) >> 0;
+			numCols -= 2;
+			var scroll:int;
+			if (currentCols > _scrollH + numCols) {
+				scroll += numCols;
+				scrollH = (scroll > maxCols) ? maxCols : scroll;
+			} else if (currentCols < _scrollH) {
+				scroll -= numCols;
+				scrollH = (scroll < 0) ? 0 : scroll;
+			}
+		}
+		
+		we_internal function countNewLines($begin:int, $end:int):Object {
+			for (var ct:int = 0, pos:int = $begin; pos != -1 && pos < $end; ct++)
+				pos = _text.indexOf(NL, pos + 1);
+				
+			return {
+				numNewLines : ct,
+				lastNewLinePos : pos
+			};
 		}
 		
 		public function gotoLine(line:int):void
@@ -694,10 +731,11 @@ package net.wonderfl.editor.core
 			
 			var lines:int = 0;
 			pos = firstPos;
+			//trace(_text, pos);
 			
 			while (true)
 			{
-				pos = _text.indexOf(NL, pos)+1;
+				pos = _text.indexOf(NL, pos) + 1;
 				if (pos == 0 || pos > index) break;
 				lines++;
 				lastNL = pos;
@@ -707,6 +745,7 @@ package net.wonderfl.editor.core
 			var i:int = 0;
 			var textLine:TextLine;
 			var rect:Rectangle;
+			i = 0;
 			textLine = _block.firstLine;
 			while (textLine && i++ < lines) textLine = textLine.nextLine;
 			index -= lastNL;
@@ -714,19 +753,26 @@ package net.wonderfl.editor.core
 				xpos = textLine.getAtomBounds(index).x + textLine.x;
 			else if ($index == _text.length && textLine) {
 				var atomCount:int = index - 1;
-				atomCount = (atomCount >= textLine.atomCount) ? atomCount - 1 : atomCount;
+				atomCount = (atomCount >= textLine.atomCount) ? (textLine.atomCount) - 1 : atomCount;
 				atomCount = (atomCount < 0) ? 0 : atomCount;
 				rect = textLine.getAtomBounds(atomCount);
+				trace($index, rect);
 				xpos = rect.x + rect.width + textLine.x;
-			} else
-				calcXposByOriginalMethod("faild @ atomCount");
-			
-			function calcXposByOriginalMethod(msg:String):void {
-				trace('calcXposByOriginalMethod : ' + msg);
-				xpos = cursor.x;
 			}
+			
 			//xpos = x;
 			return new Point(xpos, ypos);
+		}
+		
+		public function highlightChar($index:int):void {
+			if ($index >= _text.length - 2 || $index < 0) return;
+			
+			var p0:Point = getPointForIndex($index);
+			var p1:Point = getPointForIndex($index + 1);
+			
+			_charHighlight.highlight(p0.x, p0.y, p1.x - p0.x, boxHeight);
+			
+			addChild(_charHighlight);
 		}
 		
 		public function set scrollH(value:int):void {
@@ -758,8 +804,22 @@ package net.wonderfl.editor.core
 			_replaceText(0, 0, '');
 		}
 		
-		public function undo():void { }
-		public function redo():void { }
 		
+		public function findPreviousMatch($left:String, $right:String, $index:int):int {
+			var i:int = 1, j:int = $index;
+			var lastRightOne:int;
+			var lastLeftOne:int;
+			
+			while (i > 0) {
+				lastLeftOne = _text.lastIndexOf($left, j - 1);
+				lastRightOne = _text.lastIndexOf($right, j - 1);
+				i += (lastRightOne > lastLeftOne) ? 1 : -1;
+				j = (lastLeftOne > lastRightOne) ? lastLeftOne : lastRightOne;
+			}
+			
+			highlightChar(lastLeftOne);
+			
+			return lastLeftOne;
+		}
 	}
 }

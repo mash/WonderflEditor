@@ -9,31 +9,31 @@
 	 * ...
 	 * @author kobayashi-taro
 	 */
-	public class LiveCodingEditor implements ILiveEditor
+	public class LiveCodingBroadcaster implements ILiveEditor
 	{
 		private var _onJoin:Function;
 		private var _onMemberUpdate:Function;
-		private static const TICK:int = 80;
+		private static const TICK:int = 6;
 		private var _queue:LiveCommandQueue = new LiveCommandQueue;
 		private var _executer:Sprite = new Sprite;
 		private var _isReady:Boolean;
-		private var broadcaster:SocketBroadCaster = new SocketBroadCaster;
+		private var _broadcaster:SocketBroadCaster = new SocketBroadCaster;
 		private var _commandCount:int;
 		private var _editor:IEditor;
 				
-		public function LiveCodingEditor() 
+		public function LiveCodingBroadcaster() 
 		{
-			broadcaster.addEventListener(Event.CONNECT, function ():void {
-				broadcaster.join( LiveCodingSettings.room, LiveCodingSettings.ticket);
+			_broadcaster.addEventListener(Event.CONNECT, function ():void {
+				_broadcaster.join( LiveCodingSettings.room, LiveCodingSettings.ticket);
 			});
-			broadcaster.addEventListener(LiveCodingEvent.JOINED, startBroadCasting);
-			broadcaster.addEventListener(LiveCodingEvent.MEMBERS_UPDATED, __onMemberUpdate);
-			broadcaster.addEventListener(IOErrorEvent.IO_ERROR, new Function);
+			_broadcaster.addEventListener(LiveCodingEvent.JOINED, startBroadCasting);
+			_broadcaster.addEventListener(LiveCodingEvent.MEMBERS_UPDATED, __onMemberUpdate);
+			_broadcaster.addEventListener(IOErrorEvent.IO_ERROR, new Function);
 		}
 		
 		public function startLiveCoding():void {
 			_isReady = false;
-			broadcaster.connect(LiveCodingSettings.server, LiveCodingSettings.port);
+			_broadcaster.connect(LiveCodingSettings.server, LiveCodingSettings.port);
 			_queue.length = 0;
 			_executer.addEventListener(Event.ENTER_FRAME, execute);
 		}
@@ -41,7 +41,7 @@
 		public function endLiveCoding():void {
 			closeLiveCoding();
 			flush();
-			broadcaster.close();
+			_broadcaster.close();
 			_executer.removeEventListener(Event.ENTER_FRAME, execute);
 		}
 		
@@ -49,7 +49,7 @@
 		{
 			while (_queue.length > 0) {
 				var command:LiveCommand = _queue.next;
-				broadcaster.send.apply(null, command.arguments);
+				_broadcaster.send.apply(null, command.arguments);
 			}
 		}
 		
@@ -78,7 +78,7 @@
 					if (_queue.length == 0) break;
 					
 					command = _queue.next;
-					broadcaster.send.apply(null, command.arguments);
+					_broadcaster.send.apply(null, command.arguments);
 				}
 			}
 		}

@@ -1,0 +1,1 @@
+package net.wonderfl.editor {	public namespace we_internal = 'http://github.com/mash/WonderflEditor';}

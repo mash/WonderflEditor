@@ -114,7 +114,7 @@ package ro.minibuilder.asparser
 		
 		public function toString():String
 		{
-			return (access ? access + ' ' : '') + fieldType + ' ' + name + (type? ': '+type.type : '');
+			return (access ? access + ' ' : '') + fieldType + ' ' + name + (type? ': '+type.type : '') + ' @pos = ' + pos + ' members ' + members.toArray();
 		}
 	}
 }

@@ -62,6 +62,7 @@ package net.wonderfl.editor
 				arr[i - start] = i;
 			}
 			
+			
 			var elementFormat:ElementFormat = new ElementFormat(new FontDescription(_defaultTextFormat.font), _defaultTextFormat.size + 0, 0xffffff);
 			var textElement:TextElement = new TextElement(arr.join('\n'), elementFormat);
 			_block.content = textElement;
@@ -84,8 +85,9 @@ package net.wonderfl.editor
 				}
 			}
 			
+			
 			w += 6;
-			if (_width != w) {
+			if (_fte.x != w) {
 				_width = w;
 				
 				dispatchEvent(new Event(Event.RESIZE));

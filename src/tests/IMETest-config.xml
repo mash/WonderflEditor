@@ -1,25 +1,16 @@
 <flex-config>
+	<target-player>10.0</target-player>
 	<compiler>
-		<debug>false</debug>
-		<define>
-			<name>CONFIG::benchmark</name>
-			<value>false</value>
-		</define>
 		<define>
 			<name>CONFIG::debug</name>
-			<value>false</value>
-		</define>
-		<define>
-			<name>Thread::debug</name>
 			<value>true</value>
 		</define>
+		<debug>true</debug>
 		<incremental>true</incremental>
 		<source-path>
 			<path-element>.</path-element>
-			<path-element>../libs</path-element>
 		</source-path>
 	</compiler>
 	<static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
 	<default-frame-rate>30</default-frame-rate>
-	<default-background-color>0</default-background-color>
 </flex-config>

@@ -7,18 +7,20 @@ package net.wonderfl.editor.livecoding{
     import com.adobe.serialization.json.JSONDecoder;
     import com.adobe.serialization.json.JSONEncoder;
 
-	[Event(name='LiveCodingEvent_JOINED', type='net.wonderfl.editor.livecoding.LiveCodingEvent')]
-	[Event(name='LiveCodingEvent_RELAYED', type='net.wonderfl.editor.livecoding.LiveCodingEvent')]
-	[Event(name='LiveCodingEvent_MEMBERS_UPDATED', type='net.wonderfl.editor.livecoding.LiveCodingEvent')]
-	[Event(name='LiveCodingEvent_ERROR', type='net.wonderfl.editor.livecoding.LiveCodingEvent')]
+	[Event(name = 'LiveCodingEvent_JOINED', type = 'net.wonderfl.editor.livecoding.LiveCodingEvent')]
+	[Event(name = 'LiveCodingEvent_RELAYED', type = 'net.wonderfl.editor.livecoding.LiveCodingEvent')]
+	[Event(name = 'LiveCodingEvent_MEMBERS_UPDATED', type = 'net.wonderfl.editor.livecoding.LiveCodingEvent')]
+	[Event(name = 'LiveCodingEvent_ERROR', type = 'net.wonderfl.editor.livecoding.LiveCodingEvent')]
+	[Event(name = 'close', type = 'flash.events.Event')]
+	[Event(name = 'connect', type = 'flash.events.Event')]
+	[Event(name = 'ioError', type = 'flash.events.IOErrorEvent')]
+	[Event(name = 'securityError', type = 'flash.events.SecurityErrorEvent')]
     public class SocketBroadCaster extends EventDispatcher implements IBroadCaster {
         private var debug  :Boolean = false;
         private var socket :Socket;
         private var host   :String;
         private var port   :int;
         private var remainingString :String = "";
-        
-
         Security.allowDomain('*');
 
         public function SocketBroadCaster( _host :String = null, _port :int = 0 ){
@@ -56,7 +58,7 @@ package net.wonderfl.editor.livecoding{
         }
 
         private function call( method :String, args :Object ) :void {
-            logger("[call]method: "+method+" args: ",args);
+           // logger("[call]method: "+method+" args: ",args);
 
             var obj  :Object = { method : method, args : args };
             var json :String = JSON.encode( obj );
@@ -121,9 +123,10 @@ package net.wonderfl.editor.livecoding{
             socket.close();
         }
 
-        private function logger(... args):void{
-            if(!debug){ return; }
-            //log.apply(null,(new Array("[SocketBroadCaster]",this)).concat(args));
+        private function logger(... args):void {
+			CONFIG::debug {
+				trace.apply(null, (["[SocketBroadCaster]", this]).concat(args));
+			}
         }
     }
 }

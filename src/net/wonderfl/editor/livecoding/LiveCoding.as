@@ -17,14 +17,14 @@
 		public static var isLive:Boolean = true;
 		private var _text:String = '';
 		private var _prevText:String = '';
-		static private var _broadCaster:LiveCodingEditor;
+		static private var _broadCaster:LiveCodingBroadcaster;
 		static private var _this:LiveCoding;
 		static private var _onJoin:Function;
 		
 		public function LiveCoding() 
 		{
 			_this = this;
-			_broadCaster = new LiveCodingEditor;
+			_broadCaster = new LiveCodingBroadcaster;
 		}
 		
 		public static function getInstance():LiveCoding {
@@ -46,6 +46,10 @@
 		
 		public function pushCurrentSelection($selectionBeginIndex:int, $selectionEndIndex:int):void {
 			_broadCaster.setSelection($selectionBeginIndex, $selectionEndIndex);
+		}
+		
+		public function pushReplaceText($startIndex:int, $endIndex:int, $text:String):void {
+			_broadCaster.replaceText($startIndex, $endIndex, $text);
 		}
 		
 		public function pushSWFReloaded():void {

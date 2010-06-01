@@ -1,5 +1,3 @@
-﻿package net.wonderfl.editor.minibuilder 
-{
 /* license section
 
 Flash MiniBuilder is free software: you can redistribute it and/or modify
@@ -28,41 +26,39 @@ Author: Victor Dramba
  * The code is provided "as is" without warranty of any kind.
  */
 
- /*
-  * 
-  */
-
-//package ro.minibuilder.asparser
-//{
+package net.wonderfl.editor.minibuilder
+{
+	import __AS3__.vec.Vector;
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
-	import flash.utils.setTimeout;
 	import net.wonderfl.editor.IEditor;
 	import net.wonderfl.editor.utils.isMXML;
+	import ro.minibuilder.asparser.Field;
 	import ro.minibuilder.asparser.Parser;
 	import ro.minibuilder.asparser.TypeDB;
+	import ro.minibuilder.main.editor.Location;
 	import ro.minibuilder.swcparser.SWFParser;
 	import ro.victordramba.thread.ThreadEvent;
 	import ro.victordramba.thread.ThreadsController;
+	
 
 	[Event(type="flash.events.Event", name="change")]
+	
+
+
+
 	public class ASParserController extends EventDispatcher
 	{
 		[Embed(source="../../../../../assets/globals.amf", mimeType="application/octet-stream")]
 		private static var GlobalTypesAsset:Class;
 		
-		//[Embed(source="../../../../assets/playerglobal.swc", mimeType="application/octet-stream")]
-		//private static var PlayerglobalSWC:Class;
-		
 		[Embed(source="../../../../../assets/playerglobals.amf", mimeType="application/octet-stream")]
 		private static var PlayerglobalAsset:Class;
 		
-		//[Embed(source = "../../../../assets/framework.swc", mimeType = "application/octet-stream")]
-		//private static var Framework:Class;
-		//
+		
 		
 		private var parser:Parser;
 		private var t0:Number;		
@@ -74,24 +70,21 @@ Author: Victor Dramba
 		//public var scopeInfo:Array/*of String*/
 		//public var typeInfo:Array/*of String*/
 		
-		private var editor:IEditor;
-		//public var coloringThread:TextColoringThread;
+		private var fld:IEditor;
 		
-		public function ASParserController(stage:Stage, $editor:IEditor)
+		public function ASParserController(stage:Stage, textField:IEditor)
 		{
-			editor = $editor;
+			fld = textField;
 			//TODO refactor, Controller should probably be a singleton
 			if (!tc)
 			{
 				tc = new ThreadsController(stage);
-				//TypeDB.setDB('framework', SWCParser.parse(new Framework));
-				//TypeDB.setDB('playerglobal', SWCParser.parse(new PlayerglobalSWC));
 				TypeDB.setDB('global', TypeDB.fromByteArray(new GlobalTypesAsset));
 				TypeDB.setDB('playerglobal', TypeDB.fromByteArray(new PlayerglobalAsset));
 			}
 			parser = new Parser;
-		
 			
+			//parser.addTypeData(TypeDB.formByteArray(new GlobalTypesAsset), 'global');
 			//parser.addTypeData(TypeDB.formByteArray(new PlayerglobalAsset), 'player');
 			//parser.addTypeData(TypeDB.formByteArray(new ASwingAsset), 'aswing');
 			
@@ -100,10 +93,9 @@ Author: Victor Dramba
 			tc.addEventListener(ThreadEvent.THREAD_READY, function(e:ThreadEvent):void
 			{
 				if (e.thread != parser) return;
-				status = 'Parse time: ' + (getTimer() - t0) + 'ms ' + parser.tokenCount + ' tokens';
-				parser.applyFormats(editor); // 
+				parser.applyFormats(fld);
 				//cursorMoved(textField.caretIndex);
-				trace('status: ' + status);
+				status = 'Parse time: '+ (getTimer()-t0) + 'ms '+parser.tokenCount+' tokens';
 				dispatchEvent(new Event('status'));
 			});
 			
@@ -114,16 +106,7 @@ Author: Victor Dramba
 				percentReady = parser.percentReady;
 				dispatchEvent(new Event('status'));
 			});
-		}
-		
-		//public function startColoringThread():void {
-			//if (coloringThread) {
-				//if (tc.isRunning(coloringThread))
-					//tc.kill(coloringThread);
-				//
-				//tc.run(coloringThread);
-			//}
-		//}
+		}		
 
 		public function saveTypeDB():void
 		{
@@ -156,41 +139,27 @@ Author: Victor Dramba
 		
 		public function sourceChanged(source:String, fileName:String):Boolean
 		{
-			/* stop parsing when the source is MXML */
 			if (source && source.charAt(0) == "<" && isMXML(source)) return false;
 			source = source.replace(/\n|\r\n/g, '\r');
-			
-			trace('source changed');
 			
 			t0 = getTimer();
 			parser.load(source, fileName);
 			if (tc.isRunning(parser))
 				tc.kill(parser);
 			tc.run(parser);
+			status = 'Processing ...';
 			
 			return true;
 		}
 		
-		public static function addSourceFile(source:String, fileName:String, onComplete:Function):void
-		{
-			source = source.replace(/(\n|\r\n)/g, '\r');
-			var parser:Parser = new Parser;
-			parser.load(source, fileName);
-			while (parser.runSlice()) {
-				//
-			}
-			setTimeout(onComplete, 1);
-		}
-		
 		public function getMemberList(index:int):Vector.<String>
 		{
-			
-			return parser.newResolver().getMemberList(editor.text, index);
+			return parser.newResolver().getMemberList(fld.text, index);
 		}
 		
-		public function getFunctionDetails(index:int):String
+		public function getFunctionDetails(index:int):Field
 		{
-			return parser.newResolver().getFunctionDetails(editor.text, index);
+			return parser.newResolver().getFunctionDetails(fld.text, index);
 		}
 		
 		public function getTypeOptions():Vector.<String>
@@ -211,6 +180,27 @@ Author: Victor Dramba
 		public function isInScope(name:String, pos:int):Boolean
 		{
 			return parser.newResolver().isInScope(name, pos);
+		}
+		
+		public function findDefinition(index:int):Location
+		{
+			var field:Field = parser.newResolver().findDefinition(fld.text, index);
+			if (!field) return null;
+			debug(field + '-' + field.parent);
+			for (var parent:Field = field, i:int=0; parent && i<10; parent = parent.parent, i++)
+			{
+				debug('def path'+i+': '+parent.sourcePath);
+				if (parent.sourcePath)
+				{
+					debug('found');
+					return new Location(parent.sourcePath, field.pos);
+				}
+			}
+			return new Location(null, field.pos);
+		}
+		
+		private function debug(...args):void {
+			CONFIG::debug { trace('ASParserController :: ' + args); }
 		}
 	}
 }

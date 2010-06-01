@@ -88,6 +88,7 @@ package ro.minibuilder.asparser
 		{
 			//debug('get missing imports');
 			
+			// should treat internal classes
 			//find the scope
 			var t:Token = tokenizer.tokenByPos(pos);
 			if (!t) return null;
@@ -196,12 +197,11 @@ package ro.minibuilder.asparser
 			return a;
 		}
 		
-		public function getFunctionDetails(text:String, pos:int):String
+		public function getFunctionDetails(text:String, pos:int):Field
 		{
 			resolve(text, pos);
 			var field:Field = resolvedRef;
 			
-			//debug(field);
 			
 			//we didn't find it
 			if (!field || field.fieldType!='function') return null;
@@ -220,7 +220,8 @@ package ro.minibuilder.asparser
 			if (field.hasRestParams)
 				a[a.length-1] = '...'+par.name;
 			
-			return 'function ' + field.name + '(' + a.join(', ') + ')'+(field.type ? ':'+field.type.type : ''); 
+				
+			return field;
 		}
 		
 		/**
@@ -441,7 +442,7 @@ package ro.minibuilder.asparser
 		{
 			//can we find a better way to set the scope?
 			//we set the scope to be able to deal with private/protected, etc access
-			for (tokenScopeClass = scope; tokenScopeClass.fieldType!='class' && tokenScopeClass.parent; tokenScopeClass=tokenScopeClass.parent);
+			for (tokenScopeClass = scope; tokenScopeClass.fieldType != 'class' && tokenScopeClass.parent; tokenScopeClass = tokenScopeClass.parent) { }
 			if (tokenScopeClass.fieldType != 'class') tokenScopeClass = null;
 		}
 	}
