@@ -168,6 +168,11 @@ package net.wonderfl.editor.core
 			_selectionManager.keyDownHandler(e);
 		}
 		
+		private function dispatchChange():void
+		{
+			dispatchEvent(new Event(Event.CHANGE));
+		}
+		
 		public function undo():void {
 			_historyManager.undo();
 			dispatchEvent(new EditorEvent(EditorEvent.UNDO));
