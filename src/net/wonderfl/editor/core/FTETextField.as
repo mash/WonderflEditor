@@ -800,7 +800,7 @@ package net.wonderfl.editor.core
 		
 		public function applyFormatRuns():void
 		{
-			_replaceText(0, 0, '');
+			we_internal::__replaceText(0, 0, '');
 		}
 		
 		

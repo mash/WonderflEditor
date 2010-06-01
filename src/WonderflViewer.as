@@ -39,7 +39,7 @@
 	 */
 	public class WonderflViewer extends UIComponent
 	{
-		private static const TICK:int = 80;
+		private static const TICK:int = 6;
 		private static const COPY:String = 'Copy (C-c)';
 		private static const SELECT_ALL:String = 'Select All (C-a)';
 		private static const SAVE:String = 'Save (C-s)';
