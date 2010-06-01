@@ -275,8 +275,21 @@ package com.adobe.serialization.json
 			{
 				// Loop over all of the variables and accessors in the class and 
 				// serialize them along with their values.
-				for each ( var v:XML in classInfo..*.( name() == "variable" || name() == "accessor" ) )
+				for each ( var v:XML in classInfo..*.( 
+					name() == "variable"
+					||
+					( 
+						name() == "accessor"
+						// Issue #116 - Make sure accessors are readable
+						&& attribute( "access" ).charAt( 0 ) == "r" ) 
+					) )
 				{
+					// Issue #110 - If [Transient] metadata exists, then we should skip
+					if ( v.metadata && v.metadata.( @name == "Transient" ).length() > 0 )
+					{
+						continue;
+					}
+					
 					// When the length is 0 we're adding the first item so
 					// no comma is necessary
 					if ( s.length > 0 ) {
