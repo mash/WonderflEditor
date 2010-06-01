@@ -92,7 +92,7 @@ package net.wonderfl.editor
 				
 				dispatchEvent(new Event(Event.RESIZE));
 			}
-			//_height = i * box.height - 2;
+			_height = i * box.height - 2;
 			
 			graphics.clear();
 			graphics.beginFill(0);

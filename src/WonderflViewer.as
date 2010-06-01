@@ -48,7 +48,7 @@
 		private var _image_over_:Class;
 		
 		private var _viewer:AS3Viewer;
-		private var _ctrl:ASParserController;
+		private var _parser:ASParserController;
 		private var _scaleDownButton:Sprite;
 		private var broadcaster:SocketBroadCaster = new SocketBroadCaster;
 		private var _source:String ='';
@@ -96,7 +96,7 @@
 			addChild(_viewer);
 			addChild(_scaleDownButton);
 			
-			_ctrl = new ASParserController(stage, _viewer);
+			_parser = new ASParserController(stage, _viewer);
 			
 			_viewer.addEventListener(Event.CHANGE, onChange);
 
@@ -351,7 +351,7 @@
 		
 		private function onChange(e:Event):void 
 		{
-			var parserRunning:Boolean = _ctrl.sourceChanged(_source, '');
+			var parserRunning:Boolean = _parser.sourceChanged(_source, '');
 			
 			if (!parserRunning)
 				_viewer.text = _source;
@@ -366,13 +366,13 @@
 		
 		private function onReplaceText($beginIndex:int, $endIndex:int, $newText:String):void 
 		{
-			//JSLog.logToConsole('viewer: onReplaceText', $beginIndex, $endIndex, $newText.length);
 			_source = _source.substring(0, $beginIndex) + $newText + substring($endIndex);
 			_viewer.text = _source;
 			_selectionObject = {
 				index : $endIndex + $newText.length
 			}
 			onChange(null);
+			_viewer.updateLineNumbers();
 		}
 		
 		private function onSetSelection($selectionBeginIndex:int, $selectionEndIndex:int):void

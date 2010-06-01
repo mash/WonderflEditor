@@ -25,9 +25,7 @@ package net.wonderfl.editor
 		{
 			_field = new UIFTETextField;
 			addChild(_field);
-			
-			_boxWidth = calcFontBox(_field.defaultTextFormat).width;
-			
+			_boxWidth = _field.boxWidth;
 			
 			addEventListener(FocusEvent.FOCUS_IN, function(e:FocusEvent):void {
 				stage.focus = _field;
@@ -37,7 +35,6 @@ package net.wonderfl.editor
 				e.preventDefault();	
 			});
 			
-			_field.addEventListener(Event.SCROLL, onTextScroll);
 			_field.addEventListener(Event.RESIZE, onFieldResize);
 			
 			lineNums = new LineNumberField(_field);
@@ -71,15 +68,7 @@ package net.wonderfl.editor
 		
 		private function onHScroll(e:Event):void 
 		{
-			//trace('on h scroll : ' + _hScroll.value);
 			_field.scrollH = _hScroll.value;
-//			_field.x = lineNums.width - _hScroll.value * _boxWidth;
-		}
-		
-		private function onTextScroll(e:Event):void 
-		{
-			//_hScroll.setThumbPercent(_width / _field.maxWidth);
-			//_hScroll.setSliderParams(1, _field.width / _boxWidth, _hScroll.value);
 		}
 		
 		private function numStageMouseUp(e:Event):void
@@ -122,7 +111,11 @@ package net.wonderfl.editor
 		}
 		
 		public function set scrollH(value:int):void {
-			
+			_field.scrollH = value;
+		}
+		
+		public function updateLineNumbers():void {
+			lineNums.draw();
 		}
 		
 		public function get selectionBeginIndex():int { return _field.selectionBeginIndex; }
