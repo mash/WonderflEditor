@@ -94,7 +94,7 @@ package net.wonderfl.editor.core
 			if (startIndex != endIndex || text.length > 0)
 				_historyManager.pushReplaceOperation(startIndex, endIndex, text);
 			
-			if (LiveCoding.isLive) _livecoding.pushReplaceText(startIndex, endIndex, text);
+			if (LiveCoding.isLive && (startIndex != endIndex || text.length)) _livecoding.pushReplaceText(startIndex, endIndex, text);
 				
 			super._replaceText(startIndex, endIndex, text);
 		}

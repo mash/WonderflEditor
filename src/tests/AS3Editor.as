@@ -105,8 +105,7 @@ package tests
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, function ():void {
 				//checkMouse();
 			});
-			addEventListener(Event.CHANGE, onChange);
-			//addEventListener(Event.SCROLL, onScroll);
+			_field.addEventListener(Event.CHANGE, onChange);
 		}
 		
 		private function onComplete():void
