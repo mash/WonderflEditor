@@ -90,6 +90,7 @@ package tests
 		private function onScroll(e:ScrollEvent):void 
 		{
 			if (e.direction == ScrollEventDirection.VERTICAL) {
+				_vScroll.value = e.position;
 			} else { // horizontal
 				_hScroll.value = e.position;
 			}
@@ -135,11 +136,13 @@ package tests
 		private function onFieldResize(e:Event):void 
 		{
 			_hScroll.setThumbPercent((_width - lineNums.width - 15) / _field.maxWidth);
+			_vScroll.setThumbPercent((_height - _liveCodingController.height - _hScroll.height) / _height);
 			
 			var maxH:int = ((_field.maxWidth - _width + lineNums.width + 15) / _field.boxWidth) >> 0;
 			maxH = (maxH < 0) ? 0 : maxH;
 			maxH++;
 			
+			// update position
 			_hScroll.setSliderParams(1, maxH, _hScroll.value);
 		}
 		

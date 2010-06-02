@@ -20,7 +20,7 @@ package net.wonderfl.editor.scroll
 		{
 			super($target);
 			boxWidth = calcFontBox($target.defaultTextFormat).width;
-			_height = MINIMUM_THUMB_WIDTH;
+			_handle.height = _height = MINIMUM_THUMB_WIDTH;
 		}
 		
 		override protected function onDrag(e:MouseEvent):void 
@@ -65,21 +65,7 @@ package net.wonderfl.editor.scroll
 			_handle.visible = ($value < 1);
 		}
 		
-		private function onScroll(e:Event):void 
-		{
-			//_handle.width = _width * _target.visibleColumns / (_target.width / boxWidth);
-			//_trackWidth = _width - _handle.width;
-		}
-		
 		override public function set height(value:Number):void  { }
-		
-		
-		protected function onDrop(event:MouseEvent):void
-		{
-			stage.removeEventListener(MouseEvent.MOUSE_UP, onDrop);
-			stage.removeEventListener(Event.ENTER_FRAME, checkMouse);
-			_handle.stopDrag();
-		}
 		
 		override protected function updateSize():void {
 			graphics.clear();
