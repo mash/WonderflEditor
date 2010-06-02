@@ -86,7 +86,7 @@ package net.wonderfl.editor.livecoding{
 
             var obj :Object;
             try {
-                obj = ( new JSONDecoder(remainingString) ).getValue();
+                obj = ( new JSONDecoder(remainingString, true) ).getValue();
             } catch(err :Error) {
                 logger("failed to parse: " + remainingString + " error: " + err);
                 return null;
