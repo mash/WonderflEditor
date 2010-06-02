@@ -34,6 +34,8 @@ package net.wonderfl.editor.scroll
 		
 		override protected function updateSize():void 
 		{
+			trace('updateSize', this, _width, _height);
+			
 			graphics.clear();
 			graphics.beginFill(0x444444);
 			graphics.drawRect(0, 0, _width, _height);

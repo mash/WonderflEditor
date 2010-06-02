@@ -57,15 +57,15 @@ package net.wonderfl.editor.scroll
 			
 			_handle.y = ($value - $min) / ($max - $min) * _handleMax;
 			
-			if (oldValue != $value) {
+			//if (oldValue != $value) {
 				dispatchEvent(new Event(Event.SCROLL));
-			}
+			//}
 		}
 		
 		override public function setThumbPercent($value:Number):void 
 		{
-			_handle.height = $value * (_height - MINIMUM_THUMB_HEIGHT);
-			_handleMax = _height - _handle.height - MINIMUM_THUMB_HEIGHT;
+			_handle.height = $value * _height;
+			_handleMax = _height - _handle.height;
 			_handle.visible = ($value < 1);
 		}
 		

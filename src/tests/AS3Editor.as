@@ -79,12 +79,18 @@ package tests
 			_vScroll = new TextVScroll(_field);
 			_hScroll = new TextHScroll(_field);
 			_hScroll.addEventListener(Event.SCROLL, onHScroll);
+			_vScroll.addEventListener(Event.SCROLL, onVScroll);
 			addChild(_vScroll);
 			addChild(_hScroll);
 			addChild(_liveCodingController = new LiveCodingControllerView);
 			
 			
 			addEventListener(Event.ADDED_TO_STAGE, init);
+		}
+		
+		private function onVScroll(e:Event):void 
+		{
+			_field.scrollY = _vScroll.value;
 		}
 		
 		private function onScroll(e:ScrollEvent):void 
@@ -136,7 +142,7 @@ package tests
 		private function onFieldResize(e:Event):void 
 		{
 			_hScroll.setThumbPercent((_width - lineNums.width - 15) / _field.maxWidth);
-			_vScroll.setThumbPercent((_height - _liveCodingController.height - _hScroll.height) / _height);
+			_vScroll.setThumbPercent(_field.visibleRows / (_field.visibleRows + _field.maxScrollV));
 			
 			var maxH:int = ((_field.maxWidth - _width + lineNums.width + 15) / _field.boxWidth) >> 0;
 			maxH = (maxH < 0) ? 0 : maxH;
@@ -144,6 +150,7 @@ package tests
 			
 			// update position
 			_hScroll.setSliderParams(1, maxH, _hScroll.value);
+			_vScroll.setSliderParams(1, _field.visibleRows + _field.maxScrollV, _field.scrollY);
 		}
 		
 		private function onHScroll(e:Event):void 
@@ -170,9 +177,10 @@ package tests
 			_liveCodingController.width = _width - _vScroll.width;
 			_field.setSize(_width - lineNums.width - _vScroll.width, _height - _hScroll.height - _liveCodingController.height); 
 			_field.y = _liveCodingController.height;
-			_vScroll.height = _height;
+			_vScroll.height = _height - _liveCodingController.height - _hScroll.height;
 			_hScroll.width = _width;
 			_vScroll.x = _width - _vScroll.width;
+			_vScroll.y = _liveCodingController.height;
 			_hScroll.y = _field.height + _liveCodingController.height;
 			lineNums.height = _field.height;
 			lineNums.y = _liveCodingController.height;
