@@ -18,6 +18,7 @@ package net.wonderfl.editor.core
 	import net.wonderfl.editor.manager.HistoryManager;
 	import net.wonderfl.editor.manager.IKeyboadEventManager;
 	import net.wonderfl.editor.manager.SelectionManager;
+	import net.wonderfl.editor.operations.SetSelection;
 	import net.wonderfl.editor.utils.versionTest;
 	import net.wonderfl.editor.we_internal;
 	/**
@@ -196,7 +197,8 @@ package net.wonderfl.editor.core
 			}
 			
 			replaceSelection(e.text);
-			_setSelection(_caret, _caret);
+//			_setSelection(_caret, _caret, true);
+			setSelectionPromise = new SetSelection(_caret, _caret);
 			saveLastCol();
 			checkScrollToCursor();
 			

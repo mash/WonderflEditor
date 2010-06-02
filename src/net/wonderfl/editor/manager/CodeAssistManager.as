@@ -170,7 +170,7 @@ package net.wonderfl.editor.manager
 				menuData = ctrl.getAllOptions(pos);
 			else if (trigger == '(')
 			{
-				if (showToolTip(pos)) return;
+				showToolTip(pos);
 			}
 				
 			if (!menuData || menuData.length == 0) {

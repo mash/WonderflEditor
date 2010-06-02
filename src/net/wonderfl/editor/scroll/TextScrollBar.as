@@ -87,6 +87,14 @@ package net.wonderfl.editor.scroll
 		public function setThumbPercent(value:Number):void { }		
 		public function set pageSize(value:int):void { }
 		public function get value():int { return _value; }
+		
+		public function set value(value:int):void 
+		{
+			if (_value == value) return;
+			
+			_value = value;
+			setSliderParams(_min, _max, value);
+		}
 	}
 
 }

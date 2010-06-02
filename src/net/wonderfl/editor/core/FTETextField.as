@@ -31,6 +31,8 @@ package net.wonderfl.editor.core
 	import flash.utils.clearTimeout;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
+	import mx.events.ScrollEvent;
+	import mx.events.ScrollEventDirection;
 	import net.wonderfl.editor.error.ErrorMessage;
 	import net.wonderfl.editor.error.ErrorMessageLayer;
 	import net.wonderfl.editor.IEditor;
@@ -44,7 +46,7 @@ package net.wonderfl.editor.core
 	import ro.victordramba.scriptarea.Base;
 	
 	[Event(name = 'resize', type = 'flash.events.Event')]
-	[Event(name = 'scroll', type = 'flash.events.Event')]
+	[Event(name = 'scroll', type = 'mx.events.ScrollEvent')]
 	public class FTETextField extends UIComponent implements IEditor
 	{
 		we_internal var _caret:int;
@@ -153,8 +155,16 @@ package net.wonderfl.editor.core
 			value = Math.min(Math.max(0, value), _maxScrollV);
 			if (_scrollY == value) return;
 			
+			var delta:int = value - _scrollY;
 			_scrollY = value;
 			updateScrollProps();
+			
+			dispatchEvent(
+				new ScrollEvent(
+					ScrollEvent.SCROLL, false, false, null,
+					value, ScrollEventDirection.VERTICAL, delta
+				)
+			);
 		}
 		
 		public function get scrollY():int
@@ -538,8 +548,7 @@ package net.wonderfl.editor.core
 					
 					_textDecorationContainer.visible = true;
 					children.length = 0;
-					_setSelection(_selStart, _selEnd);
-					dispatchEvent(new Event(Event.SCROLL, true));
+					_setSelection(_selStart, _selEnd, true);
 					
 					return false;
 				},
@@ -547,7 +556,7 @@ package net.wonderfl.editor.core
 					if (killFlag) return false;
 					
 					if (_setSelectionPromise) {
-						_setSelection(_setSelectionPromise.beginIndex, _setSelectionPromise.endIndex);
+						_setSelection(_setSelectionPromise.beginIndex, _setSelectionPromise.endIndex, true);
 						_setSelectionPromise = null;
 					}
 					_errorLayer.render();
@@ -633,13 +642,14 @@ package net.wonderfl.editor.core
 		we_internal function checkScrollToCursor():void
 		{
 			var result:Object;
+			var pos:int;
+			var delta:int;
+			// check vertical scroll
 			if (_caret > lastPos)
 			{
 				result = countNewLines(lastPos, _caret);
 				scrollY += result.numNewLines;
 			}
-			
-			//TODO similar
 			if (_caret < firstPos)
 			{
 				result = countNewLines(_caret, firstPos);
@@ -651,6 +661,8 @@ package net.wonderfl.editor.core
 			var numCols:int = (_width / boxWidth) >> 0;
 			numCols -= 2;
 			var scroll:int;
+			
+			// check horizontal scroll
 			if (currentCols > _scrollH + numCols) {
 				scroll += numCols;
 				scrollH = (scroll > maxCols) ? maxCols : scroll;
@@ -787,9 +799,18 @@ package net.wonderfl.editor.core
 		}
 		
 		public function set scrollH(value:int):void {
-			//trace('scrollH = ' + value);
+			if (_scrollH == value) return;
+			
+			var delta:int = value - _scrollH;
 			_scrollH = value;
 			_container.x = - boxWidth * (value - 1);
+			
+			dispatchEvent(
+				new ScrollEvent(
+					ScrollEvent.SCROLL, false, false, null,
+					value, ScrollEventDirection.HORIZONTAL, delta
+				)
+			);
 		}
 		
 		public function get scrollH():int { return _scrollH; }

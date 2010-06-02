@@ -5,6 +5,8 @@ package tests
 	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
 	import flash.utils.setTimeout;
+	import mx.events.ScrollEvent;
+	import mx.events.ScrollEventDirection;
 	import net.wonderfl.editor.core.UIFTETextInput;
 	import net.wonderfl.editor.events.EditorEvent;
 	import net.wonderfl.editor.IEditor;
@@ -58,11 +60,10 @@ package tests
 				e.preventDefault();	
 			});
 			
-			_field.addEventListener(Event.SCROLL, onTextScroll);
 			_field.addEventListener(Event.RESIZE, onFieldResize);
 			_field.addEventListener(EditorEvent.UNDO, hideCodeAssists);
 			_field.addEventListener(EditorEvent.REDO, hideCodeAssists);
-			
+			_field.addEventListener(ScrollEvent.SCROLL, onScroll);
 			
 			lineNums = new LineNumberField(_field);
 			addChild(lineNums);
@@ -84,6 +85,14 @@ package tests
 			
 			
 			addEventListener(Event.ADDED_TO_STAGE, init);
+		}
+		
+		private function onScroll(e:ScrollEvent):void 
+		{
+			if (e.direction == ScrollEventDirection.VERTICAL) {
+			} else { // horizontal
+				_hScroll.value = e.position;
+			}
 		}
 		
 		public function hideCodeAssists(e:EditorEvent):void 
