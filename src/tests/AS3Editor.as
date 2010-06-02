@@ -149,8 +149,9 @@ package tests
 			maxH++;
 			
 			// update position
-			_hScroll.setSliderParams(1, maxH, _hScroll.value);
-			_vScroll.setSliderParams(1, _field.visibleRows + _field.maxScrollV, _field.scrollY);
+			_hScroll.setSliderParams(0, maxH, _hScroll.value);
+			_vScroll.setSliderParams(0, _field.maxScrollV, _field.scrollY);
+			//_vScroll.height = _height - _liveCodingController.height - _hScroll.height;
 		}
 		
 		private function onHScroll(e:Event):void 
@@ -177,7 +178,7 @@ package tests
 			_liveCodingController.width = _width - _vScroll.width;
 			_field.setSize(_width - lineNums.width - _vScroll.width, _height - _hScroll.height - _liveCodingController.height); 
 			_field.y = _liveCodingController.height;
-			_vScroll.height = _height - _liveCodingController.height - _hScroll.height;
+			_vScroll.height = _height - _liveCodingController.height;
 			_hScroll.width = _width;
 			_vScroll.x = _width - _vScroll.width;
 			_vScroll.y = _liveCodingController.height;
