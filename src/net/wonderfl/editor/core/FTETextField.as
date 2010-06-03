@@ -87,12 +87,12 @@ package net.wonderfl.editor.core
 		we_internal var _container:Sprite;
 		private var _scrollYEngine:Sprite = new Sprite;
 		private var _charHighlight:CharHighlighter = new CharHighlighter;
+		protected var _igonoreCursor:Boolean = false;
 		
 		use namespace we_internal;
 		
 		public function FTETextField()
 		{
-			//mouseChildren = false;
 			mouseEnabled = true;
 			buttonMode = true;
 			
@@ -122,7 +122,7 @@ package net.wonderfl.editor.core
 			_block = new TextBlock;
 			
 			cursor = new ScriptCursor;
-			cursor.visible = false;
+			//cursor.visible = false;
 			cursor.mouseChildren = cursor.mouseEnabled = false;
 			ScriptCursor.height = boxHeight;
 			_container.addChild(cursor);
@@ -158,6 +158,7 @@ package net.wonderfl.editor.core
 			var delta:int = value - _scrollY;
 			_scrollY = value;
 			updateScrollProps();
+			
 			
 			dispatchEvent(
 				new ScrollEvent(
@@ -275,26 +276,18 @@ package net.wonderfl.editor.core
 				}
 			}
 			
-			cursor.visible = _caret <= lastPos && _caret >= firstPos;
-			//_caret = endIndex;
-			cursor.pauseBlink();
 			cursor.setX(p1.x);
 			cursor.y = p1.y;
 			
-			if (caret)
+			if (caret && !_igonoreCursor)
 			{
 				_caret = endIndex;
 				checkScrollToCursor();
 			}
-			
-			//trace('_setSelection : ' + (getTimer() - t) + ' ms');
 		}
 		
 		public function updateCaret():void
 		{
-			cursor.visible = _caret <= lastPos && _caret >= firstPos;
-			cursor.pauseBlink();
-			//trace('updateCaret');
 			var p:Point = getPointForIndex(_caret);
 			cursor.setX(p.x);
 			cursor.y = p.y;
@@ -416,6 +409,10 @@ package net.wonderfl.editor.core
 			var i:int;
 			var l:int;
 			var w:int;
+			
+			ThreadExecuter.onComplete = function ():void {
+				_igonoreCursor = false;
+			};
 			
 			ThreadExecuter.addTask(
 				function ():void {
@@ -641,6 +638,8 @@ package net.wonderfl.editor.core
 		
 		we_internal function checkScrollToCursor():void
 		{
+			if (_igonoreCursor) return;
+			
 			var result:Object;
 			var pos:int;
 			var delta:int;
@@ -750,7 +749,7 @@ package net.wonderfl.editor.core
 			
 			// give up providing proper value for these indeces
 			if (index < firstPos) return new Point(cursor.x, -boxHeight);
-			if (index > lastPos) return new Point(cursor.x, boxHeight * visibleRows + 2);
+			if (index > lastPos) return new Point(cursor.x, boxHeight * (1 + visibleRows) + 2);
 			
 			var lines:int = 0;
 			pos = firstPos;
@@ -764,7 +763,7 @@ package net.wonderfl.editor.core
 				lastNL = pos;
 			}
 			var ypos:int = lines * boxHeight + 2;
-			var xpos:int;
+			var xpos:int = cursor.x;
 			var i:int = 0;
 			var textLine:TextLine;
 			var rect:Rectangle;
@@ -783,7 +782,6 @@ package net.wonderfl.editor.core
 				xpos = rect.x + rect.width + textLine.x;
 			}
 			
-			//xpos = x;
 			return new Point(xpos, ypos);
 		}
 		

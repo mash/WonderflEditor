@@ -13,12 +13,13 @@ package net.wonderfl.editor.scroll
 	[Event(name = "scroll", type = "flash.events.Event")]
 	public class TextScrollBar extends UIComponent
 	{
+		protected var _changeLocked:Boolean = false;
 		protected var _target:FTETextField;
 		protected var _handle:TextScrollBarHandle;
 		protected var _prevMouse:int;
 		protected var _diff:Number;
 		protected var _handleMax:int;
-		protected var _value:int = -1;
+		protected var _value:int = 0;
 		protected var _min:int;
 		protected var _max:int;
 		
@@ -50,8 +51,15 @@ package net.wonderfl.editor.scroll
 			
 			if (newValue != _value) {
 				_value = newValue;
-				dispatchEvent(new Event(Event.SCROLL));
+				dispatchEvent(new Event(Event.CHANGE));
 			}
+		}
+		
+		private function dispatchChange(e:Event):void {
+			removeEventListener(Event.ENTER_FRAME, dispatchChange);
+			
+			dispatchEvent(new Event(Event.CHANGE));
+			_changeLocked = false;
 		}
 		
 		protected function truncateHandlePos($pos:Number):Number {

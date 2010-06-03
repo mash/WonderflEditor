@@ -38,7 +38,7 @@ package tests
 			LiveCoding.editor = _editor;
 			
 			_editor.addEventListener(Event.CHANGE, function ():void {
-				trace(arguments);
+				trace('WonderflEditor ' + arguments);
 				_compileTimer = setTimeout(compile, 1500);
 			});
 			

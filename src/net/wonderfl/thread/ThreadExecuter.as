@@ -14,6 +14,7 @@ package net.wonderfl.thread
 		private static var _que:Array = [];
 		private static var _running:Boolean = false;
 		private static var _currentJob:ThreadTask = null;
+		private static var _onComplete:Function;
 		
 		public static function addTask($killer:Function, ...$jobslices:Array):Class {
 			_que.push(new ThreadTask($jobslices, $killer));
@@ -50,6 +51,11 @@ package net.wonderfl.thread
 		
 		static public function get running():Boolean { return _running; }
 		
+		static public function set onComplete(value:Function):void 
+		{
+			_onComplete = value;
+		}
+		
 		private static function executer(e:Event):void {
 			var tick:int = getTimer();
 			
@@ -77,6 +83,9 @@ package net.wonderfl.thread
 			_currentJob = null;
 			_que.length = 0;
 			_running = false;
+			
+			if (_onComplete != null)
+				_onComplete();
 		}
 	}
 }

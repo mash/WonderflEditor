@@ -158,7 +158,7 @@ package net.wonderfl.editor.core
 			if (e.keyCode == Keyboard.ESCAPE)
 				return;
 			
-			cursor.visible = !_imeManager.keyDownHandler(e);
+			_imeManager.keyDownHandler(e);
 			
 			if (_editManager.keyDownHandler(e)) {
 				_preventDefault = true;

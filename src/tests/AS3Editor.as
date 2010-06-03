@@ -78,8 +78,8 @@ package tests
 			
 			_vScroll = new TextVScroll(_field);
 			_hScroll = new TextHScroll(_field);
-			_hScroll.addEventListener(Event.SCROLL, onHScroll);
-			_vScroll.addEventListener(Event.SCROLL, onVScroll);
+			_hScroll.addEventListener(Event.CHANGE, onHScroll);
+			_vScroll.addEventListener(Event.CHANGE, onVScroll);
 			addChild(_vScroll);
 			addChild(_hScroll);
 			addChild(_liveCodingController = new LiveCodingControllerView);
@@ -90,11 +90,12 @@ package tests
 		
 		private function onVScroll(e:Event):void 
 		{
-			_field.scrollY = _vScroll.value;
+			_field.setScrollYByBar(_vScroll.value);
 		}
 		
 		private function onScroll(e:ScrollEvent):void 
 		{
+			trace('onScroll :: ' + e);
 			if (e.direction == ScrollEventDirection.VERTICAL) {
 				_vScroll.value = e.position;
 			} else { // horizontal
@@ -139,6 +140,7 @@ package tests
 			lineNums.draw();
 			_field.clearErrorMessages();
 		}
+		
 		private function onFieldResize(e:Event):void 
 		{
 			_hScroll.setThumbPercent((_width - lineNums.width - 15) / _field.maxWidth);
@@ -151,20 +153,15 @@ package tests
 			// update position
 			_hScroll.setSliderParams(0, maxH, _hScroll.value);
 			_vScroll.setSliderParams(0, _field.maxScrollV, _field.scrollY);
-			//_vScroll.height = _height - _liveCodingController.height - _hScroll.height;
 		}
 		
 		private function onHScroll(e:Event):void 
 		{
-			//trace('on h scroll : ' + _hScroll.value);
 			_field.scrollH = _hScroll.value;
-//			_field.x = lineNums.width - _hScroll.value * _boxWidth;
 		}
 		
 		private function onTextScroll(e:Event):void 
 		{
-			//_hScroll.setThumbPercent(_width / _field.maxWidth);
-			//_hScroll.setSliderParams(1, _field.width / _boxWidth, _hScroll.value);
 		}
 		
 		private function numStageMouseUp(e:Event):void

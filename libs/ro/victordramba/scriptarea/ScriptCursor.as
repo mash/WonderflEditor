@@ -3,17 +3,29 @@ package ro.victordramba.scriptarea
 	import flash.display.GradientType;
 	import flash.display.Shape;
 	import flash.display.Sprite;
+	import flash.events.TimerEvent;
 	import flash.geom.Matrix;
 	import flash.utils.setInterval;
+	import flash.utils.Timer;
 
 	public class ScriptCursor extends Sprite
 	{
 		public static var height:int;
+		private var _blinkTimer:Timer;
+		private var _blinkRestartTimer:Timer;
 		private var crs:Shape;
 		
 		public function ScriptCursor()
 		{
-			setInterval(redraw, 500);
+			_blinkTimer = new Timer(500);
+			_blinkTimer.addEventListener(TimerEvent.TIMER, function ():void {
+				redraw();
+			});
+			_blinkRestartTimer = new Timer(300);
+			_blinkRestartTimer.addEventListener(TimerEvent.TIMER, function ():void {
+				_blinkTimer.start();
+			});
+			_blinkTimer.start();
 			crs = new Shape;
 			addChild(crs);
 		}
@@ -34,6 +46,7 @@ package ro.victordramba.scriptarea
 			b = false;
 			redraw();
 			b = false;
+			_blinkTimer.stop();
 		}
 		
 		public function setSize(w:int, h:int):void
@@ -48,6 +61,10 @@ package ro.victordramba.scriptarea
 		
 		public function setX(x:int):void
 		{
+			pauseBlink();
+			_blinkRestartTimer.stop();
+			_blinkRestartTimer.reset();
+			_blinkRestartTimer.start();
 			crs.x = x;
 		}
 		
