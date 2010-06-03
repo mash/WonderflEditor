@@ -196,7 +196,6 @@ package net.wonderfl.editor.core
 			
 			pos = (i < _textLineCache.length) ? _textLineCache[i] : _text.length;
 			lastPos = pos;
-			
 			updateVisibleText();
 		}
 		
@@ -755,7 +754,6 @@ package net.wonderfl.editor.core
 			
 			var lines:int = 0;
 			pos = firstPos;
-			//trace(_text, pos);
 			
 			while (true)
 			{
@@ -772,7 +770,8 @@ package net.wonderfl.editor.core
 			i = 0;
 			textLine = _block.firstLine;
 			while (textLine && i++ < lines) textLine = textLine.nextLine;
-			index -= lastNL;
+			index = _text.lastIndexOf(NL, $index - 1) + 1;
+			index = $index - index;
 			if (lines >= 0 && textLine && index < textLine.atomCount) {
 				xpos = textLine.getAtomBounds(index).x + textLine.x;
 			} else if ($index == _text.length && textLine) {
@@ -783,7 +782,6 @@ package net.wonderfl.editor.core
 				trace($index, rect);
 				xpos = rect.x + rect.width + textLine.x;
 			} else {
-				ypos = boxHeight * (1 + visibleRows);
 			}
 			
 			return new Point(xpos, ypos);
