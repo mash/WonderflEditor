@@ -135,7 +135,7 @@ package ro.minibuilder.asparser
 				}
 				else if (nextChar()=="/")
 				{
-					skipUntil("\r");
+					skipUntil("\n");
 					pos--;
 					return new Token(string.substring(start,pos), Token.COMMENT, pos);
 				}
@@ -239,7 +239,7 @@ package ro.minibuilder.asparser
 			//this is faster than regexp
             pos++;
             var c:String;
-            while ((c=string.charAt(pos)) != exit && c!='\r' && c) {
+            while ((c=string.charAt(pos)) != exit && c!='\n' && c) {
                 if (c == "\\") pos++;
                 pos++;
             }
@@ -256,7 +256,7 @@ package ro.minibuilder.asparser
 		}
 
 		private function isWhitespace(str:String):Boolean {
-			return str==" " || str=="\n" || str=="\t" || str=="\r";
+			return str==" " || str=="\n" || str=="\t";
 		}
 
 		private function skipToStringEnd():void

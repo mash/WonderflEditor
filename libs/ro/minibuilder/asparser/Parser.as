@@ -62,7 +62,7 @@ package ro.minibuilder.asparser
 		
 		public static function addSourceFile(source:String, fileName:String, onComplete:Function):void
 		{
-			source = source.replace(/(\n|\r\n)/g, '\r');
+			source = source.replace(/\r/g, '\n');
 			var parser:Parser = new Parser;
 			parser.load(source, fileName);
 			while (parser.runSlice()) { }

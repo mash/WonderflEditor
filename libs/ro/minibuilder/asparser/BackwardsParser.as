@@ -56,7 +56,7 @@ package ro.minibuilder.asparser
 			var m:Array;
 			
 			//check for regexp literal
-			if (tmp.match(/^[gimsx]{0,5}\/[^\/\r]+\/\s*[=,(\;\[\}\{]/))
+			if (tmp.match(/^[gimsx]{0,5}\/[^\/\n]+\/\s*[=,(\;\[\}\{]/))
 			{
 				addItem('RegExp', EXPR);
 				return true;
