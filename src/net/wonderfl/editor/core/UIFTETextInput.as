@@ -239,14 +239,9 @@ package net.wonderfl.editor.core
 					ba.writeUTF(str);
 					ba.position = 0;
 					str = ba.readUTF() || "";
-					str = str.replace(/\r/g, "\n");
 					replaceSelection(str);
 					
-					addEventListener(Event.ENTER_FRAME, function dispatch(e:Event):void {
-						removeEventListener(Event.ENTER_FRAME, dispatch);
-						
 						dispatchChange();
-					});
 				}
 			} catch (e:SecurityError) { };//can't paste
 		}
