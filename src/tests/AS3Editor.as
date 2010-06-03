@@ -284,6 +284,7 @@ package tests
 		
 		public function set text(value:String):void {
 			_field.text = value;
+			onChange(null);
 		}
 		
 	}
