@@ -3,6 +3,8 @@ package net.wonderfl.editor
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
+	import mx.events.ScrollEvent;
+	import mx.events.ScrollEventDirection;
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.core.UIFTETextField;
 	import net.wonderfl.editor.operations.SetSelection;
@@ -37,6 +39,7 @@ package net.wonderfl.editor
 			});
 			
 			_field.addEventListener(Event.RESIZE, onFieldResize);
+			_field.addEventListener(ScrollEvent.SCROLL, onScroll);
 			
 			lineNums = new LineNumberField(_field);
 			addChild(lineNums);
@@ -51,20 +54,46 @@ package net.wonderfl.editor
 			
 			_vScroll = new TextVScroll(_field);
 			_hScroll = new TextHScroll(_field);
-			_hScroll.addEventListener(Event.SCROLL, onHScroll);
+			_hScroll.addEventListener(Event.CHANGE, onHScroll);
+			_vScroll.addEventListener(Event.CHANGE, onVScroll);
 			addChild(_vScroll);
 			addChild(_hScroll);
 		}
 		
+		private function onVScroll(e:Event):void 
+		{
+			_field.setScrollYByBar(_vScroll.value);
+		}
+		
+		private function onScroll(e:ScrollEvent):void 
+		{
+			if (e.direction == ScrollEventDirection.VERTICAL) {
+				_vScroll.value = e.position;
+			} else { // horizontal
+				_hScroll.value = e.position;
+			}
+			
+			redrawBars();
+		}
+		
 		private function onFieldResize(e:Event):void 
 		{
+			redrawBars();
+		}
+		
+		private function redrawBars():void {
+			
 			_hScroll.setThumbPercent((_width - lineNums.width - 15) / _field.maxWidth);
 			
 			var maxH:int = ((_field.maxWidth - _width + lineNums.width + 15) / _field.boxWidth) >> 0;
 			maxH = (maxH < 0) ? 0 : maxH;
 			maxH++;
 			
-			_hScroll.setSliderParams(1, maxH, _hScroll.value);
+			// update position
+			_hScroll.setSliderParams(0, maxH, _hScroll.value);
+			
+			_vScroll.setThumbPercent(_field.visibleRows / (_field.visibleRows + _field.maxScrollV));
+			_vScroll.setSliderParams(0, _field.maxScrollV, _field.scrollY);
 		}
 		
 		private function onHScroll(e:Event):void 
