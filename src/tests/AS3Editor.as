@@ -95,7 +95,6 @@ package tests
 		
 		private function onScroll(e:ScrollEvent):void 
 		{
-			trace('onScroll :: ' + e);
 			if (e.direction == ScrollEventDirection.VERTICAL) {
 				_vScroll.value = e.position;
 			} else { // horizontal

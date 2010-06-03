@@ -771,15 +771,17 @@ package net.wonderfl.editor.core
 			textLine = _block.firstLine;
 			while (textLine && i++ < lines) textLine = textLine.nextLine;
 			index -= lastNL;
-			if (lines >= 0 && textLine && index < textLine.atomCount)
+			if (lines >= 0 && textLine && index < textLine.atomCount) {
 				xpos = textLine.getAtomBounds(index).x + textLine.x;
-			else if ($index == _text.length && textLine) {
+			} else if ($index == _text.length && textLine) {
 				var atomCount:int = index - 1;
 				atomCount = (atomCount >= textLine.atomCount) ? (textLine.atomCount) - 1 : atomCount;
 				atomCount = (atomCount < 0) ? 0 : atomCount;
 				rect = textLine.getAtomBounds(atomCount);
 				trace($index, rect);
 				xpos = rect.x + rect.width + textLine.x;
+			} else {
+				ypos = boxHeight * (1 + visibleRows);
 			}
 			
 			return new Point(xpos, ypos);
