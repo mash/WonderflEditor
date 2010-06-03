@@ -197,13 +197,10 @@ package net.wonderfl.editor.core
 			}
 			
 			replaceSelection(e.text);
-//			_setSelection(_caret, _caret, true);
 			setSelectionPromise = new SetSelection(_caret, _caret);
 			saveLastCol();
 			checkScrollToCursor();
-			
 			dispatchChange();
-			
 			e.stopPropagation();
 		}
 		

@@ -32,7 +32,6 @@ package net.wonderfl.editor.manager
 			_caret = _field.we_internal::_caret;
 			_length = _text.length;
 			
-			trace(<>keyDownHandler _seleStart : {_selStart}, _selEnd : {_selEnd}, _caret : {_caret}, str : [{c}]</>);
 			switch (k) {
 			case Keyboard.DELETE:
 				handleDeleteKey($event);

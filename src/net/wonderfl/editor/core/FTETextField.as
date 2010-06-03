@@ -257,6 +257,8 @@ package net.wonderfl.editor.core
 			var p0:Point = getPointForIndex(i0);
 			var p1:Point;
 			p1 = (i0 == i1) ? p0.clone() : getPointForIndex(i1);
+			
+			trace('start draw selection ' + p0 + p1);
 			var g:Graphics = _selectionShape.graphics;
 			g.clear();
 			if (_selStart != _selEnd && _selStart <= lastPos && _selEnd >= firstPos)
@@ -658,15 +660,15 @@ package net.wonderfl.editor.core
 			var maxCols:int = Math.ceil(_maxWidth / boxWidth);
 			var currentCols:int = (cursor.getX() / boxWidth) >> 0;
 			var numCols:int = (_width / boxWidth) >> 0;
-			numCols -= 2;
+			var tolerance:int = 1 << 4;
 			var scroll:int;
 			
 			// check horizontal scroll
-			if (currentCols > _scrollH + numCols) {
-				scroll += numCols;
+			if (currentCols > numCols - tolerance) {
+				scroll += (currentCols - numCols + tolerance);
 				scrollH = (scroll > maxCols) ? maxCols : scroll;
-			} else if (currentCols < _scrollH) {
-				scroll -= numCols;
+			} else if (currentCols < _scrollH + tolerance) {
+				scroll += (currentCols - _scrollH - tolerance);
 				scrollH = (scroll < 0) ? 0 : scroll;
 			}
 		}
@@ -803,7 +805,7 @@ package net.wonderfl.editor.core
 			
 			var delta:int = value - _scrollH;
 			_scrollH = value;
-			_container.x = - boxWidth * (value - 1);
+			_container.x = - boxWidth * value;
 			
 			dispatchEvent(
 				new ScrollEvent(

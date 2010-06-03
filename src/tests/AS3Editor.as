@@ -100,6 +100,8 @@ package tests
 			} else { // horizontal
 				_hScroll.value = e.position;
 			}
+			
+			redrawBars();
 		}
 		
 		public function hideCodeAssists(e:EditorEvent):void 
@@ -115,7 +117,6 @@ package tests
 			_editorHotkeyManager = new EditorHotkeyManager(_field, _parser);
 			_field.addPlugIn(_codeAssistManager);
 			_field.addPlugIn(_editorHotkeyManager);
-			
 			
 			//setTimeout(checkMouse, CHECK_MOUSE_DURATION);
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, function ():void {
@@ -140,10 +141,9 @@ package tests
 			_field.clearErrorMessages();
 		}
 		
-		private function onFieldResize(e:Event):void 
-		{
+		private function redrawBars():void {
+			
 			_hScroll.setThumbPercent((_width - lineNums.width - 15) / _field.maxWidth);
-			_vScroll.setThumbPercent(_field.visibleRows / (_field.visibleRows + _field.maxScrollV));
 			
 			var maxH:int = ((_field.maxWidth - _width + lineNums.width + 15) / _field.boxWidth) >> 0;
 			maxH = (maxH < 0) ? 0 : maxH;
@@ -151,7 +151,14 @@ package tests
 			
 			// update position
 			_hScroll.setSliderParams(0, maxH, _hScroll.value);
+			
+			_vScroll.setThumbPercent(_field.visibleRows / (_field.visibleRows + _field.maxScrollV));
 			_vScroll.setSliderParams(0, _field.maxScrollV, _field.scrollY);
+		}
+		
+		private function onFieldResize(e:Event):void 
+		{
+			redrawBars();
 		}
 		
 		private function onHScroll(e:Event):void 
