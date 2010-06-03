@@ -782,6 +782,9 @@ package net.wonderfl.editor.core
 				trace($index, rect);
 				xpos = rect.x + rect.width + textLine.x;
 			} else {
+				if (lines > 0) {
+					ypos = boxHeight * (visibleRows + 1);
+				}
 			}
 			
 			return new Point(xpos, ypos);
