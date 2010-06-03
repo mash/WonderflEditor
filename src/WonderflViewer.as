@@ -118,7 +118,7 @@
 			if (ExternalInterface.available) {
 				var code:String = ExternalInterface.call("Wonderfl.Codepage.get_initial_code");
 				code ||= "";
-				_source = code.replace(/\t/g, "    ").replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+				_source = code.replace(/\t/g, "    ").replace(/\r/g, "\n");
 				_viewer.text = _source;
 				//trace('init', code);
 				if (!_setInitialCodeForLiveCoding) {
@@ -186,7 +186,7 @@
 		}
 		
 		public function save():void {
-			var text:String = (Capabilities.os.indexOf('Windows') != -1) ? _viewer.text.replace(/\r/g, '\r\n') : _viewer.text;
+			var text:String = (Capabilities.os.indexOf('Windows') != -1) ? _viewer.text.replace(/\n/g, '\r\n') : _viewer.text;
 			var localName:String = CodeUtil.getDefinitionLocalName(text);
 			localName ||= "untitled";
 			fileRef = new FileReference();

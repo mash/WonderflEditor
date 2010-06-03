@@ -144,7 +144,7 @@ package net.wonderfl.editor.minibuilder
 		public function sourceChanged(source:String, fileName:String):Boolean
 		{
 			if (source && source.charAt(0) == "<" && isMXML(source)) return false;
-			source = source.replace(/\n|\r\n/g, '\r');
+			//source = source.replace(/\n|\r\n/g, '\r');
 			
 			t0 = getTimer();
 			parser.load(source, fileName);

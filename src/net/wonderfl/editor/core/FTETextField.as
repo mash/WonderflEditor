@@ -72,7 +72,7 @@ package net.wonderfl.editor.core
 		public var visibleColumns:int;
 		private var _maxWidth:int = -1;
 		
-		static public var NL:String = '\r';
+		static public var NL:String = '\n';
 		
 		//format. very simplified
 		private var runs:Array = [];
@@ -313,15 +313,15 @@ package net.wonderfl.editor.core
 		{
 
 			$text ||= "";
-			$text = $text.replace(new RegExp("\r\n", "gm"), NL).replace(/\n/gm, NL);
+			//$text = escapeNewLine($text);
 			//$text = $text.replace("\n", NL);
-			$text = $text.replace("\t", '    ');
+			//$text = $text.replace("\t", '    ');
 			_replaceText($startIndex, $endIndex, $text);
 		}
 		
 		we_internal function __replaceText(startIndex:int, endIndex:int, text:String):void {
 			var t:int = getTimer();
-			_text = _text.substr(0, startIndex) + text + _text.substr(endIndex);
+			_text = escapeNewLine(_text.substr(0, startIndex) + text + _text.substr(endIndex)).replace("\t", "    ");
 			
 			_numLines = _text.split(NL).length;
 			_maxScrollV = Math.max(0, _numLines - visibleRows);
@@ -497,7 +497,7 @@ package net.wonderfl.editor.core
 					var tick:int = getTimer();
 					
 					while ((getTimer() - tick) < 6 && !killFlag) {
-						line = _block.createTextLine(line, TextLine.MAX_LINE_WIDTH);
+						line = _block.createTextLine(line);
 						
 						if (line == null) break;
 						
@@ -617,13 +617,20 @@ package net.wonderfl.editor.core
 			}
 		}
 		
+		private function escapeNewLine(str:String):String {
+			var result:String = str.replace(/\r/gm, NL);
+			
+			return result;
+		}
 		
-		public function replaceSelection(text:String):void
+		
+		public function replaceSelection($text:String):void
 		{
-			replaceText(_selStart, _selEnd, text);
+			$text = escapeNewLine($text);
+			replaceText(_selStart, _selEnd, $text);
 			
 			//FIXME filter text
-			_setSelection(_selStart+text.length, _selStart+text.length, true);
+			_setSelection(_selStart + $text.length, _selStart + $text.length, true);
 		}
 		
 		

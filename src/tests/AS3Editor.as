@@ -227,14 +227,6 @@ package tests
 			return (/^(?:\(|\:|\.|\ssa\b|\swen\b|\ssdnetxe)/.test(str))
 		}
 		
-		public function loadSource(source:String, filePath:String):void
-		{
-			text = source.replace(/(\n|\r\n)/g, '\r');
-			//fileName = filePath;
-			//ctrl.sourceChanged(text, fileName);
-			_parser.sourceChanged(_field.text, '');
-		}
-		
 		public function findDefinition():Location
 		{
 			return _parser.findDefinition(_field.caretIndex);
@@ -279,7 +271,7 @@ package tests
 		}
 		
 		public function get text():String {
-			return _field.text;
+			return _field.text.replace(/\r/gm, "\n").replace(/\t/g, "    ");
 		}
 		
 		public function set text(value:String):void {

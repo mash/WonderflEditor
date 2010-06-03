@@ -11,7 +11,7 @@ package net.wonderfl.editor.manager
 	public class SelectionManager
 	{
 		private var _field:FTETextField;
-		private var NL:String =  '\r';
+		private var NL:String =  '\n';
 		private var _lastCol:int;
 		private var _text:String;
 		private var _caret:int;

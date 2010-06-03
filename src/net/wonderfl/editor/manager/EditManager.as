@@ -114,7 +114,7 @@ package net.wonderfl.editor.manager
 				var str:String = _text.substring(begin, end);
 				
 				if ($event.shiftKey)
-					str = str.replace(/\r    /g, FTETextField.NL).replace(/^    /, '');
+					str = str.replace(/\n    /g, FTETextField.NL).replace(/^    /, '');
 				else
 					str = '    ' + str.replace(new RegExp(FTETextField.NL, 'g'), FTETextField.NL+'    ');
 				

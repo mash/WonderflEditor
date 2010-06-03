@@ -9,6 +9,7 @@ package net.wonderfl.editor.core
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	import flash.ui.Keyboard;
+	import flash.utils.ByteArray;
 	import net.wonderfl.editor.events.EditorEvent;
 	import net.wonderfl.editor.ime.IMEClient_10_0;
 	import net.wonderfl.editor.ime.IMEClient_10_1;
@@ -195,7 +196,6 @@ package net.wonderfl.editor.core
 			if (e.text in MATCH) {
 				findPreviousMatch(MATCH[e.text], e.text, _caret)
 			}
-			
 			replaceSelection(e.text);
 			setSelectionPromise = new SetSelection(_caret, _caret);
 			saveLastCol();
@@ -235,8 +235,18 @@ package net.wonderfl.editor.core
 				var str:String = Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT) as String;
 				if (str)
 				{
+					var ba:ByteArray = new ByteArray;
+					ba.writeUTF(str);
+					ba.position = 0;
+					str = ba.readUTF() || "";
+					str = str.replace(/\r/g, "\n");
 					replaceSelection(str);
-					dispatchChange();
+					
+					addEventListener(Event.ENTER_FRAME, function dispatch(e:Event):void {
+						removeEventListener(Event.ENTER_FRAME, dispatch);
+						
+						dispatchChange();
+					});
 				}
 			} catch (e:SecurityError) { };//can't paste
 		}

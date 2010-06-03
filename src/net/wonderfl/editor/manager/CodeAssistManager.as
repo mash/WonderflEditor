@@ -113,7 +113,7 @@ package net.wonderfl.editor.manager
 						//TODO make a better regexp
 						var pos:int = fld.text.lastIndexOf('package ', fld.caretIndex);
 						pos = fld.text.indexOf('{', pos) + 1;
-						var imp:String = '\r    '+(i>0?'//':'')+'import '+missing[i] + '.' + name + ';';
+						var imp:String = '\n    '+(i>0?'//':'')+'import '+missing[i] + '.' + name + ';';
 						sumChars += imp.length;
 						fld.replaceText(pos, pos, imp);
 					}
