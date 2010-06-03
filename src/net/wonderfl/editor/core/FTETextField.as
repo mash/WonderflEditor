@@ -660,7 +660,7 @@ package net.wonderfl.editor.core
 			var maxCols:int = Math.ceil(_maxWidth / boxWidth);
 			var currentCols:int = (cursor.getX() / boxWidth) >> 0;
 			var numCols:int = (_width / boxWidth) >> 0;
-			var tolerance:int = 1 << 4;
+			var tolerance:int = 1 << 3;
 			var scroll:int;
 			
 			// check horizontal scroll
