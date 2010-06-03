@@ -139,10 +139,16 @@ package tests
 				
 			lineNums.draw();
 			_field.clearErrorMessages();
+			
+			var value:int;
+			if (_field.visibleRows + _field.maxScrollV < _vScroll.max) {
+				//_vScroll.max = _field.visibleRows + _field.maxScrollV;
+				_vScroll.setThumbPercent(_field.visibleRows / (_field.visibleRows + _field.maxScrollV));
+				_vScroll.setSliderParams(0, _field.maxScrollV, Math.min(_field.scrollY, Math.max(0, _vScroll.max - _field.visibleRows)));
+			}
 		}
 		
 		private function redrawBars():void {
-			
 			_hScroll.setThumbPercent((_width - lineNums.width - 15) / _field.maxWidth);
 			
 			var maxH:int = ((_field.maxWidth - _width + lineNums.width + 15) / _field.boxWidth) >> 0;

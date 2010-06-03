@@ -95,14 +95,24 @@ package net.wonderfl.editor.scroll
 		public function setThumbPercent(value:Number):void { }		
 		public function set pageSize(value:int):void { }
 		public function get value():int { return _value; }
+		public function get max():int { return _max; }
+		public function get min():int { return _min; }
 		
-		public function set value(value:int):void 
+		public function set value($value:int):void 
 		{
-			if (_value == value) return;
+			if (_value == $value) return;
 			
-			_value = value;
-			setSliderParams(_min, _max, value);
+			_value = $value;
+			setSliderParams(_min, _max, $value);
 		}
+		
+		public function set max($value:int):void {
+			if (_max == $value) return;
+			
+			_max = $value;
+			setSliderParams(_min, _max, _value);
+		}
+		
 	}
 
 }
