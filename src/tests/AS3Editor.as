@@ -97,6 +97,7 @@ package tests
 		{
 			if (e.direction == ScrollEventDirection.VERTICAL) {
 				_vScroll.value = e.position;
+				trace("AS3Editor.onScroll > e : " + e);
 			} else { // horizontal
 				_hScroll.value = e.position;
 			}
@@ -140,11 +141,17 @@ package tests
 			lineNums.draw();
 			_field.clearErrorMessages();
 			
+			trace("AS3Editor.onChange > e : " + e + " [_vScroll]" + _vScroll + " " + <> maxScroll : { _field.maxScrollV }, scrollY : { _field.scrollY}, scroll : {scroll}</>);
+			
 			var value:int;
-			if (_field.visibleRows + _field.maxScrollV < _vScroll.max) {
+			if (_field.maxScrollV < _vScroll.max) {
 				//_vScroll.max = _field.visibleRows + _field.maxScrollV;
+				trace('in if');
+				var scroll:int = Math.min(_field.scrollY, _vScroll.max);
 				_vScroll.setThumbPercent(_field.visibleRows / (_field.visibleRows + _field.maxScrollV));
-				_vScroll.setSliderParams(0, _field.maxScrollV, Math.min(_field.scrollY, Math.max(0, _vScroll.max - _field.visibleRows)));
+				_vScroll.setSliderParams(0, _field.maxScrollV, scroll);
+				_field.setScrollYByBar(scroll);
+				//_field.scrollY = scroll;
 			}
 		}
 		

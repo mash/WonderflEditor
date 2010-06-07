@@ -98,6 +98,10 @@ package net.wonderfl.editor.scroll
 		public function get max():int { return _max; }
 		public function get min():int { return _min; }
 		
+		override public function toString():String {
+			return <>min : {_min}, max : {_max}, value : {_value}</>;
+		}
+		
 		public function set value($value:int):void 
 		{
 			if (_value == $value) return;

@@ -153,12 +153,12 @@ package net.wonderfl.editor.core
 		public function set scrollY(value:int):void
 		{
 			value = Math.min(Math.max(0, value), _maxScrollV);
-			if (_scrollY == value) return;
+			if (_scrollY == value && !_igonoreCursor) return;
 			
 			var delta:int = value - _scrollY;
 			_scrollY = value;
 			updateScrollProps();
-			
+			trace("FTETextField :: scrollY : " + scrollY);
 			
 			dispatchEvent(
 				new ScrollEvent(
