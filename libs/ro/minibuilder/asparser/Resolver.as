@@ -93,6 +93,7 @@ package ro.minibuilder.asparser
 			var t:Token = tokenizer.tokenByPos(pos);
 			if (!t) return null;
 			var imports:HashMap = findImports(t);
+			if (!imports) return null;
 			
 			var found:Boolean = false;
 			var missing:Vector.<String> = typeDB.listImportsFor(name)

@@ -187,17 +187,14 @@ package net.wonderfl.editor.manager
 			var show:Boolean = false;
 			var i:int = lastColon;
 			while (/\s/.test(text.charAt(i))) i--;
-			trace('after skipping spaces : ' + text.charAt(i));
 			
+			// very rough criteria for function return value type
 			if (text.charAt(i - 1) == ')') show = true;
 			else {
 				--i;
 				while (/[\w$]/.test(text.charAt(i))) i--;
-				trace('else after skipping words : ' + text.charAt(i));
 				while (/\s/.test(text.charAt(i))) i--;
-				trace('else after skipping spaces : ' + text.charAt(i));
-				trace("text.substring(i - 2, i + 1) : " + text.substring(i - 2, i + 1));
-				if (text.substring(i - 2, i + 1) == 'var')
+				if (text.substring(i - 2, i + 1) == 'var') // var declarations
 					show = true;
 			}
 			

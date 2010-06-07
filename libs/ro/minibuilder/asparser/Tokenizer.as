@@ -391,7 +391,7 @@ package ro.minibuilder.asparser
 					imports = new HashMap;
 
 				//toplevel package
-				if (t.string=='{' && tp.string == 'package')
+				if (t.string=='{' && tp && tp.string == 'package')
 				{
 					_scope = scope.members.getValue('');
 					//imports.setItem('.*');
@@ -402,7 +402,7 @@ package ro.minibuilder.asparser
 				}
 				else if (tp && tp.string == 'extends')
 				{
-					field.extendz = new Multiname(t.string, imports);
+					if (field && t) field.extendz = new Multiname(t.string, imports);
 				}
 				else if (t.string=='private' || t.string=='protected' || t.string=='public' || t.string=='internal')
 				{
