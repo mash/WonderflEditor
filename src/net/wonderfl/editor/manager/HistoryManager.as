@@ -76,6 +76,9 @@ package net.wonderfl.editor.manager
 				_field.text.substring($operation.startIndex, $operation.endIndex)
 			);
 		}
+		
+		public function get undoStack():ReplaceText { return _undoStack; }
+		public function get redoStack():ReplaceText { return _redoStack; }
 	}
 
 }

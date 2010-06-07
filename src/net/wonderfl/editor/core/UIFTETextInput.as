@@ -19,6 +19,7 @@ package net.wonderfl.editor.core
 	import net.wonderfl.editor.manager.HistoryManager;
 	import net.wonderfl.editor.manager.IKeyboadEventManager;
 	import net.wonderfl.editor.manager.SelectionManager;
+	import net.wonderfl.editor.operations.ReplaceText;
 	import net.wonderfl.editor.operations.SetSelection;
 	import net.wonderfl.editor.utils.versionTest;
 	import net.wonderfl.editor.we_internal;
@@ -176,11 +177,22 @@ package net.wonderfl.editor.core
 		}
 		
 		public function undo():void {
+			var stack:ReplaceText = _historyManager.undoStack;
+			if (stack && LiveCoding.isLive) {
+				_livecoding.pushReplaceText(stack.startIndex, stack.endIndex, stack.text);
+			}
+			
 			_historyManager.undo();
 			dispatchEvent(new EditorEvent(EditorEvent.UNDO));
 		}
 		
 		public function redo():void {
+			var stack:ReplaceText = _historyManager.redoStack;
+			if (stack && LiveCoding.isLive) {
+				_livecoding.pushReplaceText(stack.startIndex, stack.endIndex, stack.text);
+			}
+			
+			
 			_historyManager.redo();
 			dispatchEvent(new EditorEvent(EditorEvent.REDO));
 		}
