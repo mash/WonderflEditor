@@ -97,12 +97,7 @@ package net.wonderfl.editor.core
 		
 		private function onMouseWheel(e:MouseEvent):void
 		{
-			//_igonoreCursor = true;
-			//scrollY -= e.delta;
 			setScrollYByBar(_scrollY - e.delta);
-			//e.preventDefault();//this both don't work :((, the html page still scrolls
-			//e.stopImmediatePropagation();
-			//_igonoreCursor = false;
 		}
 				
 		public function onCopy(e:Event=null):void

@@ -119,7 +119,6 @@ package tests
 			_field.addPlugIn(_codeAssistManager);
 			_field.addPlugIn(_editorHotkeyManager);
 			
-			//setTimeout(checkMouse, CHECK_MOUSE_DURATION);
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, function ():void {
 				//checkMouse();
 			});
@@ -145,13 +144,11 @@ package tests
 			
 			var value:int;
 			if (_field.maxScrollV < _vScroll.max) {
-				//_vScroll.max = _field.visibleRows + _field.maxScrollV;
 				trace('in if');
 				var scroll:int = Math.min(_field.scrollY, _vScroll.max);
 				_vScroll.setThumbPercent(_field.visibleRows / (_field.visibleRows + _field.maxScrollV));
 				_vScroll.setSliderParams(0, _field.maxScrollV, scroll);
 				_field.setScrollYByBar(scroll);
-				//_field.scrollY = scroll;
 			}
 		}
 		

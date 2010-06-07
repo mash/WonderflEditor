@@ -313,9 +313,6 @@ package net.wonderfl.editor.core
 		{
 
 			$text ||= "";
-			//$text = escapeNewLine($text);
-			//$text = $text.replace("\n", NL);
-			//$text = $text.replace("\t", '    ');
 			_replaceText($startIndex, $endIndex, $text);
 		}
 		
