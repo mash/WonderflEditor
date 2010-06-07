@@ -52,10 +52,6 @@ package net.wonderfl.editor.scroll
 			super.setSliderParams($min, $max, $value);
 			
 			_handle.x = ($value - $min) / ($max - $min) * _handleMax;
-			
-			if (oldValue != $value) {
-				dispatchEvent(new Event(Event.SCROLL));
-			}
 		}
 		
 		override public function setThumbPercent($value:Number):void 

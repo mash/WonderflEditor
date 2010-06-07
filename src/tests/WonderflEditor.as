@@ -12,6 +12,7 @@ package tests
 	import flash.utils.setTimeout;
 	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
+	import org.libspark.ui.SWFWheel;
 	
 	//import net.wonderfl.editor.WonderflEditor;
 	
@@ -120,6 +121,8 @@ package tests
 			
 			CONFIG::useExternalInterface {
 				if (ExternalInterface.available) {
+					SWFWheel.initialize(stage);
+					
 					var code:String = ExternalInterface.call("Wonderfl.Compiler.get_initial_code");
 					_editor.text = (code) ? code : "";
 				}
