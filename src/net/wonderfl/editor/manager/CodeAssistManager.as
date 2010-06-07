@@ -161,9 +161,7 @@ package net.wonderfl.editor.manager
 			if (rt == 'new' || rt == 'as' || rt == 'is' || rt == 'extends' || rt == 'implements')
 				menuData = ctrl.getTypeOptions();
 			else if (rt == ':') {
-				var lastColon:int = fld.text.lastIndexOf(':', fld.caretIndex - 1);
-				
-				menuData = ctrl.getTypeOptions();
+				treatColon();
 			} else if (trigger == '.')
 				menuData = ctrl.getMemberList(pos);
 			else if (trigger == '')
@@ -180,6 +178,33 @@ package net.wonderfl.editor.manager
 			
 			
 			filterMenu();
+		}
+		
+		private function treatColon():void {
+			var text:String = fld.text;
+			var lastColon:int = text.lastIndexOf(':', fld.caretIndex - 1);
+			
+			var show:Boolean = false;
+			var i:int = lastColon;
+			while (/\s/.test(text.charAt(i))) i--;
+			trace('after skipping spaces : ' + text.charAt(i));
+			
+			if (text.charAt(i - 1) == ')') show = true;
+			else {
+				--i;
+				while (/[\w$]/.test(text.charAt(i))) i--;
+				trace('else after skipping words : ' + text.charAt(i));
+				while (/\s/.test(text.charAt(i))) i--;
+				trace('else after skipping spaces : ' + text.charAt(i));
+				trace("text.substring(i - 2, i + 1) : " + text.substring(i - 2, i + 1));
+				if (text.substring(i - 2, i + 1) == 'var')
+					show = true;
+			}
+			
+			if (show)
+				menuData = ctrl.getTypeOptions();
+			else
+				menuData = null;
 		}
 		
 		
@@ -291,6 +316,8 @@ package net.wonderfl.editor.manager
 					case 'p' :
 						menu.selectedIndex--;
 						return true;
+					case ' ' :
+						return filterMenu();
 					default :
 						break;
 					}
