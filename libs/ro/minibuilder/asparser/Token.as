@@ -61,6 +61,8 @@ package ro.minibuilder.asparser
 
 		public var scope:Field;//lexical scope
 		public var imports:HashMap;//used to solve names and types
+		
+		public var depth:int = 0; // depth of the tree
 
 		public static var map:Dictionary = new Dictionary(true);
 
@@ -75,10 +77,15 @@ package ro.minibuilder.asparser
 			id = count++;
 			map[id] = this;
 		}
+		
+		public function toStr():String {
+			return <>id : {id}, string : {string}, level: {depth}, pos : {pos}</>;
+		}
 
 		public function toString():String 
 		{
-			return string;
+			return <>{toStr()}, {imports ? imports.toArray().length +" imports : " + imports.toArray() : "no imports"}, children : [[{
+				children ? children.map(function (token:Token, i:int, arr:Array):String { return token.toString(); } ) : [] }{"\n"}]]</>;
 		}
 	}
 }

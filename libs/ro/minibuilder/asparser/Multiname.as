@@ -39,7 +39,7 @@ package ro.minibuilder.asparser
 		
 		public function toString():String
 		{
-			return '[Multiname '+type+']';
+			return '[Multiname '+type+' imports '+ imports.toArray() +']';
 		}
 	}
 }

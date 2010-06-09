@@ -101,24 +101,35 @@ package net.wonderfl.editor.manager
 		
 		private function checkAddImports(name:String):void
 		{
+			trace("CodeAssistManager.checkAddImports > name : " + name);
 			var caret:int = fld.caretIndex;
 			if (!ctrl.isInScope(name, caret-name.length))
 			{
-				var missing:Vector.<String> = ctrl.getMissingImports(name, caret-name.length);
+				var missingImports:Object = ctrl.getMissingImports(name, caret - name.length);
+				if (!missingImports) return;
+				var missing:Vector.<String> = missingImports.missing;
+				var prefix:String = "";
+				trace(<>missing = {missing}</>);
+	
+
 				if (missing)
 				{
 					var sumChars:int = 0
+					trace('pos = ' + missingImports.pos);
+					var pos:int = fld.text.lastIndexOf('}', missingImports.pos) + 1;
+					if (pos == 0) {
+						trace('finding for {');
+						prefix = "    ";
+						pos = fld.text.lastIndexOf('{', missingImports.pos) + 1;
+					}
 					for (var i:int=0; i<missing.length; i++)
 					{
-						//TODO make a better regexp
-						var pos:int = fld.text.lastIndexOf('package ', fld.caretIndex);
-						pos = fld.text.indexOf('{', pos) + 1;
-						var imp:String = '\n    '+(i>0?'//':'')+'import '+missing[i] + '.' + name + ';';
+						var imp:String = '\n' + prefix + (i > 0?'//':'') + 'import ' + missing[i] + '.' + name + ';';
 						sumChars += imp.length;
 						fld.replaceText(pos, pos, imp);
 					}
 					fld.setSelection(caret + sumChars, caret + sumChars);
-					fld.parent.dispatchEvent(new Event(Event.CHANGE));
+					fld.dispatchEvent(new Event(Event.CHANGE));
 				}
 			}
 		}

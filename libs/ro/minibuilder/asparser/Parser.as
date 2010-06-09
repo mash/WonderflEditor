@@ -144,7 +144,10 @@ package ro.minibuilder.asparser
 				tokenizer = tokenizer2;
 				tokenizer2 = null;
 				TypeDB.setDB(fileName, tokenizer.typeDB);
+				
+				trace('parse complete : ' + tokenizer ? tokenizer.tree : 'null');
 			}
+			
 			return b;
 		}
 

@@ -21,6 +21,7 @@ Author: Victor Dramba
 package ro.minibuilder.asparser
 {
 	import __AS3__.vec.Vector;
+	import net.wonderfl.editor.minibuilder.ImportStructure;
 	//import com.victordramba.console.debug;
 	
 	import ro.victordramba.util.HashMap;
@@ -84,19 +85,23 @@ package ro.minibuilder.asparser
 			return false;
 		}
 		
-		public function getMissingImports(name:String, pos:int):Vector.<String>
+		public function getMissingImports(name:String, pos:int):Object
 		{
 			//debug('get missing imports');
 			
-			// should treat internal classes
 			//find the scope
 			var t:Token = tokenizer.tokenByPos(pos);
 			if (!t) return null;
-			var imports:HashMap = findImports(t);
-			if (!imports) return null;
-			
+			var foundStructure:ImportStructure = findImports(t);
+			var imports:HashMap = foundStructure.imports;
 			var found:Boolean = false;
-			var missing:Vector.<String> = typeDB.listImportsFor(name)
+			var missing:Vector.<String> = typeDB.listImportsFor(name);
+			
+			if (!imports) {
+				trace('imports not found');
+				return null;
+			}
+			
 			loop1: for each (var pack:String in missing)
 			{
 				for each (var line:String in imports.toArray())
@@ -113,7 +118,10 @@ package ro.minibuilder.asparser
 			
 			//debug(missing.join('\n'));
 			
-			if (!found) return missing;
+			if (!found) return {
+				missing : missing,
+				pos : foundStructure.pos
+			};
 			return null;
 		}
 		
@@ -300,12 +308,33 @@ package ro.minibuilder.asparser
 		}
 		
 		//find the imports for this token
-		private function findImports(token:Token):HashMap
+		private function findImports(token:Token):ImportStructure
 		{
-			do {
-				token = token.parent;
-			} while (token.parent && !token.imports);
-			return token.imports;			
+			if (token.parent && token.parent.string == "top") {
+				trace('parent == top');
+				var temp:Token = token = token.parent;
+				var t:Token;
+				var i:int = 0;
+				var len:int = token.children.length;
+				while (i < len) {
+					t = token.children[i];
+					if (t.imports) {
+						trace('imports found' + t);
+						break;
+					}
+					i++;
+				}
+				
+				
+				token = t.imports ? t : temp;
+			} else {
+				do {
+					token = token.parent;
+				} while (token.parent && !token.imports);
+			}
+			
+			
+			return new ImportStructure(token.imports, token.pos);
 		}
 		
 		
@@ -336,7 +365,7 @@ package ro.minibuilder.asparser
 			var name:String = bp.names[0];
 			var itemType:String = bp.types[0];
 			
-			var imports:HashMap = findImports(t);
+			var imports:HashMap = findImports(t).imports;
 			
 			findScopeClass(t.scope);
 			

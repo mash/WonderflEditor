@@ -333,6 +333,7 @@ package ro.minibuilder.asparser
 		
 		internal var topScope:Field;
 		private var _typeDB:TypeDB;
+		private var _level:int = 0;
 
 		internal function get typeDB():TypeDB
 		{
@@ -348,6 +349,7 @@ package ro.minibuilder.asparser
 				{
 					tokens = [];
 					tree = new Token('top', null, 0);
+					tree.pos = 0;
 					tree.children = [];
 					crtBlock = tree;
 
@@ -372,12 +374,19 @@ package ro.minibuilder.asparser
 				crtBlock.children.push(t);
 				if (t.string=='{'/* || t.string=='[' || t.string=='('*/)
 				{
+					++_level;
 					crtBlock = t;
 					t.children = [];
-				}
-				if (t.string=='}' && crtBlock.parent/* || t.string==']' || t.string==')'*/)
-				{
-					crtBlock = crtBlock.parent;
+				} else if (t.string == '}') {
+					--_level;
+					if (_level == 0) {
+						imports = new HashMap;
+						//crtBlock.imports = imports;
+					}
+					if (crtBlock.parent/* || t.string==']' || t.string==')'*/)
+					{
+						crtBlock = crtBlock.parent;
+					}
 				}
 
 				t.scope = scope;
@@ -387,14 +396,17 @@ package ro.minibuilder.asparser
 				var tp2:Token = tokens[tl-2];
 				var tp3:Token = tokens[tl-3];
 
-				if (t.string == 'package')
-					imports = new HashMap;
+				//if (t.string == '{' && _level == 0) {
+					//
+				//}
+				
+				
+					//imports = new HashMap;
 
 				//toplevel package
 				if (t.string=='{' && tp && tp.string == 'package')
 				{
 					_scope = scope.members.getValue('');
-					//imports.setItem('.*');
 				}
 				else if (tp && tp.string == 'import')
 				{
@@ -442,7 +454,6 @@ package ro.minibuilder.asparser
 						{
 							field.access = access;
 							access = null;
-							
 						}
 						//all interface methods are public
 						if (scope.fieldType == 'interface')
@@ -463,7 +474,8 @@ package ro.minibuilder.asparser
 						}
 					}
 					//add current package to imports
-					if (tp.string == 'package')
+					//if (tp.string == 'package')
+					if (tp && tp.string == 'class')
 						imports.setValue(t.string+'.*', t.string+'.*');
 				}
 
@@ -536,11 +548,16 @@ package ro.minibuilder.asparser
 						field = null;
 					}
 				}
+				
+				if (t.string == 'class') {
+					imports ||= new HashMap; // imports != null
+					t.imports = imports;
+				}
 
 
 				if (t.string == '{' && _scope)
 				{
-					crtBlock.imports = imports;
+					//crtBlock.imports = imports;
 					_scope.pos = t.pos;
 					_scope.parent = scope;
 					scope = _scope;
@@ -561,6 +578,7 @@ package ro.minibuilder.asparser
 					tokens.push(sepT);
 				}
 
+				t.depth = _level;
 			}
 			return true;
 		}

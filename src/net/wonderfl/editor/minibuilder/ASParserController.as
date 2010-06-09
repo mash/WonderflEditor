@@ -176,7 +176,7 @@ package net.wonderfl.editor.minibuilder
 			return parser.newResolver().getAllOptions(index);
 		}
 		
-		public function getMissingImports(name:String, pos:int):Vector.<String>
+		public function getMissingImports(name:String, pos:int):Object
 		{
 			return parser.newResolver().getMissingImports(name, pos);
 		}
