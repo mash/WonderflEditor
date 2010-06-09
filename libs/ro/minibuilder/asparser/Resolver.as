@@ -98,7 +98,6 @@ package ro.minibuilder.asparser
 			var found:Boolean = false;
 			var missing:Vector.<String> = typeDB.listImportsFor(name);
 			
-			trace('imports : ' + foundStructure.imports.toArray(), ' pos = ' + foundStructure.pos);
 			
 			loop1: for each (var pack:String in missing)
 			{
@@ -310,8 +309,10 @@ package ro.minibuilder.asparser
 		{
 			var manager:ImportManager = ImportManager.getInstance();
 			var imports:ImportStructure = new ImportStructure;
-			imports.imports = (manager.packageEndIndex < token.pos) ? manager.topImport : manager.topImport;
-			imports.pos = (manager.packageEndIndex < token.pos) ? manager.packageEndIndex : manager.packageBeginIndex;
+			
+			var inPackage:Boolean = manager.packageEndIndex == -1 || (manager.packageEndIndex > token.pos);
+			imports.imports = inPackage ? manager.packageImport : manager.topImport;
+			imports.pos = inPackage ? manager.packageBeginIndex : manager.packageEndIndex;
 			
 			return imports;
 		}
