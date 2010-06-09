@@ -19,7 +19,6 @@ package net.wonderfl.editor.minibuilder
 		}
 		
 		public function clearData():void {
-			trace("ImportManager.clearData");
 			_packageBeginIndex = -1;
 			_packageEndIndex = -1;
 			packageImport = new HashMap;
@@ -31,7 +30,6 @@ package net.wonderfl.editor.minibuilder
 		}
 		
 		public function get imports():HashMap {
-			trace("imports : " + topImport.toArray() + ' -- package -- ' + packageImport.toArray());
 			return (_packageEndIndex > -1) ? topImport : packageImport;
 		}
 		

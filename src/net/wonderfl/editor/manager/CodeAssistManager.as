@@ -124,6 +124,7 @@ package net.wonderfl.editor.manager
 					}
 					for (var i:int=0; i<missing.length; i++)
 					{
+						if (missing[i] == 'top') continue;
 						var imp:String = '\n' + prefix + (i > 0?'//':'') + 'import ' + missing[i] + '.' + name + ';';
 						sumChars += imp.length;
 						fld.replaceText(pos, pos, imp);
