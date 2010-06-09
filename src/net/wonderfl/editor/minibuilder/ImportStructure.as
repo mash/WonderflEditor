@@ -10,7 +10,7 @@ package net.wonderfl.editor.minibuilder
 		public var imports:HashMap;
 		public var pos:int;
 		
-		public function ImportStructure($imports:HashMap, $pos:int) 
+		public function ImportStructure($imports:HashMap = null, $pos:int = 0) 
 		{
 			imports = $imports;
 			pos = $pos;

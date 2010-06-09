@@ -34,6 +34,7 @@ package ro.minibuilder.asparser
 	//import com.victordramba.console.debug;
 	
 	import flash.utils.getTimer;
+	import net.wonderfl.editor.minibuilder.ImportManager;
 	import ro.victordramba.util.HashMap;
 
 
@@ -361,8 +362,8 @@ package ro.minibuilder.asparser
 					pos = 0;
 					defParamValue = null;
 					paramsBlock = false;
-					
-					imports = new HashMap;
+					ImportManager.getInstance().clearData();
+					//imports = new HashMap;
 				}
 
 				var t:Token = nextToken();
@@ -380,7 +381,10 @@ package ro.minibuilder.asparser
 				} else if (t.string == '}') {
 					--_level;
 					if (_level == 0) {
-						imports = new HashMap;
+						if (ImportManager.getInstance().packageEndIndex == -1) {
+							ImportManager.getInstance().packageEndIndex = t.pos;
+						}
+						//imports = new HashMap;
 						//crtBlock.imports = imports;
 					}
 					if (crtBlock.parent/* || t.string==']' || t.string==')'*/)
@@ -406,15 +410,16 @@ package ro.minibuilder.asparser
 				//toplevel package
 				if (t.string=='{' && tp && tp.string == 'package')
 				{
+					ImportManager.getInstance().packageBeginIndex = t.pos;
 					_scope = scope.members.getValue('');
 				}
 				else if (tp && tp.string == 'import')
 				{
-					imports.setValue(t.string, t.string);
+					ImportManager.getInstance().imports.setValue(t.string, t.string);
 				}
 				else if (tp && tp.string == 'extends')
 				{
-					if (field && t) field.extendz = new Multiname(t.string, imports);
+					if (field && t) field.extendz = new Multiname(t.string, ImportManager.getInstance().imports);
 				}
 				else if (t.string=='private' || t.string=='protected' || t.string=='public' || t.string=='internal')
 				{
@@ -476,7 +481,7 @@ package ro.minibuilder.asparser
 					//add current package to imports
 					//if (tp.string == 'package')
 					if (tp && tp.string == 'class')
-						imports.setValue(t.string+'.*', t.string+'.*');
+						ImportManager.getInstance().imports.setValue(t.string+'.*', t.string+'.*');
 				}
 
 				if (t.string == ';')
@@ -509,10 +514,10 @@ package ro.minibuilder.asparser
 						{
 							if (_scope.fieldType == 'set')
 							{
-								_scope.type = new Multiname(t.string, imports);
+								_scope.type = new Multiname(t.string, ImportManager.getInstance().imports);
 							}
 							else
-								param.type = new Multiname(t.string, imports);
+								param.type = new Multiname(t.string, ImportManager.getInstance().imports);
 						}
 
 						else if (t.string == '=')
@@ -543,21 +548,15 @@ package ro.minibuilder.asparser
 					{
 						if (field.fieldType != 'set')
 						{
-							field.type = new Multiname(t.string, imports);
+							field.type = new Multiname(t.string, ImportManager.getInstance().imports);
 						}
 						field = null;
 					}
 				}
 				
-				if (t.string == 'class') {
-					imports ||= new HashMap; // imports != null
-					t.imports = imports;
-				}
-
 
 				if (t.string == '{' && _scope)
 				{
-					//crtBlock.imports = imports;
 					_scope.pos = t.pos;
 					_scope.parent = scope;
 					scope = _scope;

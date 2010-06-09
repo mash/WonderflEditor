@@ -21,6 +21,7 @@ Author: Victor Dramba
 package ro.minibuilder.asparser
 {
 	import __AS3__.vec.Vector;
+	import net.wonderfl.editor.minibuilder.ImportManager;
 	import net.wonderfl.editor.minibuilder.ImportStructure;
 	//import com.victordramba.console.debug;
 	
@@ -97,10 +98,7 @@ package ro.minibuilder.asparser
 			var found:Boolean = false;
 			var missing:Vector.<String> = typeDB.listImportsFor(name);
 			
-			if (!imports) {
-				trace('imports not found');
-				return null;
-			}
+			trace('imports : ' + foundStructure.imports.toArray(), ' pos = ' + foundStructure.pos);
 			
 			loop1: for each (var pack:String in missing)
 			{
@@ -310,31 +308,12 @@ package ro.minibuilder.asparser
 		//find the imports for this token
 		private function findImports(token:Token):ImportStructure
 		{
-			if (token.parent && token.parent.string == "top") {
-				trace('parent == top');
-				var temp:Token = token = token.parent;
-				var t:Token;
-				var i:int = 0;
-				var len:int = token.children.length;
-				while (i < len) {
-					t = token.children[i];
-					if (t.imports) {
-						trace('imports found' + t);
-						break;
-					}
-					i++;
-				}
-				
-				
-				token = t.imports ? t : temp;
-			} else {
-				do {
-					token = token.parent;
-				} while (token.parent && !token.imports);
-			}
+			var manager:ImportManager = ImportManager.getInstance();
+			var imports:ImportStructure = new ImportStructure;
+			imports.imports = (manager.packageEndIndex < token.pos) ? manager.topImport : manager.topImport;
+			imports.pos = (manager.packageEndIndex < token.pos) ? manager.packageEndIndex : manager.packageBeginIndex;
 			
-			
-			return new ImportStructure(token.imports, token.pos);
+			return imports;
 		}
 		
 		
