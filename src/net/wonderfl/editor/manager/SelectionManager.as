@@ -71,11 +71,13 @@ package net.wonderfl.editor.manager
 				saveLastCol();
 			
 			if (handled) {
-				if (!$event.shiftKey && k != Keyboard.TAB)
-					_field._setSelection(_caret, _caret);
+				if (!$event.shiftKey && k != Keyboard.TAB) {
+					//_field.we_internal::igonoreCursor = true;
+					_field._setSelection(_caret, _caret, true);
+				}
 					
-				_field.updateCaret();
-				_field.we_internal::checkScrollToCursor();
+					//_field.updateCaret();
+				//_field.we_internal::checkScrollToCursor();
 			}
 			
 			return handled;

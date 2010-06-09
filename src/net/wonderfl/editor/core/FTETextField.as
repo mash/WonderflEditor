@@ -779,13 +779,14 @@ package net.wonderfl.editor.core
 			index = $index - index;
 			if (lines >= 0 && textLine && index < textLine.atomCount) {
 				xpos = textLine.getAtomBounds(index).x + textLine.x;
-			} else if ($index == _text.length && textLine) {
-				var atomCount:int = index - 1;
-				atomCount = (atomCount >= textLine.atomCount) ? (textLine.atomCount) - 1 : atomCount;
-				atomCount = (atomCount < 0) ? 0 : atomCount;
-				rect = textLine.getAtomBounds(atomCount);
-				trace($index, rect);
-				xpos = rect.x + rect.width + textLine.x;
+			} else if ($index == _text.length) {
+				if ( textLine) {
+					var atomCount:int = index - 1;
+					atomCount = (atomCount >= textLine.atomCount) ? (textLine.atomCount) - 1 : atomCount;
+					atomCount = (atomCount < 0) ? 0 : atomCount;
+					rect = textLine.getAtomBounds(atomCount);
+					xpos = rect.x + rect.width + textLine.x;
+				}
 			} else {
 				if (lines > 0) {
 					ypos = boxHeight * (visibleRows + 1);
@@ -828,6 +829,11 @@ package net.wonderfl.editor.core
 		public function get maxScrollH():int { return _maxScrollH; }
 		
 		public function get maxWidth():int { return _maxWidth; }
+		
+		we_internal function set igonoreCursor(value:Boolean):void 
+		{
+			_igonoreCursor = value;
+		}
 
 		public function addFormatRun(beginIndex:int, endIndex:int, bold:Boolean, italic:Boolean, color:String):void
 		{
