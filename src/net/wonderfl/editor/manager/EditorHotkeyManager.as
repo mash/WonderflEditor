@@ -24,11 +24,6 @@ package net.wonderfl.editor.manager
 			_savePositions = new Vector.<int>;
 		}
 		
-		public function get imeMode():Boolean
-		{
-			return false;
-		}
-		
 		public function keyDownHandler($event:KeyboardEvent):Boolean
 		{
 			var result:Boolean = true;

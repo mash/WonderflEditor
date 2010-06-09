@@ -9,7 +9,6 @@ package net.wonderfl.editor.manager
 	public interface IKeyboadEventManager 
 	{
 		function keyDownHandler($event:KeyboardEvent):Boolean;
-		function get imeMode():Boolean;
 	}
 	
 }

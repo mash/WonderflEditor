@@ -11,6 +11,7 @@ package net.wonderfl.editor.core
 	import flash.ui.Keyboard;
 	import flash.utils.ByteArray;
 	import net.wonderfl.editor.events.EditorEvent;
+	import net.wonderfl.editor.ime.AbstractIMEClient;
 	import net.wonderfl.editor.ime.IMEClient_10_0;
 	import net.wonderfl.editor.ime.IMEClient_10_1;
 	import net.wonderfl.editor.livecoding.LiveCoding;
@@ -39,7 +40,7 @@ package net.wonderfl.editor.core
 		private var _selectionManager:SelectionManager;
 		private var _clipboardManager:ClipboardManager;
 		private var _historyManager:HistoryManager;
-		private var _imeManager:IKeyboadEventManager;
+		private var _imeManager:AbstractIMEClient;
 		private var _plugins:Vector.<IKeyboadEventManager>;
 		private var _editManager:EditManager;
 		private var _livecoding:LiveCoding;

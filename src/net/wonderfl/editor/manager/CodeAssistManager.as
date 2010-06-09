@@ -61,7 +61,6 @@ package net.wonderfl.editor.manager
 		private var menuRefY:int;
 		private var tooltip:ToolTip;
 		private var tooltipCaret:int;
-		private var _imeMode:Boolean;
 		private var _menuActive:Boolean;
 		private var _selectedFunctionDefinition:Field;
 		
@@ -273,16 +272,8 @@ package net.wonderfl.editor.manager
 			CONFIG::debug { trace('  CodeAssistManager :: ' + args); }
 		}
 		
-		/* INTERFACE net.wonderfl.editor.manager.IKeyboadEventManager */
-		
-		public function get imeMode():Boolean
-		{
-			return _imeMode;
-		}
-		
 		public function keyDownHandler($event:KeyboardEvent):Boolean
 		{
-			_imeMode = false;
 			if (tooltip.isShowing())
 			{
 				if ($event.keyCode == Keyboard.ESCAPE || $event.keyCode == Keyboard.UP || $event.keyCode == Keyboard.DOWN || fld.caretIndex < tooltipCaret) {
