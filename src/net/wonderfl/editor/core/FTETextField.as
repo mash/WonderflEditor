@@ -653,11 +653,13 @@ package net.wonderfl.editor.core
 			if (_caret > lastPos)
 			{
 				result = countNewLines(lastPos, _caret);
+				_igonoreCursor = true;
 				scrollY += result.numNewLines;
 			}
 			if (_caret < firstPos)
 			{
 				result = countNewLines(_caret, firstPos);
+				_igonoreCursor = true;
 				scrollY -= result.numNewLines;
 			}
 			

@@ -33,6 +33,13 @@ package net.wonderfl.editor.manager
 			_caret = _field.we_internal::_caret;
 			_length = _text.length;
 			
+			var tmp:int;
+			if (_selStart > _selEnd) {
+				tmp = _selStart;
+				_selStart = _selEnd;
+				_selEnd = tmp;
+			}
+			
 			switch (k) {
 			case Keyboard.LEFT:
 				handleLeftArrow($event);
@@ -63,7 +70,7 @@ package net.wonderfl.editor.manager
 				break;
 			}
 			
-			_field.we_internal::_caret = _caret;
+			
 
 			
 			//save last column
@@ -71,9 +78,14 @@ package net.wonderfl.editor.manager
 				saveLastCol();
 			
 			if (handled) {
+				_field.we_internal::_caret = _caret;
+				
 				if (!$event.shiftKey && k != Keyboard.TAB) {
 					//_field.we_internal::igonoreCursor = true;
 					_field._setSelection(_caret, _caret, true);
+				} else {
+					_field.updateCaret();
+					_field.we_internal::checkScrollToCursor();
 				}
 					
 					//_field.updateCaret();
@@ -104,7 +116,10 @@ package net.wonderfl.editor.manager
 		
 		private function extendSel($left:Boolean):void
 		{
+			//trace("SelectionManager.extendSel > $left : " + $left);
+			
 			if ($left) {
+				trace("_caret : " + _caret + ", _selStart : " + _selStart);
 				if (_caret < _selStart)
 					_field._setSelection(_caret, _selEnd);
 				else
@@ -138,7 +153,7 @@ package net.wonderfl.editor.manager
 		
 		private function handleUpArrow($event:KeyboardEvent):void
 		{
-			var i:int = _text.lastIndexOf(NL, _caret-1);
+			var i:int = _text.lastIndexOf(NL, Math.min(_selStart, _caret)-1);
 			var lineBegin:int = i;
 			if (i != -1)
 			{

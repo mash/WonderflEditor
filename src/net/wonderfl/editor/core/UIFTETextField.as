@@ -146,7 +146,6 @@ package net.wonderfl.editor.core
 					scrollDelta = 0;
 					
 				if (scrollDelta != 0) {
-					//scrollY += scrollDelta;
 					setScrollYByBar(_scrollY + scrollDelta);
 				}
 				
