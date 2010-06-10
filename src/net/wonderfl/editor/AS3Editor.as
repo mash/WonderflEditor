@@ -192,7 +192,7 @@ package net.wonderfl.editor
 			_field.setSize(_width - lineNums.width - _vScroll.width, _height - _hScroll.height - _liveCodingController.height); 
 			_field.y = _liveCodingController.height;
 			_vScroll.height = _height - _liveCodingController.height - _hScroll.height;
-			_hScroll.width = _width;
+			_hScroll.width = _width - _vScroll.width;
 			_vScroll.x = _width - _vScroll.width;
 			_vScroll.y = _liveCodingController.height;
 			_hScroll.y = _field.height + _liveCodingController.height;
