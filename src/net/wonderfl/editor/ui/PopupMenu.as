@@ -118,8 +118,10 @@ package net.wonderfl.editor.ui
 			graphics.drawRect(0, 0, _width, _height);
 			graphics.endFill();
 			
+			var i:int = (_selectedIndex - _scrollPos);
+			i = (i > 9) ? 9 : i;
 			graphics.beginFill(SELECT_COLOR);
-			graphics.drawRect(0, 15 * (_selectedIndex - _scrollPos), _width, 15);
+			graphics.drawRect(0, 15 * i, _width, 15);
 			graphics.endFill();
 		}
 	}
