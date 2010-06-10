@@ -1,4 +1,4 @@
-package tests 
+package  
 {
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
@@ -12,6 +12,7 @@ package tests
 	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
 	import flash.utils.Timer;
+	import net.wonderfl.editor.AS3Editor;
 	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
 	import net.wonderfl.editor.utils.bind;
@@ -24,10 +25,10 @@ package tests
 	 */
 	public class WonderflEditor extends Sprite
 	{
-		[Embed(source = '../../assets/btn_smallscreen.jpg')]
+		[Embed(source = '../assets/btn_smallscreen.jpg')]
 		private var _image_out_:Class;
 		
-		[Embed(source = '../../assets/btn_smallscreen_o.jpg')]
+		[Embed(source = '../assets/btn_smallscreen_o.jpg')]
 		private var _image_over_:Class;
 		
 		private var _scaleDownButton:Sprite;

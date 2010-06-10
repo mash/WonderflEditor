@@ -1,4 +1,4 @@
-package tests 
+package net.wonderfl.editor 
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
