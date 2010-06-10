@@ -86,13 +86,70 @@ package net.wonderfl.editor.manager
 			var a:Array = menuData ? vectorToArray(menuData.filter(menuFilterCallback)) : [];
 
 			if (a.length == 0) return false;
-			menu.setListData(a.sort());
+			menu.setListData(a.sort(function sortMenu($a:String, $b:String):int {
+				if (menuStr.length == 0) {
+					if ($a < $b) return -1;
+					else if ($a > $b) return 1;
+					else return 0;
+				}
+				
+				var da:int = diff($a);
+				var db:int = diff($b);
+				
+				if (da < db)
+					return -1;
+				else if (da > db)
+					return 1;
+				else return 0;
+			}));
+			//menu.setListData(a);
 			menu.selectedIndex = 0;
 			
 			rePositionMenu();
 			return true;
 		}
 		
+		private function sortMenu($a:String, $b:String):int {
+			var da:int = diff($a);
+			var db:int = diff($b);
+			
+			if (da < db)
+				return -1;
+			else if (da > db)
+				return 1;
+			else return 0;
+		}
+		
+		private function diff($str:String):int {
+			var m:String = $str.toLowerCase();
+			$str = menuStr.toLowerCase();
+			var dx:int = $str.length;
+			var dy:int = m.length;
+			var table:Array = [];
+			table.length = (dx + 1) * (dy + 1);
+			
+			var i:int, j:int;
+			
+			for (i = 0; i <= dx; ++i) table[i] = i;
+			for (j = 0; j <= dy; ++j) table[j * (dx + 1)] = j;
+			
+			var cost:int, u:int;
+			
+			u = dx + 1;
+			for (i = 1; i <= dx; i++)
+			{
+				for (j = 1; j <= dy; j++)
+				{
+					cost = ($str.charAt(i - 1) != m.charAt(j - 1) ? 1 : 0);
+					table[i + j * u] = Math.min(
+												table[i - 1 + u * j] + 1,
+												table[i + u * (j - 1)] + 1,
+												table[i - 1 + u *(j - 1)] + cost);
+				}
+			}
+			
+			return table[dx + u * dy];
+		}
 		private function menuFilterCallback($item:String, $index:int, $vec:Vector.<String>):Boolean {
 			return (new RegExp('^' + menuStr.split('').join('.*'), 'i')).test($item);
 		}
