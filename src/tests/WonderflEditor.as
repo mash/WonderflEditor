@@ -7,11 +7,14 @@ package tests
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
 	import flash.external.ExternalInterface;
 	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
+	import flash.utils.Timer;
 	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
+	import net.wonderfl.editor.utils.bind;
 	import org.libspark.ui.SWFWheel;
 	
 	//import net.wonderfl.editor.WonderflEditor;
@@ -29,7 +32,7 @@ package tests
 		
 		private var _scaleDownButton:Sprite;
 		private var _editor:AS3Editor;
-		private var _compileTimer:uint;
+		private var _compileTimer:Timer;
 		private var _mouseUIFlag:Boolean = false;
 		
 		public function WonderflEditor() 
@@ -37,11 +40,9 @@ package tests
 			new LiveCoding;
 			addChild(_editor = new AS3Editor);
 			LiveCoding.editor = _editor;
-			
-			_editor.addEventListener(Event.CHANGE, function ():void {
-				trace('WonderflEditor ' + arguments);
-				_compileTimer = setTimeout(compile, 1500);
-			});
+			_compileTimer = new Timer(1500, 1);
+			_compileTimer.addEventListener(TimerEvent.TIMER, bind(compile));
+			_editor.addEventListener(Event.COMPLETE, bind(_compileTimer.start));
 			
 			_editor.setFontSize(12);
 			
@@ -105,19 +106,15 @@ package tests
 			stage.addEventListener(Event.RESIZE, onResize);
 			stage.dispatchEvent(new Event(Event.RESIZE));
 			
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, function ():void {
-				clearTimeout(_compileTimer);
-			});
+			var resetTimer:Function;
+			
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, resetTimer = bind(_compileTimer.reset));
 			stage.addEventListener(MouseEvent.MOUSE_DOWN, function ():void {
-				clearTimeout(_compileTimer);
+				resetTimer();
 				_mouseUIFlag = true;
 			});
-			stage.addEventListener(Event.MOUSE_LEAVE, function ():void {
-				_mouseUIFlag = false;
-			});
-			stage.addEventListener(MouseEvent.MOUSE_UP, function ():void {
-				_mouseUIFlag = false;
-			});
+			stage.addEventListener(Event.MOUSE_LEAVE, clearMouseUIFlag);
+			stage.addEventListener(MouseEvent.MOUSE_UP, clearMouseUIFlag);
 			
 			CONFIG::useExternalInterface {
 				if (ExternalInterface.available) {
@@ -127,6 +124,10 @@ package tests
 					_editor.text = (code) ? code : "";
 				}
 			}
+		}
+		
+		private function clearMouseUIFlag(e:Event):void {
+			_mouseUIFlag = false;
 		}
 		
 		private function onResize(e:Event):void 

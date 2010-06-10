@@ -114,6 +114,7 @@ package tests
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			
 			_parser = new ASParserController(stage, _this);
+			_parser.addEventListener(Event.COMPLETE, dispatchEvent);
 			_codeAssistManager = new CodeAssistManager(_field, _parser, stage, onComplete);
 			_editorHotkeyManager = new EditorHotkeyManager(_field, _parser);
 			_field.addPlugIn(_codeAssistManager);
@@ -127,7 +128,6 @@ package tests
 		
 		private function onComplete():void
 		{
-			
 		}
 		
 		private function onChange(e:Event):void

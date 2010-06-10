@@ -46,6 +46,7 @@ package net.wonderfl.editor.minibuilder
 	
 
 	[Event(type="flash.events.Event", name="change")]
+	[Event(type="flash.events.Event", name="complete")]
 	
 
 
@@ -97,6 +98,7 @@ package net.wonderfl.editor.minibuilder
 				//cursorMoved(textField.caretIndex);
 				status = 'Parse time: '+ (getTimer()-t0) + 'ms '+parser.tokenCount+' tokens';
 				dispatchEvent(new Event('status'));
+				dispatchEvent(new Event(Event.COMPLETE));
 			});
 			
 			tc.addEventListener(ThreadEvent.PROGRESS, function(e:ThreadEvent):void
