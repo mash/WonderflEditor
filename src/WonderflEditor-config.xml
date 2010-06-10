@@ -14,7 +14,7 @@
 		</define>
 		<define>
 			<name>CONFIG::debug</name>
-			<value>true</value>
+			<value>false</value>
 		</define>
 		<define>
 			<name>CONFIG::IME</name>

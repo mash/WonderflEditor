@@ -111,8 +111,8 @@ package net.wonderfl.editor
 		{
 			_field.height = _height - _hScroll.height;
 			_field.width = _width - lineNums.width - _vScroll.width;
-			_vScroll.height = _height;
-			_hScroll.width = _width;
+			_vScroll.height = _height - _hScroll.height;
+			_hScroll.width = _width - _vScroll.width;
 			_vScroll.x = _width - _vScroll.width;
 			_hScroll.y = _field.height;
 			lineNums.height = _field.height;
