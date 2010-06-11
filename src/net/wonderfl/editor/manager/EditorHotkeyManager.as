@@ -3,7 +3,7 @@ package net.wonderfl.editor.manager
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
 	import net.wonderfl.editor.core.FTETextField;
-	import net.wonderfl.editor.core.UIFTETextInput;
+	import net.wonderfl.editor.core.UIFTETextField;
 	import net.wonderfl.editor.minibuilder.ASParserController;
 	import ro.minibuilder.main.editor.Location;
 	/**
@@ -12,12 +12,12 @@ package net.wonderfl.editor.manager
 	 */
 	public class EditorHotkeyManager implements IKeyboadEventManager
 	{
-		private var _field:UIFTETextInput;
+		private var _field:UIFTETextField;
 		private var _savePositions:Vector.<int>;
 		private var _parser:ASParserController;
 		private var _lastCol:int;
 		
-		public function EditorHotkeyManager($field:FTETextField, $parser:ASParserController) 
+		public function EditorHotkeyManager($field:UIFTETextField, $parser:ASParserController) 
 		{
 			_field = $field;
 			_parser = $parser;
