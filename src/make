@@ -1,1 +1,6 @@
-mxmlc WEditor.as -target-player 10 -static-link-runtime-shared-libraries=true
+I'm building the entire project with Flex SDK 4.x Compiler.
+Some of the lines may cause errors when compiled with
+3.x compiler.
+
+editor : mxmlc WonderflEditor.as
+viewer : mxmlc WonderflViewer.as
