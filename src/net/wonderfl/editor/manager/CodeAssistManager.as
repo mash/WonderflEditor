@@ -260,7 +260,7 @@ package net.wonderfl.editor.manager
 			if (text.charAt(i - 1) == ')') show = true;
 			else {
 				--i;
-				while (/[\w$]/.test(text.charAt(i))) i--;
+				while (/[^.\s]/.test(text.charAt(i))) i--;
 				while (/\s/.test(text.charAt(i))) i--;
 				if (text.substring(i - 2, i + 1) == 'var') // var declarations
 					show = true;
