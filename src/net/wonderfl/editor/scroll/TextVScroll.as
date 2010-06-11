@@ -60,7 +60,9 @@ package net.wonderfl.editor.scroll
 		
 		override public function setThumbPercent($value:Number):void 
 		{
-			_handle.height = $value * _height;
+			var h:int = $value * _height;
+			h = (h < MINIMUM_THUMB_HEIGHT) ? MINIMUM_THUMB_HEIGHT : h;
+			_handle.height  = h;
 			_handleMax = _height - _handle.height;
 			_handle.visible = ($value < 1);
 		}
@@ -75,7 +77,7 @@ package net.wonderfl.editor.scroll
 			graphics.endFill();
 			
 			graphics.beginFill(0x111111);
-			graphics.drawRect(0, 0, _width, _height - MINIMUM_THUMB_HEIGHT);
+			graphics.drawRect(0, 0, _width, _height);
 			graphics.endFill();
 		}
 	}
