@@ -262,7 +262,7 @@ package net.wonderfl.editor.manager
 				--i;
 				while (/[^.\s]/.test(text.charAt(i))) i--;
 				while (/\s/.test(text.charAt(i))) i--;
-				if (text.substring(i - 2, i + 1) == 'var') // var declarations
+				if (text.substring(i - 2, i + 1) == 'var' || text.substring(i - 4, i + 1) == 'const') // var declarations
 					show = true;
 			}
 			
