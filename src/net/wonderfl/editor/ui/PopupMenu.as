@@ -26,6 +26,7 @@ package net.wonderfl.editor.ui
 		
 		public function PopupMenu() 
 		{
+			_width = _height = 0;
 			_factory = new TextBlock;
 		}
 		

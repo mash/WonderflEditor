@@ -20,6 +20,7 @@ package net.wonderfl.editor.ui
 		
 		public function ToolTip() 
 		{
+			_width = _height = 0;
 			_factory = new TextBlock;
 			_elf = new ElementFormat;
 			_elf.color = 0;
