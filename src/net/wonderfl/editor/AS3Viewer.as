@@ -8,6 +8,8 @@ package net.wonderfl.editor
 	import mx.events.ScrollEventDirection;
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.core.UIFTETextField;
+	import net.wonderfl.editor.manager.EditorHotkeyManager;
+	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.operations.SetSelection;
 	import net.wonderfl.editor.scroll.TextHScroll;
 	import net.wonderfl.editor.scroll.TextVScroll;
@@ -18,6 +20,8 @@ package net.wonderfl.editor
 	 */
 	public class AS3Viewer extends UIComponent implements IEditor
 	{
+		private var _parser:ASParserController;
+		private var _editorHotkeyManager:EditorHotkeyManager;
 		private var changeRevalIID:int;
 		private var _field:UIFTETextField;
 		private var lineNums:LineNumberField;
@@ -28,10 +32,19 @@ package net.wonderfl.editor
 		
 		public function AS3Viewer() 
 		{
+			addEventListener(Event.ADDED_TO_STAGE, init);
+		}
+		
+		private function init(e:Event):void {
+			removeEventListener(Event.ADDED_TO_STAGE, init);
+			
 			_field = new UIFTETextField;
 			addChild(_field);
 			_boxWidth = _field.boxWidth;
 			
+			_parser = new ASParserController(stage, _field);
+			_editorHotkeyManager = new EditorHotkeyManager(_field, _parser);
+			_field.addPlugIn(_editorHotkeyManager);
 			
 			addEventListener(FocusEvent.FOCUS_IN, function(e:FocusEvent):void {
 				stage.focus = _field;
@@ -43,6 +56,7 @@ package net.wonderfl.editor
 			
 			_field.addEventListener(Event.RESIZE, onFieldResize);
 			_field.addEventListener(ScrollEvent.SCROLL, onScroll);
+			_field.addEventListener(Event.CHANGE, onChange);
 			
 			lineNums = new LineNumberField(_field);
 			addChild(lineNums);
@@ -68,6 +82,15 @@ package net.wonderfl.editor
 			addChild(_blackShade);
 			addChild(_vScroll);
 			addChild(_hScroll);
+		}
+		
+		public function slowDownParser():void {
+			_parser.slowDownParser();
+		}
+		
+		public function onChange(e:Event):void 
+		{
+			_parser.sourceChanged(_field.text, '');
 		}
 		
 		private function onVScroll(e:Event):void 
@@ -171,6 +194,7 @@ package net.wonderfl.editor
 		public function onReplaceText($beginIndex:int, $endIndex:int, $newText:String):void 
 		{
 			_field.replaceText($beginIndex, $endIndex, $newText);
+			onChange(null);
 		}
 		
 		public function onSetSelection($selectionBeginIndex:int, $selectionEndIndex:int):void {
@@ -184,6 +208,7 @@ package net.wonderfl.editor
 		
 		public function set text(value:String):void {
 			_field.text = value;
+			onChange(null);
 		}
 		
 	}

@@ -69,6 +69,11 @@ package net.wonderfl.editor.core
 			addEventListener(Event.SELECT_ALL, onSelectAll);
 		}
 		
+		public function addPlugIn($plugin:IKeyboadEventManager):void {
+			_plugins.push($plugin);
+		}
+		
+		
 		public function setScrollYByBar($value:int):void {
 			_igonoreCursor = true;
 			scrollY = $value;

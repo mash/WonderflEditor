@@ -26,7 +26,6 @@
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
 	import net.wonderfl.editor.livecoding.SocketBroadCaster;
 	import net.wonderfl.editor.livecoding.ViewerInfoPanel;
-	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.utils.isMXML;
 	import org.libspark.ui.SWFWheel;
 	/**
@@ -49,7 +48,6 @@
 		private var _image_over_:Class;
 		
 		private var _viewer:AS3Viewer;
-		private var _parser:ASParserController;
 		private var _scaleDownButton:Sprite;
 		private var broadcaster:SocketBroadCaster = new SocketBroadCaster;
 		private var _source:String ='';
@@ -97,10 +95,6 @@
 			addChild(_viewer);
 			addChild(_scaleDownButton);
 			
-			_parser = new ASParserController(stage, _viewer);
-			
-			_viewer.addEventListener(Event.CHANGE, onChange);
-
 			if (loaderInfo.parameters)
 				LiveCodingSettings.setUpParameters(loaderInfo.parameters);
 			
@@ -121,10 +115,6 @@
 				code ||= "";
 				_source = code.replace(/\t/g, "    ").replace(/\r/g, "\n");
 				_viewer.text = _source;
-				//trace('init', code);
-				if (!_setInitialCodeForLiveCoding) {
-					onChange(null);
-				}
  			}
 			
 			if (_setInitialCodeForLiveCoding) {
@@ -211,7 +201,7 @@
 				if (_setInitialCodeForLiveCoding) {
 					removeEventListener(Event.ENTER_FRAME, setupInitialCode);
 					_executer.addEventListener(Event.ENTER_FRAME, execute);
-					onChange(null);
+					_viewer.onChange(null);
 				}
 			}
 		}
@@ -349,14 +339,7 @@
 				}
 			}
 		}
-		
-		private function onChange(e:Event):void 
-		{
-			var parserRunning:Boolean = _parser.sourceChanged(_source, '');
-			
-			if (!parserRunning)
-				_viewer.text = _source;
-		}
+
 		
 		private function substring($begin:int, $end:int = 0x7fffffff):String {
 			var str:String = _source.substring($begin, $end);
@@ -369,14 +352,13 @@
 		{
 			if ($beginIndex == $endIndex && $newText.length == 0) return;
 			
-			_parser.slowDownParser();
+			_viewer.slowDownParser();
 			_source = _source.substring(0, $beginIndex) + $newText + substring($endIndex);
 			//_viewer.text = _source;
 			_viewer.onReplaceText($beginIndex, $endIndex, $newText);
 			_selectionObject = {
 				index : $endIndex + $newText.length
 			}
-			onChange(null);
 			_viewer.updateLineNumbers();
 		}
 		
@@ -395,7 +377,6 @@
 		private function onSendCurrentText($text:String):void 
 		{
 			_viewer.text = _source = $text;
-			onChange(null);
 		}		
 	}
 }

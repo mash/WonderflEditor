@@ -17,7 +17,7 @@ package net.wonderfl.editor.manager
 		private var _parser:ASParserController;
 		private var _lastCol:int;
 		
-		public function EditorHotkeyManager($field:UIFTETextInput, $parser:ASParserController) 
+		public function EditorHotkeyManager($field:FTETextField, $parser:ASParserController) 
 		{
 			_field = $field;
 			_parser = $parser;

@@ -68,10 +68,6 @@ package net.wonderfl.editor.core
 			addEventListener(Event.ADDED_TO_STAGE, init);
 		}
 		
-		public function addPlugIn($plugin:IKeyboadEventManager):void {
-			_plugins.push($plugin);
-		}
-		
 		private function init(e:Event):void 
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
