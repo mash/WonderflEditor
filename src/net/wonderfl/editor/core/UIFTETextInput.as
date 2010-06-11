@@ -248,13 +248,8 @@ package net.wonderfl.editor.core
 				var str:String = Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT) as String;
 				if (str)
 				{
-					var ba:ByteArray = new ByteArray;
-					ba.writeUTF(str);
-					ba.position = 0;
-					str = ba.readUTF() || "";
 					replaceSelection(str);
-					
-						dispatchChange();
+					dispatchChange();
 				}
 			} catch (e:SecurityError) { };//can't paste
 		}
