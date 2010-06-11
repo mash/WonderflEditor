@@ -27,6 +27,7 @@
 	import net.wonderfl.editor.livecoding.SocketBroadCaster;
 	import net.wonderfl.editor.livecoding.ViewerInfoPanel;
 	import net.wonderfl.editor.minibuilder.ASParserController;
+	import net.wonderfl.editor.utils.isMXML;
 	import org.libspark.ui.SWFWheel;
 	/**
 	 * ...
@@ -190,7 +191,7 @@
 			var localName:String = CodeUtil.getDefinitionLocalName(text);
 			localName ||= "untitled";
 			fileRef = new FileReference();
-			fileRef.save(text, localName + ".as");
+			fileRef.save(text, localName + (isMXML(text) ? ".mxml" : ".as"));
 		}
 		
 		private function setupInitialCode(e:Event):void 
