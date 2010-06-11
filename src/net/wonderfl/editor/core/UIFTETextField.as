@@ -22,7 +22,9 @@ package net.wonderfl.editor.core
 	import flash.utils.setTimeout;
 	import net.wonderfl.editor.IEditor;
 	import net.wonderfl.editor.we_internal;
+	import net.wonderfl.editor.manager.IKeyboadEventManager;
 	import net.wonderfl.editor.manager.KeyDownProxy;
+	import net.wonderfl.editor.manager.SelectionManager;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -38,14 +40,18 @@ package net.wonderfl.editor.core
 		private var _keyWatcher:Function;
 		private var _this:UIFTETextField;
 		protected var _preventDefault:Boolean;
+		protected var _selectionManager:SelectionManager;
+		protected var _plugins:Vector.<IKeyboadEventManager>;
 		
 		use namespace we_internal;
 		
 		public function UIFTETextField() 
 		{
 			super();
-			focusRect = false;
+			_selectionManager = new SelectionManager(this);
+			_plugins = new Vector.<IKeyboadEventManager>;
 			
+			focusRect = false;
 			_this = this;
 			
 			new KeyDownProxy(this, onKeyDown, [Keyboard.DOWN, Keyboard.UP, Keyboard.PAGE_DOWN, Keyboard.PAGE_UP, Keyboard.LEFT, Keyboard.RIGHT, 66, 70]);
@@ -60,15 +66,7 @@ package net.wonderfl.editor.core
 			
 			
 			addEventListener(Event.COPY, onCopy);
-			//addEventListener(Event.PASTE, onPaste);
 			addEventListener(Event.SELECT_ALL, onSelectAll);
-			
-			addEventListener(MouseEvent.ROLL_OVER, function(e:MouseEvent):void {
-				//Mouse.cursor = MouseCursor.IBEAM;
-			});
-			addEventListener(MouseEvent.ROLL_OUT, function(e:MouseEvent):void {
-				//Mouse.cursor = MouseCursor.AUTO;
-			});
 		}
 		
 		public function setScrollYByBar($value:int):void {
@@ -171,7 +169,7 @@ package net.wonderfl.editor.core
 				p.x = mouseX; p.y = mouseY;
 				_setSelection(dragStart, getIndexForPoint(p), true);
 				//clearInterval(IID);
-				saveLastCol();
+				_selectionManager.saveLastCol();
 			}
 			
 			function intervalScroll():void
@@ -187,6 +185,7 @@ package net.wonderfl.editor.core
 		
 		protected function onKeyDown(e:KeyboardEvent):void
 		{
+			_preventDefault = false;
 			var c:String = String.fromCharCode(e.charCode);
 			var k:int = e.keyCode;
 			var i:int;
@@ -194,199 +193,17 @@ package net.wonderfl.editor.core
 			{
 				onCopy();
 			}
-			//else if (k == Keyboard.INSERT && e.shiftKey)
-			//{
-				//onPaste();
-			//}
-			//
-			//else if (String.fromCharCode(e.charCode) == 'z' && e.ctrlKey)
-			//{
-				//undo();
-				//dipatchChange();
-				//return;
-			//}
-			//else if (String.fromCharCode(e.charCode) == 'y' && e.ctrlKey)
-			//{
-				//redo();
-				//dipatchChange();
-				//return;
-			//}
 			
-			
-			if (k == Keyboard.CONTROL || k == Keyboard.SHIFT || e.keyCode==3/*ALT*/ || e.keyCode==Keyboard.ESCAPE)
+			if (k == Keyboard.CONTROL || k == Keyboard.SHIFT || e.keyCode == 3/*ALT*/)
 				return;
-				
-			//debug(e.charCode+' '+e.keyCode);
-				
-			//var line:TextLine = getLineAt(_caret);
-			var re:RegExp;
-			var pos:int;
 			
-			if (k == Keyboard.RIGHT)
-			{
-				if (e.ctrlKey)
-				{
-					re = /\b/g;
-					re.lastIndex = _caret+1;
-					re.exec(_text);
-					_caret = re.lastIndex;
-					if (e.shiftKey) extendSel(false);
-				}
-				else
-				{
-					//if we have a selection, goto end of selection
-					if (!e.shiftKey && _selStart != _selEnd)
-						_caret = _selEnd; 
-					else if (_caret < length) {
-						_caret += 1;
-						if (e.shiftKey) extendSel(false);
-					}
-				}
+			var len:int = _plugins.length;
+			for (i = 0; i < len; ++i) {
+				if (_plugins[i].keyDownHandler(e))
+					return;
 			}
-			else if (k == Keyboard.DOWN)
-			{
-				//look for next NL
-				i = _text.indexOf(NL, _caret);
-				if (i != -1)
-				{ 
-					_caret = i+1;
-				
-					//line = lines[line.index+1];
-					
-					i = _text.indexOf(NL, _caret);
-					if (i==-1) i = _text.length;
-					
-					
-					//restore col
-					if (i - _caret > lastCol)
-						_caret += lastCol;
-					else
-						_caret = i;
-						
-					if (e.shiftKey) extendSel(false);
-				}
-			}
-			else if (k == Keyboard.UP)
-			{
-				i = _text.lastIndexOf(NL, _caret-1);
-				var lineBegin:int = i;
-				if (i != -1)
-				{
-					i = _text.lastIndexOf(NL, i-1);
-					if (i != -1) _caret = i+1;
-					else _caret = 0;
-					
-					//line = lines[line.index - 1];
-					//_caret = line.start;
-					
-					//restore col
-					if (lineBegin - _caret > lastCol)
-						_caret += lastCol;
-					else
-						_caret = lineBegin;
-						
-					if (e.shiftKey) extendSel(true);
-				}
-			}
-			else if (k == Keyboard.PAGE_UP)
-			{
-				for (i = 0, pos = _caret; i <= visibleRows; i++) 
-				{
-					pos = _text.lastIndexOf(NL, pos-1);
-					if (pos == -1)
-					{
-						_caret = 0;
-						break;
-					}
-					_caret = pos+1;
-				}
-			}
-			else if (k == Keyboard.PAGE_DOWN)
-			{
-				for (i = 0, pos = _caret; i <= visibleRows; i++) 
-				{
-					pos = _text.indexOf(NL, pos+1);
-					if (pos == -1)
-					{
-						_caret = _text.length;
-						break;
-					}
-					_caret = pos+1;
-				}
-			}
-			else if (k == Keyboard.LEFT)
-			{
-				if (e.ctrlKey)
-				{
-					_caret = Math.max(0, findWordBound(_caret-2, true));
-					if (e.shiftKey) extendSel(true);
-				}
-				else
-				{
-					//if we have a selection, goto begin of selection
-					if (!e.shiftKey && _selStart != _selEnd) 
-						_caret = _selStart;
-					else if (_caret > 0) {
-						_caret -= 1;
-						if (e.shiftKey) extendSel(true);
-					}
-				}
-			}
-			else if (k == Keyboard.HOME)
-			{
-				if (e.ctrlKey)
-					_caret = 0;
-				else
-				{
-					var start:int = i = _text.lastIndexOf(NL, _caret-1) + 1;
-					var ch:String;
-					while ((ch=_text.charAt(i))=='\t' || ch==' ') i++;
-					_caret = _caret == i ? start : i;
-				}
-				if (e.shiftKey) extendSel(true);
-			}
-			else if (k == Keyboard.END)
-			{
-				if (e.ctrlKey)
-					_caret = _text.length;
-				else
-				{
-					i = _text.indexOf(NL, _caret);
-					_caret = i == -1 ? _text.length : i;
-				}
-				if (e.shiftKey) extendSel(false);
-			}
-			else return;
-
-			if (!e.shiftKey && k!=Keyboard.TAB)
-				_setSelection(_caret, _caret);
 			
-			//save last column
-			if (k!=Keyboard.UP && k!=Keyboard.DOWN && k!=Keyboard.TAB)
-				saveLastCol();
-			
-			checkScrollToCursor();
-			//e.updateAfterEvent();
-			//captureInput();
-			
-			//local function
-			function extendSel(left:Boolean):void
-			{
-				if (left)
-				{
-					if (_caret < _selStart)
-						_setSelection(_caret, _selEnd);
-					else
-						_setSelection(_selStart, _caret);
-				}
-				else
-				{
-					if (_caret > _selEnd)
-						_setSelection(_selStart, _caret);
-					else
-						_setSelection(_caret, _selEnd);
-				}
-			}
+			_selectionManager.keyDownHandler(e);
 		}
 		
 		override public function _setSelection(beginIndex:int, endIndex:int, caret:Boolean = false):void 
@@ -394,12 +211,6 @@ package net.wonderfl.editor.core
 			super._setSelection(beginIndex, endIndex, caret);
 			
 			stage.focus = this;
-		}
-		
-		
-		protected function saveLastCol():void
-		{
-			lastCol = _caret - _text.lastIndexOf(NL, _caret-1) - 1;
 		}
 	}
 

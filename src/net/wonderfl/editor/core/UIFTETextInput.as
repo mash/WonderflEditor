@@ -37,11 +37,9 @@ package net.wonderfl.editor.core
 			'》' : '《', '』' : '『'
 		}
 		we_internal var _imeField:TextField;
-		private var _selectionManager:SelectionManager;
 		private var _clipboardManager:ClipboardManager;
 		private var _historyManager:HistoryManager;
 		private var _imeManager:AbstractIMEClient;
-		private var _plugins:Vector.<IKeyboadEventManager>;
 		private var _editManager:EditManager;
 		private var _livecoding:LiveCoding;
 		use namespace we_internal;
@@ -49,11 +47,8 @@ package net.wonderfl.editor.core
 		public function UIFTETextInput() 
 		{
 			super();
-			_selectionManager = new SelectionManager(this);
 			_editManager = new EditManager(this);
 			_historyManager = new HistoryManager(this);  
-			
-			_plugins = new Vector.<IKeyboadEventManager>;
 			
 			_imeField = new TextField;
 			_imeField.height = boxHeight;
@@ -210,7 +205,7 @@ package net.wonderfl.editor.core
 			}
 			replaceSelection(e.text);
 			setSelectionPromise = new SetSelection(_caret, _caret);
-			saveLastCol();
+			_selectionManager.saveLastCol();
 			checkScrollToCursor();
 			dispatchChange();
 			e.stopPropagation();

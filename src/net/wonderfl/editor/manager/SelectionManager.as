@@ -95,9 +95,9 @@ package net.wonderfl.editor.manager
 			return handled;
 		}
 		
-		private function saveLastCol():void
+		public function saveLastCol():void
 		{
-			_lastCol = _caret - _text.lastIndexOf(NL, _caret-1) - 1;
+			_lastCol = _caret - _field.text.lastIndexOf(NL, _caret-1) - 1;
 		}
 		
 		private function findWordBound(start:int, left:Boolean):int
