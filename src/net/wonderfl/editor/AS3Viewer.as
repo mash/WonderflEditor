@@ -1,5 +1,6 @@
 package net.wonderfl.editor 
 {
+	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
@@ -22,6 +23,7 @@ package net.wonderfl.editor
 		private var lineNums:LineNumberField;
 		private var _vScroll:TextVScroll;
 		private var _hScroll:TextHScroll;
+		private var _blackShade:Shape;
 		private var _boxWidth:int;
 		
 		public function AS3Viewer() 
@@ -29,6 +31,7 @@ package net.wonderfl.editor
 			_field = new UIFTETextField;
 			addChild(_field);
 			_boxWidth = _field.boxWidth;
+			
 			
 			addEventListener(FocusEvent.FOCUS_IN, function(e:FocusEvent):void {
 				stage.focus = _field;
@@ -56,6 +59,13 @@ package net.wonderfl.editor
 			_hScroll = new TextHScroll(_field);
 			_hScroll.addEventListener(Event.CHANGE, onHScroll);
 			_vScroll.addEventListener(Event.CHANGE, onVScroll);
+			
+			_blackShade = new Shape;
+			_blackShade.graphics.beginFill(0);
+			_blackShade.graphics.drawRect(0, 0, _vScroll.width, _hScroll.height);
+			_blackShade.graphics.endFill();
+			
+			addChild(_blackShade);
 			addChild(_vScroll);
 			addChild(_hScroll);
 		}
@@ -115,6 +125,8 @@ package net.wonderfl.editor
 			_hScroll.width = _width - _vScroll.width;
 			_vScroll.x = _width - _vScroll.width;
 			_hScroll.y = _field.height;
+			_blackShade.x = _vScroll.x;
+			_blackShade.y = _hScroll.y;
 			lineNums.height = _field.height;
 		}
 		

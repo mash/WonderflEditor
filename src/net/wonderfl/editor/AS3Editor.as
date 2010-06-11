@@ -1,5 +1,6 @@
 package net.wonderfl.editor 
 {
+	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.FocusEvent;
@@ -41,6 +42,7 @@ package net.wonderfl.editor
 		private var _parser:ASParserController;
 		private var _errorEngine:Sprite = new Sprite;
 		private var _liveCodingController:LiveCodingControllerView;
+		private var _blackShade:Shape;
 		
 		public function AS3Editor() 
 		{
@@ -80,6 +82,14 @@ package net.wonderfl.editor
 			_hScroll = new TextHScroll(_field);
 			_hScroll.addEventListener(Event.CHANGE, onHScroll);
 			_vScroll.addEventListener(Event.CHANGE, onVScroll);
+			
+			
+			_blackShade = new Shape;
+			_blackShade.graphics.beginFill(0);
+			_blackShade.graphics.drawRect(0, 0, _vScroll.width, _hScroll.height);
+			_blackShade.graphics.endFill();
+			
+			addChild(_blackShade);
 			addChild(_vScroll);
 			addChild(_hScroll);
 			addChild(_liveCodingController = new LiveCodingControllerView);
@@ -196,6 +206,8 @@ package net.wonderfl.editor
 			_vScroll.x = _width - _vScroll.width;
 			_vScroll.y = _liveCodingController.height;
 			_hScroll.y = _field.height + _liveCodingController.height;
+			_blackShade.x = _vScroll.x;
+			_blackShade.y = _hScroll.y;
 			lineNums.height = _field.height;
 			lineNums.y = _liveCodingController.height;
 		}
