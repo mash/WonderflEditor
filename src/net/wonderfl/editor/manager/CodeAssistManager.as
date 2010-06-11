@@ -44,6 +44,7 @@ package net.wonderfl.editor.manager
 	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.ui.PopupMenu;
 	import net.wonderfl.editor.ui.ToolTip;
+	import net.wonderfl.editor.utils.removeFromParent;
 	import ro.minibuilder.asparser.Field;
 	import ro.victordramba.util.vectorToArray;
 	
@@ -310,10 +311,14 @@ package net.wonderfl.editor.manager
 				
 				// TODO highlight current argument
 				_selectedFunctionDefinition = fd;
-				tooltip.setTipText('function ' + fd.name + '(' + a.join(', ') + ')'+(fd.type ? ':'+fd.type.type : ''));
-				tooltip.showToolTip();
-				var p:Point = fld.getPointForIndex(lastLeft);
-				tooltip.moveLocationRelatedTo(p.x, p.y + fld.boxHeight);
+				tooltip.clear();
+				tooltip.leftOffset = fld.boxWidth;
+				tooltip.setPreText('function');
+				tooltip.setPostText(fd.name + '(' + a.join(', ') + ')' + (fd.type ? ':' + fd.type.type : ''));
+				tooltip.draw();
+				fld.we_internal::_container.addChild(tooltip);
+				var p:Point = fld.getPointForIndex(fld.text.lastIndexOf(fd.name, lastLeft));
+				tooltip.moveLocationRelatedTo(p.x, p.y - fld.boxHeight);
 				tooltipCaret = fld.caretIndex;
 				return true;
 			}
@@ -323,7 +328,7 @@ package net.wonderfl.editor.manager
 		
 		public function cancelAssist():void {
 			menu.dispose();
-			tooltip.disposeToolTip();
+			removeFromParent(tooltip);
 		}
 		
 		private function rePositionMenu():void
@@ -345,14 +350,14 @@ package net.wonderfl.editor.manager
 			if (tooltip.isShowing())
 			{
 				if ($event.keyCode == Keyboard.ESCAPE || $event.keyCode == Keyboard.UP || $event.keyCode == Keyboard.DOWN || fld.caretIndex < tooltipCaret) {
-					tooltip.disposeToolTip();
+					removeFromParent(tooltip);
 					_selectedFunctionDefinition = null;
 				} else {
 					var lastLeft:int = fld.text.lastIndexOf('(', fld.caretIndex);
 					var lastRight:int = fld.text.lastIndexOf(')', fld.caretIndex);
 					if (lastLeft < lastRight) {
 						_selectedFunctionDefinition = null;
-						tooltip.disposeToolTip();
+						removeFromParent(tooltip);
 					}
 				}
 			}

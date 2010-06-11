@@ -1,5 +1,6 @@
 package net.wonderfl.editor.ui 
 {
+	import flash.geom.Rectangle;
 	import flash.text.engine.ElementFormat;
 	import flash.text.engine.FontDescription;
 	import flash.text.engine.TextBlock;
@@ -13,10 +14,12 @@ package net.wonderfl.editor.ui
 	 */
 	public class ToolTip extends UIComponent
 	{
+		public var leftOffset:int;
 		private var _elf:ElementFormat;
 		private var _isShowing:Boolean = false;
 		private var _factory:TextBlock;
 		private const BACKGROUND_COLOR:uint = 0x99cee4;
+		private var _rect:Rectangle = new Rectangle;
 		
 		public function ToolTip() 
 		{
@@ -26,31 +29,36 @@ package net.wonderfl.editor.ui
 			_elf.color = 0;
 			
 			updateSize();
-			visible = false;
 		}
 		
 		public function isShowing():Boolean {
-			return _isShowing;
+			return (parent != null);
 		}
 		
-		public function disposeToolTip():void {
-			_isShowing = false;
-			visible = false;
-		}
-		
-		public function setTipText($text:String):void {
+		public function clear():void {
 			removeAllChildren(this);
-			
+		}
+		
+		public function setPreText($text:String):void {
+			var line:TextLine = getLine($text);
+			line.x = -(line.width + leftOffset);
+			_rect.left = line.x;
+		}
+		
+		public function setPostText($text:String):void {
+			var line:TextLine = getLine($text);
+			_rect.right = line.width;
+			setSize(line.width, line.height + 4);
+		}
+		
+		private function getLine($text:String):TextLine {
 			_factory.content = new TextElement($text, _elf.clone());
 			var line:TextLine = _factory.createTextLine();
 			line.y = line.height;
 			addChild(line);
-			setSize(line.width, line.height + 4);
-		}
-		
-		public function showToolTip():void {
-			_isShowing =  true;
-			visible = true;
+			_rect.bottom = line.height;
+			
+			return line;
 		}
 		
 		public function moveLocationRelatedTo($xpos:int, $ypos:int):void {
@@ -59,14 +67,18 @@ package net.wonderfl.editor.ui
 		}
 		
 		public function getSelectedValue():String {
-			return 'hoge hoge';
+			return '';
+		}
+		
+		public function draw():void {
+			updateSize();
 		}
 		
 		override protected function updateSize():void 
 		{
 			graphics.clear();
 			graphics.beginFill(BACKGROUND_COLOR);
-			graphics.drawRect(0, 0, _width, _height);
+			graphics.drawRect(_rect.left - 2, 0, _rect.width + 4, _rect.height + 2);
 			graphics.endFill();
 		}
 		
