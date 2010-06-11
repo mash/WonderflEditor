@@ -157,7 +157,6 @@ package net.wonderfl.editor.manager
 		
 		private function checkAddImports(name:String):void
 		{
-			trace("CodeAssistManager.checkAddImports > name : " + name);
 			var caret:int = fld.caretIndex;
 			if (!ctrl.isInScope(name, caret-name.length))
 			{
@@ -171,10 +170,8 @@ package net.wonderfl.editor.manager
 				if (missing)
 				{
 					var sumChars:int = 0
-					trace('pos = ' + missingImports.pos);
 					var pos:int = fld.text.lastIndexOf('}', missingImports.pos) + 1;
 					if (pos == 0) {
-						trace('finding for {');
 						prefix = "    ";
 						pos = fld.text.lastIndexOf('{', missingImports.pos) + 1;
 					}
@@ -254,22 +251,34 @@ package net.wonderfl.editor.manager
 			
 			var show:Boolean = false;
 			var i:int = lastColon;
-			while (/\s/.test(text.charAt(i))) i--;
+			while (/\s/.test(text.charAt(i))) --i;
 			
 			// very rough criteria for function return value type
 			if (text.charAt(i - 1) == ')') show = true;
 			else {
 				--i;
-				while (/[^.\s]/.test(text.charAt(i))) i--;
-				while (/\s/.test(text.charAt(i))) i--;
-				if (text.substring(i - 2, i + 1) == 'var' || text.substring(i - 4, i + 1) == 'const') // var declarations
-					show = true;
+				while (/[^.(\s]/.test(text.charAt(i))) --i;
+				while (/\s/.test(text.charAt(i))) --i;
+				show = match('var') || match('const');
+					
+				if (!show) { // function arguments
+					if (text.substring(i - 2, i + 1) == '...') i = i - 3;
+					i = text.lastIndexOf('(', i);
+					while (/[^.\s]/.test(text.charAt(i))) --i;
+					while (/\s/.test(text.charAt(i))) --i;
+					
+					show = match('function') || match('catch');
+				}
 			}
 			
 			if (show)
 				menuData = ctrl.getTypeOptions();
 			else
 				menuData = null;
+				
+			function match(word:String):Boolean {
+				return text.substring(i - word.length + 1, i + 1) == word;
+			}
 		}
 		
 		
