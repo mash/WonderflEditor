@@ -66,8 +66,8 @@
 			_tfViewer.width = (w > _tfViewer.width) ? w : _tfViewer.width;
 			w = _tfTimer.textWidth + 4;
 			_tfTimer.width = (w > _tfTimer.width) ? w : _tfTimer.width;
-			_tfViewer.x = width - _tfViewer.width - 10;
-			_tfTimer.x = _tfViewer.x - _tfTimer.width - 10;
+			_tfTimer.x = _onImage.width + _syncButton.width + 10;
+			_tfViewer.x = _tfTimer.x + _tfTimer.width + 10;
 			//_syncButton.x = _tfTimer.x - _syncButton.width - 30;
 		}
 		
@@ -122,7 +122,7 @@
 		{
 			graphics.clear();
 			graphics.beginFill(0x222222);
-			graphics.drawRect(0, 0, width, height);
+			graphics.drawRect(0, 0, _width, _height);
 			graphics.endFill();
 		}
 		

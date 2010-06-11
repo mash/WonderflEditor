@@ -72,10 +72,8 @@
 			addChild(_tfViewer = new TextField);
 			
 			_tfTimer.embedFonts = _tfViewer.embedFonts = true;
-			//var font:Font = new Ronda;
 			
-			
-			var tfm:TextFormat = new TextFormat("PF Ronda Seven", 8, Style.LABEL_TEXT);
+			var tfm:TextFormat = new TextFormat("PF Ronda Seven", 8, Style.BACKGROUND);
 			_tfTimer.defaultTextFormat = tfm;
 			_tfViewer.defaultTextFormat = tfm;
 			
@@ -157,8 +155,8 @@
 			_tfViewer.width = (w > _tfViewer.width) ? w : _tfViewer.width;
 			w = _tfTimer.textWidth + 4;
 			_tfTimer.width = (w > _tfTimer.width) ? w : _tfTimer.width;
-			_tfViewer.x = width - _tfViewer.width - 10;
-			_tfTimer.x = _tfViewer.x - _tfTimer.width - 10;
+			_tfTimer.x = _onImage.width + 10;
+			_tfViewer.x = _tfTimer.x + _tfTimer.width + 10;
 		}
 		
 		override protected function updateSize():void 
