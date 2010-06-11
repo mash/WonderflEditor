@@ -85,7 +85,6 @@ package net.wonderfl.editor.core
 			
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, function ():void {
 				if (stage.focus != _imeField && _imeManager.imeMode) {
-					trace('focus -> _imeField');
 					resetIMETFPosition();
 					stage.focus = _imeField;
 				}
