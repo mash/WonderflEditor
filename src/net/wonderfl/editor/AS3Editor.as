@@ -83,7 +83,6 @@ package net.wonderfl.editor
 			_hScroll.addEventListener(Event.CHANGE, onHScroll);
 			_vScroll.addEventListener(Event.CHANGE, onVScroll);
 			
-			
 			_blackShade = new Shape;
 			_blackShade.graphics.beginFill(0);
 			_blackShade.graphics.drawRect(0, 0, _vScroll.width, _hScroll.height);
