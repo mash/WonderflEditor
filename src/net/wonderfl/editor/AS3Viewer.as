@@ -137,7 +137,7 @@ package net.wonderfl.editor
 		}
 		
 		public function set scrollY(value:int):void {
-			_field.scrollY = value;
+			_field.setScrollYByBar(value);
 		}
 		
 		public function set scrollH(value:int):void {

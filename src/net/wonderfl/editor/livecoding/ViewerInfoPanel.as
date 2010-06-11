@@ -68,7 +68,6 @@
 			_tfTimer.width = (w > _tfTimer.width) ? w : _tfTimer.width;
 			_tfTimer.x = _onImage.width + _syncButton.width + 10;
 			_tfViewer.x = _tfTimer.x + _tfTimer.width + 10;
-			//_syncButton.x = _tfTimer.x - _syncButton.width - 30;
 		}
 		
 		public function onMemberUpdate($event:LiveCodingEvent):void {
