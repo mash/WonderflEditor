@@ -20,7 +20,7 @@
 			<name>CONFIG::IME</name>
 			<value>false</value>
 		</define>
-		<debug>true</debug>
+		<debug>false</debug>
 		<incremental>true</incremental>
 		<source-path>
 			<path-element>.</path-element>
