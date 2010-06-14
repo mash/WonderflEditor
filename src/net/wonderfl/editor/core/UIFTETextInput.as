@@ -117,11 +117,7 @@ package net.wonderfl.editor.core
 			var c:String = String.fromCharCode(e.charCode);
 			var k:int = e.keyCode;
 			var i:int;
-			if (k == Keyboard.INSERT && e.shiftKey)
-			{
-				_clipboardManager.paste();
-			}
-			else if (c == 'z' && e.ctrlKey)
+			if (c == 'z' && e.ctrlKey)
 			{
 				undo();
 				dispatchChange();

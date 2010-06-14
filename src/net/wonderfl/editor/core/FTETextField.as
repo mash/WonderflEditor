@@ -98,14 +98,15 @@ package net.wonderfl.editor.core
 			
 			_errorLayer = new ErrorMessageLayer(this);
 			_selectionShape = new Shape;
-			_defaultTextFormat = new TextFormat('Courier New', 12, 0xffffff);
-			for each (var fnt:Font in Font.enumerateFonts(true))
-				if (fnt.fontName == 'ＭＳ Ｐゴシック')
-				{
-					_defaultTextFormat.font = fnt.fontName;
-					_defaultTextFormat.size = 12;
-					break;
-				}
+			_defaultTextFormat = new TextFormat('_typewriter', 12, 0xffffff);
+			//_defaultTextFormat = new TextFormat('Courier NewCourier New', 12, 0xffffff);
+			//for each (var fnt:Font in Font.enumerateFonts(true))
+				//if (fnt.fontName == 'ＭＳ Ｐゴシック')
+				//{
+					//_defaultTextFormat.font = fnt.fontName;
+					//_defaultTextFormat.size = 12;
+					//break;
+				//}
 			//
 			var rect:Rectangle = calcFontBox(_defaultTextFormat);
 			boxHeight = rect.height;
@@ -564,7 +565,7 @@ package net.wonderfl.editor.core
 			function replaceURLString():void {
 				index = 0;
 				str.replace(
-					new RegExp("https?://[-_.!~*()a-zA-Z0-9;/?:@&=+$,%#]+", "g"),
+					new RegExp("https?://[-_.!~*a-zA-Z0-9;/?:@&=+$,%#]+", "g"),
 					function ($url:String, $begin:int, $str:String):String {
 						te = new TextElement($str.substring(index, $begin), elf.clone());
 						elements.push(te);
