@@ -106,8 +106,7 @@
 			
 			if (ExternalInterface.available) {
 				var code:String = ExternalInterface.call("Wonderfl.Codepage.get_initial_code");
-				code ||= "";
-				_source = code.replace(/\t/g, "    ").replace(/\r/g, "\n");
+				_source = code || "";
 				_viewer.text = _source;
  			}
 			
