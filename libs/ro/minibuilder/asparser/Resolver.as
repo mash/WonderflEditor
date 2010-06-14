@@ -264,6 +264,8 @@ package ro.minibuilder.asparser
 		
 		private function listTypeMembers(type:Field, skipConstructor:Boolean=true):HashMap
 		{
+			if (type == null) return new HashMap;
+			
 			if (type.fieldType != 'class' && type.fieldType != 'interface') 
 				throw new Error('type has to be class');
 			

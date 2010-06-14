@@ -565,7 +565,7 @@ package ro.minibuilder.asparser
 					_scope = null;
 				}
 
-				else if (t.string == '}' && t.parent.pos == scope.pos)
+				else if (t.string == '}' && t.parent && scope && t.parent.pos == scope.pos)
 				{
 					//info += scope.parent.name + '<-' + scope.name+'\n';
 					scope = scope.parent;
