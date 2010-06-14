@@ -146,7 +146,7 @@ package net.wonderfl.editor.manager
 		
 		private function handleUpArrow($event:KeyboardEvent):void
 		{
-			var i:int = _text.lastIndexOf(NL, Math.min(_selStart, _caret)-1);
+			var i:int = _text.lastIndexOf(NL, _caret-1);
 			var lineBegin:int = i;
 			if (i != -1)
 			{
@@ -236,7 +236,7 @@ package net.wonderfl.editor.manager
 		
 		private function handlePageDownKey($event:KeyboardEvent):void
 		{
-			for (var i:int = 0, pos:int = _caret; i <= _field.visibleRows; i++) 
+			for (var i:int = 0, pos:int = _caret; i < _field.visibleRows; i++) 
 			{
 				pos = _text.indexOf(NL, pos+1);
 				if (pos == -1)
@@ -246,11 +246,12 @@ package net.wonderfl.editor.manager
 				}
 				_caret = pos+1;
 			}
+			if ($event.shiftKey) extendSel(true);
 		}
 		
 		private function handlePageUpKey($event:KeyboardEvent):void
 		{
-			for (var i:int = 0, pos:int = _caret; i <= _field.visibleRows; i++) 
+			for (var i:int = 0, pos:int = _caret; i < _field.visibleRows; i++) 
 			{
 				pos = _text.lastIndexOf(NL, pos - 1);
 				if (pos == -1)
@@ -260,6 +261,7 @@ package net.wonderfl.editor.manager
 				}
 				_caret = pos + 1;
 			}
+			if ($event.shiftKey) extendSel(false);
 		}
 		
 		
