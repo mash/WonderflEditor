@@ -109,10 +109,7 @@ package net.wonderfl.editor.manager
 		
 		private function extendSel($left:Boolean):void
 		{
-			//trace("SelectionManager.extendSel > $left : " + $left);
-			
 			if ($left) {
-				trace("_caret : " + _caret + ", _selStart : " + _selStart);
 				if (_caret < _selStart)
 					_field._setSelection(_caret, _selEnd);
 				else
@@ -246,7 +243,7 @@ package net.wonderfl.editor.manager
 				}
 				_caret = pos+1;
 			}
-			if ($event.shiftKey) extendSel(true);
+			if ($event.shiftKey) extendSel(false);
 		}
 		
 		private function handlePageUpKey($event:KeyboardEvent):void
@@ -261,7 +258,7 @@ package net.wonderfl.editor.manager
 				}
 				_caret = pos + 1;
 			}
-			if ($event.shiftKey) extendSel(false);
+			if ($event.shiftKey) extendSel(true);
 		}
 		
 		
