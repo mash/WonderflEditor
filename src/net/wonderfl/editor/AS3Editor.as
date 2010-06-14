@@ -107,7 +107,6 @@ package net.wonderfl.editor
 		{
 			if (e.direction == ScrollEventDirection.VERTICAL) {
 				_vScroll.value = e.position;
-				trace("AS3Editor.onScroll > e : " + e);
 			} else { // horizontal
 				_hScroll.value = e.position;
 			}
