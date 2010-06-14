@@ -27,7 +27,7 @@ package net.wonderfl.editor
 	 * ...
 	 * @author kobayashi-taro
 	 */
-	public class AS3Editor extends UIComponent implements ITextArea
+	public class AS3Editor extends UIComponent implements ITextArea, IEditor
 	{
 		private const CHECK_MOUSE_DURATION:int = 500;
 		private var changeRevalIID:int;
@@ -289,6 +289,23 @@ package net.wonderfl.editor
 		
 		public function setSelection($selectionBeginIndex:int, $selectionEndIndex:int):void {
 			_field.setSelection($selectionBeginIndex, $selectionEndIndex);
+		}
+		
+		/* INTERFACE net.wonderfl.editor.IEditor */
+		
+		public function paste():void
+		{
+			
+		}
+		
+		public function cut():void
+		{
+			
+		}
+		
+		public function saveCode():void
+		{
+			_editorHotkeyManager.saveCode();
 		}
 		
 		public function get text():String {

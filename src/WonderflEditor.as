@@ -15,6 +15,7 @@ package
 	import net.wonderfl.editor.AS3Editor;
 	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
+	import net.wonderfl.editor.manager.ContextMenuBuilder;
 	import net.wonderfl.editor.utils.bind;
 	import org.libspark.ui.SWFWheel;
 	
@@ -116,6 +117,8 @@ package
 			});
 			stage.addEventListener(Event.MOUSE_LEAVE, clearMouseUIFlag);
 			stage.addEventListener(MouseEvent.MOUSE_UP, clearMouseUIFlag);
+			
+			ContextMenuBuilder.getInstance().buildMenu(this, _editor, true);
 			
 			CONFIG::useExternalInterface {
 				if (ExternalInterface.available) {
