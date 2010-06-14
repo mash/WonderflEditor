@@ -1,6 +1,6 @@
 ﻿package net.wonderfl.editor.livecoding 
 {
-	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.ITextArea;
 	/**
 	 * @author kobayashi-taro
 	 */
@@ -31,7 +31,7 @@
 			return _this;
 		}
 		
-		public static function set editor(value:IEditor):void {
+		public static function set editor(value:ITextArea):void {
 			_broadCaster.editor = value;
 		}
 		

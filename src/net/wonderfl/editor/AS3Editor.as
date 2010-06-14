@@ -10,7 +10,7 @@ package net.wonderfl.editor
 	import mx.events.ScrollEventDirection;
 	import net.wonderfl.editor.core.UIFTETextInput;
 	import net.wonderfl.editor.events.EditorEvent;
-	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.ITextArea;
 	import net.wonderfl.editor.LineNumberField;
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.core.UIFTETextField;
@@ -27,7 +27,7 @@ package net.wonderfl.editor
 	 * ...
 	 * @author kobayashi-taro
 	 */
-	public class AS3Editor extends UIComponent implements IEditor
+	public class AS3Editor extends UIComponent implements ITextArea
 	{
 		private const CHECK_MOUSE_DURATION:int = 500;
 		private var changeRevalIID:int;

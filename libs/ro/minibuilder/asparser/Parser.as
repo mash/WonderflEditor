@@ -32,7 +32,7 @@ package ro.minibuilder.asparser
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
-	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.ITextArea;
 	
 	import ro.victordramba.thread.IThread;
 	import ro.victordramba.util.HashMap;
@@ -100,7 +100,7 @@ package ro.minibuilder.asparser
 		/**
 		 * Apply color highliting
 		 */
-		public function applyFormats(textField:IEditor):void
+		public function applyFormats(textField:ITextArea):void
 		{
 			//textField.setTextFormat(formats.getValue('default'));
 			textField.clearFormatRuns();

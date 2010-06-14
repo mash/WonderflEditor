@@ -5,7 +5,7 @@
 	/**
 	 * @author kobayashi-taro
 	 */
-	public interface IEditor 
+	public interface ITextArea 
 	{
 		function applyFormatRuns():void;
 		function addFormatRun(beginIndex:int, endIndex:int, bold:Boolean, italic:Boolean, color:String):void;

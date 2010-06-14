@@ -4,7 +4,7 @@
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.utils.getTimer;
-	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.ITextArea;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -19,7 +19,7 @@
 		private var _isReady:Boolean;
 		private var _broadcaster:SocketBroadCaster = new SocketBroadCaster;
 		private var _commandCount:int;
-		private var _editor:IEditor;
+		private var _editor:ITextArea;
 				
 		public function LiveCodingBroadcaster() 
 		{
@@ -139,7 +139,7 @@
 		
 		public function get commandCount():int { return _commandCount; }
 		
-		public function set editor(value:IEditor):void 
+		public function set editor(value:ITextArea):void 
 		{
 			_editor = value;
 		}

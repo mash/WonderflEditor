@@ -34,7 +34,7 @@ package net.wonderfl.editor.minibuilder
 	import flash.events.EventDispatcher;
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
-	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.ITextArea;
 	import net.wonderfl.editor.utils.isMXML;
 	import ro.minibuilder.asparser.Field;
 	import ro.minibuilder.asparser.Parser;
@@ -71,9 +71,9 @@ package net.wonderfl.editor.minibuilder
 		//public var scopeInfo:Array/*of String*/
 		//public var typeInfo:Array/*of String*/
 		
-		private var fld:IEditor;
+		private var fld:ITextArea;
 		
-		public function ASParserController(stage:Stage, textField:IEditor)
+		public function ASParserController(stage:Stage, textField:ITextArea)
 		{
 			fld = textField;
 			//TODO refactor, Controller should probably be a singleton

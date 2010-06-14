@@ -20,7 +20,7 @@ package net.wonderfl.editor.core
 	import flash.utils.getTimer;
 	import flash.utils.setInterval;
 	import flash.utils.setTimeout;
-	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.ITextArea;
 	import net.wonderfl.editor.we_internal;
 	import net.wonderfl.editor.manager.IKeyboadEventManager;
 	import net.wonderfl.editor.manager.KeyDownProxy;
@@ -29,7 +29,7 @@ package net.wonderfl.editor.core
 	 * ...
 	 * @author kobayashi-taro
 	 */
-	public class UIFTETextField extends FTETextField implements IEditor
+	public class UIFTETextField extends FTETextField implements ITextArea
 	{
 		internal var lastCol:int = 0;
 		private var extChar:int;

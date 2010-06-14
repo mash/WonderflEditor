@@ -35,7 +35,7 @@ package net.wonderfl.editor.core
 	import mx.events.ScrollEventDirection;
 	import net.wonderfl.editor.error.ErrorMessage;
 	import net.wonderfl.editor.error.ErrorMessageLayer;
-	import net.wonderfl.editor.IEditor;
+	import net.wonderfl.editor.ITextArea;
 	import net.wonderfl.editor.operations.SetSelection;
 	import net.wonderfl.editor.utils.removeAllChildren;
 	import net.wonderfl.editor.we_internal;
@@ -47,7 +47,7 @@ package net.wonderfl.editor.core
 	
 	[Event(name = 'resize', type = 'flash.events.Event')]
 	[Event(name = 'scroll', type = 'mx.events.ScrollEvent')]
-	public class FTETextField extends UIComponent implements IEditor
+	public class FTETextField extends UIComponent implements ITextArea
 	{
 		we_internal var _caret:int;
 		we_internal var _selStart:int = 0;

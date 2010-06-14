@@ -18,7 +18,7 @@ package net.wonderfl.editor
 	 * ...
 	 * @author kobayashi-taro
 	 */
-	public class AS3Viewer extends UIComponent implements IEditor
+	public class AS3Viewer extends UIComponent implements ITextArea
 	{
 		private var _parser:ASParserController;
 		private var _editorHotkeyManager:EditorHotkeyManager;
