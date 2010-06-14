@@ -18,7 +18,6 @@
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 	import jp.psyark.utils.CodeUtil;
-	import jp.psyark.utils.StringComparator;
 	import net.wonderfl.editor.AS3Viewer;
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.livecoding.LiveCoding;
@@ -59,7 +58,6 @@
 		private var _infoPanel:ViewerInfoPanel;
 		private var _ignoreSelection:Boolean;
 		private var _prevText:String;
-		private var _comparetor:StringComparator;
 		private var _selectionObject:Object;
 		
 		public function WonderflViewer() 
@@ -107,7 +105,6 @@
 			if (LiveCodingSettings.server && LiveCodingSettings.port) {
 				broadcaster.connect(LiveCodingSettings.server, LiveCodingSettings.port);
 				_setInitialCodeForLiveCoding = true;
-				_comparetor = new StringComparator;
 			}
 			
 			if (ExternalInterface.available) {
