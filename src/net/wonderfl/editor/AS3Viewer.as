@@ -84,6 +84,10 @@ package net.wonderfl.editor
 			addChild(_hScroll);
 		}
 		
+		public function saveCode():void {
+			_editorHotkeyManager.saveCode();
+		}
+		
 		public function slowDownParser():void {
 			_parser.slowDownParser();
 		}

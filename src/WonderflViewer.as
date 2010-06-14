@@ -9,7 +9,6 @@
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
-	import flash.net.FileReference;
 	import flash.net.navigateToURL;
 	import flash.net.URLRequest;
 	import flash.system.Capabilities;
@@ -25,7 +24,6 @@
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
 	import net.wonderfl.editor.livecoding.SocketBroadCaster;
 	import net.wonderfl.editor.livecoding.ViewerInfoPanel;
-	import net.wonderfl.editor.utils.isMXML;
 	import org.libspark.ui.SWFWheel;
 	/**
 	 * ...
@@ -38,7 +36,6 @@
 		private static const SELECT_ALL:String = 'Select All (C-a)';
 		private static const SAVE:String = 'Save (C-s)';
 		private static const MINI_BUILDER:String = 'MiniBuilder';
-		public var fileRef:FileReference;
 		
 		[Embed(source = '../assets/btn_smallscreen.jpg')]
 		private var _image_out_:Class;
@@ -135,7 +132,6 @@
 			});
 			contextMenu = menu;
 			stage.dispatchEvent(new Event(Event.RESIZE));
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDownHandler);
 		}
 		
 		private function onMenuItemSelected(e:ContextMenuEvent):void 
@@ -148,7 +144,7 @@
 				_viewer.selectAll();
 				break;
 			case SAVE : 
-				save();
+				_viewer.saveCode();
 				break;
 			case MINI_BUILDER :
 				navigateToURL(new URLRequest('http://code.google.com/p/minibuilder/'), '_self');
@@ -162,23 +158,6 @@
 				onSetSelection(_selectionObject.index, _selectionObject.index);
 				
 			_selectionObject = null;
-		}
-		
-		private function keyDownHandler(e:KeyboardEvent):void 
-		{
-			if (e.ctrlKey) {
-				if (e.keyCode == 83) { // Ctrl + S
-					save();
-				}
-			}
-		}
-		
-		public function save():void {
-			var text:String = (Capabilities.os.indexOf('Windows') != -1) ? _viewer.text.replace(/\n/g, '\r\n') : _viewer.text;
-			var localName:String = CodeUtil.getDefinitionLocalName(text);
-			localName ||= "untitled";
-			fileRef = new FileReference();
-			fileRef.save(text, localName + (isMXML(text) ? ".mxml" : ".as"));
 		}
 		
 		private function setupInitialCode(e:Event):void 

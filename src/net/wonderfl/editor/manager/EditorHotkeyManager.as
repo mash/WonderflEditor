@@ -1,10 +1,14 @@
 package net.wonderfl.editor.manager 
 {
 	import flash.events.KeyboardEvent;
+	import flash.net.FileReference;
+	import flash.system.Capabilities;
 	import flash.ui.Keyboard;
+	import jp.psyark.utils.CodeUtil;
 	import net.wonderfl.editor.core.FTETextField;
 	import net.wonderfl.editor.core.UIFTETextField;
 	import net.wonderfl.editor.minibuilder.ASParserController;
+	import net.wonderfl.editor.utils.isMXML;
 	import ro.minibuilder.main.editor.Location;
 	/**
 	 * ...
@@ -16,6 +20,7 @@ package net.wonderfl.editor.manager
 		private var _savePositions:Vector.<int>;
 		private var _parser:ASParserController;
 		private var _lastCol:int;
+		private var fileRef:FileReference;
 		
 		public function EditorHotkeyManager($field:UIFTETextField, $parser:ASParserController) 
 		{
@@ -30,18 +35,6 @@ package net.wonderfl.editor.manager
 			var char:String = String.fromCharCode($event.charCode);
 			
 			switch($event.keyCode) {
-			case 66: // Ctrl + B
-				if ($event.ctrlKey) {
-					prevChar();
-				} else 
-					result = false
-				break;
-			case 70: // Ctrl + F
-				if ($event.ctrlKey) {
-					nextChar();
-				} else 
-					result = false;
-				break;
 			case Keyboard.F3:
 				searchWord($event.shiftKey);
 				break;
@@ -84,11 +77,23 @@ package net.wonderfl.editor.manager
 			case 80: // Ctrl + P
 				previousLine();
 				break;
+			case 83: // Ctrl + S
+				saveCode();
+				break;
 			default : 
 				result = false;
 			}
 			
 			return result;
+		}
+		
+		public function saveCode():void
+		{
+			var text:String = (Capabilities.os.indexOf('Windows') != -1) ? _field.text.replace(/\n/g, '\r\n') : _field.text;
+			var localName:String = CodeUtil.getDefinitionLocalName(text);
+			localName ||= "untitled";
+			fileRef = new FileReference();
+			fileRef.save(text, localName + (isMXML(text) ? ".mxml" : ".as"));
 		}
 		
 		private function previousLine():void
