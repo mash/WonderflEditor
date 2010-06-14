@@ -24,6 +24,7 @@
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
 	import net.wonderfl.editor.livecoding.SocketBroadCaster;
 	import net.wonderfl.editor.livecoding.ViewerInfoPanel;
+	import net.wonderfl.editor.manager.ContextMenuBuilder;
 	import org.libspark.ui.SWFWheel;
 	/**
 	 * ...
@@ -32,10 +33,6 @@
 	public class WonderflViewer extends UIComponent
 	{
 		private static const TICK:int = 33;
-		private static const COPY:String = 'Copy (C-c)';
-		private static const SELECT_ALL:String = 'Select All (C-a)';
-		private static const SAVE:String = 'Save (C-s)';
-		private static const MINI_BUILDER:String = 'MiniBuilder';
 		
 		[Embed(source = '../assets/btn_smallscreen.jpg')]
 		private var _image_out_:Class;
@@ -59,6 +56,12 @@
 		
 		public function WonderflViewer() 
 		{
+			addEventListener(Event.ADDED_TO_STAGE, init);
+		}
+		
+		private function init(e:Event):void {
+			removeEventListener(Event.ADDED_TO_STAGE, init);
+			
 			_parseTime = getTimer();
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
@@ -115,40 +118,8 @@
 				_setInitialCodeForLiveCoding = false;
 			}
 			
-			var menu:ContextMenu = new ContextMenu;
-			menu.hideBuiltInItems();
-			menu.customItems = ([COPY, SELECT_ALL, SAVE, MINI_BUILDER]).map(
-				function ($caption:String, $index:int, $arr:Array):ContextMenuItem {
-					var item:ContextMenuItem = new ContextMenuItem($caption, $caption == MINI_BUILDER || $caption == SAVE);
-					item.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onMenuItemSelected);
-					
-					return item;
-				}
-			);
-			menu.addEventListener(ContextMenuEvent.MENU_SELECT, function ():void {
-				menu.customItems[0].enabled = (_viewer.selectionBeginIndex != _viewer.selectionEndIndex);
-				menu.customItems[1].enabled = (_viewer.selectionBeginIndex > 0 || _viewer.selectionEndIndex < _viewer.text.length - 1);
-			});
-			contextMenu = menu;
+			ContextMenuBuilder.getInstance().buildMenu(this, _viewer);
 			stage.dispatchEvent(new Event(Event.RESIZE));
-		}
-		
-		private function onMenuItemSelected(e:ContextMenuEvent):void 
-		{
-			switch (e.currentTarget.caption) {
-			case COPY :
-				_viewer.copy();
-				break;
-			case SELECT_ALL :
-				_viewer.selectAll();
-				break;
-			case SAVE : 
-				_viewer.saveCode();
-				break;
-			case MINI_BUILDER :
-				navigateToURL(new URLRequest('http://code.google.com/p/minibuilder/'), '_self');
-				break;
-			}
 		}
 		
 		private function onColoringComplete(e:Event):void 

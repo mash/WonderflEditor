@@ -18,7 +18,7 @@ package net.wonderfl.editor
 	 * ...
 	 * @author kobayashi-taro
 	 */
-	public class AS3Viewer extends UIComponent implements ITextArea
+	public class AS3Viewer extends UIComponent implements ITextArea, IEditor
 	{
 		private var _parser:ASParserController;
 		private var _editorHotkeyManager:EditorHotkeyManager;
@@ -205,7 +205,6 @@ package net.wonderfl.editor
 			_field.setSelectionPromise = new SetSelection($selectionBeginIndex, $selectionEndIndex);
 		}
 		
-		
 		public function get text():String {
 			return _field.text;
 		}
@@ -215,6 +214,11 @@ package net.wonderfl.editor
 			onChange(null);
 		}
 		
+		/* net.wonderfl.editor.IEditor
+		 * the viewer is read-only
+		 */
+		public function paste():void { }
+		public function cut():void { }
 	}
 
 }
