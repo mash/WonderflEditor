@@ -1,6 +1,7 @@
 package net.wonderfl.editor.manager 
 {
 	import flash.events.KeyboardEvent;
+	import flash.geom.Point;
 	import flash.ui.Keyboard;
 	import net.wonderfl.editor.we_internal;
 	import net.wonderfl.editor.core.FTETextField;
@@ -86,6 +87,13 @@ package net.wonderfl.editor.manager
 			}
 			
 			return handled;
+		}
+		
+		public function selectCurrentLine():void {
+			var caret:int = _field.caretIndex;
+			var lineBegin:int = _field.text.lastIndexOf(NL, caret - 1) + 1;
+			var lineEnd:int = _field.text.indexOf(NL, caret) + 1;
+			_field.setSelection(lineBegin, lineEnd);
 		}
 		
 		public function saveLastCol():void

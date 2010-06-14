@@ -45,6 +45,7 @@ package net.wonderfl.editor.core
 		protected var _selectionManager:SelectionManager;
 		protected var _plugins:Vector.<IKeyboadEventManager>;
 		protected var _clipboardManager:ClipboardManager;
+		private var _double:Boolean;
 		
 		use namespace we_internal;
 		
@@ -84,6 +85,7 @@ package net.wonderfl.editor.core
 		}
 		
 		private function onDoubleClick():void {
+			_double = true;
 			var pos:int = getIndexForPoint(new Point(mouseX, mouseY));
 			_setSelection(findWordBound(pos, true), findWordBound(pos, false), true);
 		}
@@ -163,10 +165,16 @@ package net.wonderfl.editor.core
 				
 				var t:int = getTimer();
 				if (t - prevMouseUpTime < 250) {
-					onDoubleClick();
+					if (_double) {
+						onTrippleClick();
+					} else {
+						onDoubleClick();
+					}
 					prevMouseUpTime = t;
 					return;
 				}
+				
+				_double = false;
 				prevMouseUpTime = t;
 				p.x = mouseX; p.y = mouseY;
 				_setSelection(dragStart, getIndexForPoint(p), true);
@@ -183,6 +191,12 @@ package net.wonderfl.editor.core
 					_setSelection(dragStart, getIndexForPoint(p));
 				}
 			}
+		}
+		
+		private function onTrippleClick():void
+		{
+			_double = false;
+			_selectionManager.selectCurrentLine();
 		}
 		
 		protected function onKeyDown(e:KeyboardEvent):void
