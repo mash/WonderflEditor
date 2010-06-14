@@ -10,6 +10,7 @@ package net.wonderfl.editor.manager
 	public class HistoryManager
 	{
 		private static const MAX_LENGTH:int = 100 * (1 << 20);
+		private static var _this:HistoryManager;
 		private static const REDO:String = '_redoStack';
 		private static const UNDO:String = '_undoStack';
 		private var _totalTextSize:int = 0;
@@ -19,7 +20,10 @@ package net.wonderfl.editor.manager
 		
 		public function HistoryManager($field:FTETextField):void {
 			_field = $field;
+			_this = this;
 		}
+		
+		public static function getInstance():HistoryManager { return _this; }
 		
 		public function pushReplaceOperation($startIndex:int, $endIndex:int, $text:String):void {
 			var undo:ReplaceText = new ReplaceText($startIndex, $startIndex + $text.length, _field.text.substring($startIndex, $endIndex));

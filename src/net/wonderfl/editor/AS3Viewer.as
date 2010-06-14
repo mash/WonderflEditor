@@ -8,6 +8,7 @@ package net.wonderfl.editor
 	import mx.events.ScrollEventDirection;
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.core.UIFTETextField;
+	import net.wonderfl.editor.manager.ClipboardManager;
 	import net.wonderfl.editor.manager.EditorHotkeyManager;
 	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.operations.SetSelection;
@@ -158,7 +159,7 @@ package net.wonderfl.editor
 		}
 		
 		public function copy():void {
-			_field.onCopy();
+			ClipboardManager.getInstance().copy();
 		}
 		
 		public function selectAll():void {

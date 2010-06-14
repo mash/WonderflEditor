@@ -54,6 +54,9 @@ package net.wonderfl.editor.manager
 					case SELECT_ALL:
 						_itemSelectAll = item;
 						break;
+					case PASTE:
+						item.enabled = false; // cannot paste from context menu due to the security problem
+						break;
 					}
 					
 					return item;
@@ -80,9 +83,9 @@ package net.wonderfl.editor.manager
 			case CUT:
 				_editor.cut();
 				break;
-			case PASTE:
-				_editor.paste();
-				break;
+			//case PASTE:
+				//_editor.paste();
+				//break;
 			case SELECT_ALL :
 				_editor.selectAll();
 				break;

@@ -22,6 +22,7 @@ package net.wonderfl.editor.core
 	import net.wonderfl.editor.manager.SelectionManager;
 	import net.wonderfl.editor.operations.ReplaceText;
 	import net.wonderfl.editor.operations.SetSelection;
+	import net.wonderfl.editor.utils.bind;
 	import net.wonderfl.editor.utils.versionTest;
 	import net.wonderfl.editor.we_internal;
 	/**
@@ -37,7 +38,6 @@ package net.wonderfl.editor.core
 			'》' : '《', '』' : '『'
 		}
 		we_internal var _imeField:TextField;
-		private var _clipboardManager:ClipboardManager;
 		private var _historyManager:HistoryManager;
 		private var _imeManager:AbstractIMEClient;
 		private var _editManager:EditManager;
@@ -62,9 +62,9 @@ package net.wonderfl.editor.core
 				_imeManager = new IMEClient_10_0(this);
 			}
 			
+			addEventListener(Event.CUT, bind(_clipboardManager.cut));
+			addEventListener(Event.PASTE, bind(_clipboardManager.paste));
 			addEventListener(TextEvent.TEXT_INPUT, onInputText);
-			addEventListener(Event.CUT, onCut);
-			addEventListener(Event.PASTE, onPaste);
 			addEventListener(Event.ADDED_TO_STAGE, init);
 		}
 		
@@ -117,13 +117,9 @@ package net.wonderfl.editor.core
 			var c:String = String.fromCharCode(e.charCode);
 			var k:int = e.keyCode;
 			var i:int;
-			if (k == Keyboard.INSERT && e.ctrlKey)
+			if (k == Keyboard.INSERT && e.shiftKey)
 			{
-				onCopy();
-			}
-			else if (k == Keyboard.INSERT && e.shiftKey)
-			{
-				onPaste();
+				_clipboardManager.paste();
 			}
 			else if (c == 'z' && e.ctrlKey)
 			{
@@ -228,27 +224,6 @@ package net.wonderfl.editor.core
 				_imeField.x = point.x - 2;
 				_imeField.y = point.y - 2;
 			}
-		}
-		
-		
-		private function onPaste(e:Event=null):void
-		{
-			try {
-				if (!Clipboard.generalClipboard.hasFormat(ClipboardFormats.TEXT_FORMAT)) return;
-				var str:String = Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT) as String;
-				if (str)
-				{
-					replaceSelection(str);
-					dispatchChange();
-				}
-			} catch (e:SecurityError) { };//can't paste
-		}
-		
-		private function onCut(e:Event=null):void
-		{
-			onCopy();
-			replaceSelection('');
-			dispatchChange();
 		}
 	}
 

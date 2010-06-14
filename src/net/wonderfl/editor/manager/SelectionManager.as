@@ -70,9 +70,6 @@ package net.wonderfl.editor.manager
 				break;
 			}
 			
-			
-
-			
 			//save last column
 			if (k != Keyboard.UP && k != Keyboard.DOWN && k != Keyboard.TAB)
 				saveLastCol();
@@ -81,15 +78,11 @@ package net.wonderfl.editor.manager
 				_field.we_internal::_caret = _caret;
 				
 				if (!$event.shiftKey && k != Keyboard.TAB) {
-					//_field.we_internal::igonoreCursor = true;
 					_field._setSelection(_caret, _caret, true);
 				} else {
 					_field.updateCaret();
 					_field.we_internal::checkScrollToCursor();
 				}
-					
-					//_field.updateCaret();
-				//_field.we_internal::checkScrollToCursor();
 			}
 			
 			return handled;

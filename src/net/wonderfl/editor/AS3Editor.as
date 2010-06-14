@@ -16,6 +16,7 @@ package net.wonderfl.editor
 	import net.wonderfl.editor.core.UIFTETextField;
 	import net.wonderfl.editor.error.ErrorMessage;
 	import net.wonderfl.editor.livecoding.LiveCodingControllerView;
+	import net.wonderfl.editor.manager.ClipboardManager;
 	import net.wonderfl.editor.manager.CodeAssistManager;
 	import net.wonderfl.editor.manager.EditorHotkeyManager;
 	import net.wonderfl.editor.minibuilder.ASParserController;
@@ -254,7 +255,7 @@ package net.wonderfl.editor
 		}
 		
 		public function copy():void {
-			_field.onCopy();
+			ClipboardManager.getInstance().copy();
 		}
 		
 		public function selectAll():void {
@@ -295,12 +296,12 @@ package net.wonderfl.editor
 		
 		public function paste():void
 		{
-			
+			ClipboardManager.getInstance().paste();
 		}
 		
 		public function cut():void
 		{
-			
+			ClipboardManager.getInstance().cut();
 		}
 		
 		public function saveCode():void

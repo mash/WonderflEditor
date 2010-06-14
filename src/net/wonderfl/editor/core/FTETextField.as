@@ -623,8 +623,6 @@ package net.wonderfl.editor.core
 		
 		public function replaceSelection($text:String):void
 		{
-			$text = escapeNewLine($text);
-			$text = $text.replace(/\t/g, "    ");
 			replaceText(_selStart, _selEnd, $text);
 			
 			//FIXME filter text

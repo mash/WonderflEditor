@@ -22,9 +22,11 @@ package net.wonderfl.editor.core
 	import flash.utils.setTimeout;
 	import net.wonderfl.editor.ITextArea;
 	import net.wonderfl.editor.we_internal;
+	import net.wonderfl.editor.manager.ClipboardManager;
 	import net.wonderfl.editor.manager.IKeyboadEventManager;
 	import net.wonderfl.editor.manager.KeyDownProxy;
 	import net.wonderfl.editor.manager.SelectionManager;
+	import net.wonderfl.editor.utils.bind;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -42,6 +44,7 @@ package net.wonderfl.editor.core
 		protected var _preventDefault:Boolean;
 		protected var _selectionManager:SelectionManager;
 		protected var _plugins:Vector.<IKeyboadEventManager>;
+		protected var _clipboardManager:ClipboardManager;
 		
 		use namespace we_internal;
 		
@@ -50,6 +53,7 @@ package net.wonderfl.editor.core
 			super();
 			_selectionManager = new SelectionManager(this);
 			_plugins = new Vector.<IKeyboadEventManager>;
+			_plugins.push(_clipboardManager = new ClipboardManager(this));
 			
 			focusRect = false;
 			_this = this;
@@ -65,7 +69,7 @@ package net.wonderfl.editor.core
 			addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
 			
 			
-			addEventListener(Event.COPY, onCopy);
+			addEventListener(Event.COPY, bind(_clipboardManager.copy));
 			addEventListener(Event.SELECT_ALL, onSelectAll);
 		}
 		
@@ -103,15 +107,8 @@ package net.wonderfl.editor.core
 			setScrollYByBar(_scrollY - e.delta);
 		}
 				
-		public function onCopy(e:Event=null):void
-		{
-			if (_selStart != _selEnd)
-				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _text.substring(_selStart, _selEnd));
-		}
-		
 		public function onSelectAll(e:Event):void
 		{
-			trace('select all '+ _text.length);
 			_setSelection(0, _text.length, true);
 		}
 		
@@ -191,13 +188,8 @@ package net.wonderfl.editor.core
 		protected function onKeyDown(e:KeyboardEvent):void
 		{
 			_preventDefault = false;
-			var c:String = String.fromCharCode(e.charCode);
 			var k:int = e.keyCode;
 			var i:int;
-			if (k == Keyboard.INSERT && e.ctrlKey)
-			{
-				onCopy();
-			}
 			
 			if (k == Keyboard.CONTROL || k == Keyboard.SHIFT || e.keyCode == 3/*ALT*/)
 				return;
