@@ -61,10 +61,10 @@ package net.wonderfl.editor
 			
 			lineNums = new LineNumberField(_field);
 			addChild(lineNums);
-			lineNums.addEventListener(MouseEvent.MOUSE_DOWN, function(e:MouseEvent):void {
-				_field.onMouseDown(e);
-				stage.addEventListener(MouseEvent.MOUSE_UP, numStageMouseUp);
-			});
+			//lineNums.addEventListener(MouseEvent.MOUSE_DOWN, function(e:MouseEvent):void {
+				//_field.onMouseDown(e);
+				//stage.addEventListener(MouseEvent.MOUSE_UP, numStageMouseUp);
+			//});
 			lineNums.addEventListener(Event.RESIZE, function ():void {
 				_field.x = lineNums.width;
 				_field.width = _width - lineNums.width;
@@ -139,11 +139,11 @@ package net.wonderfl.editor
 			_field.scrollH = _hScroll.value;
 		}
 		
-		private function numStageMouseUp(e:Event):void
-		{
-			stage.focus = _field;
-			stage.removeEventListener(MouseEvent.MOUSE_UP, numStageMouseUp);
-		}
+		//private function numStageMouseUp(e:Event):void
+		//{
+			//stage.focus = _field;
+			//stage.removeEventListener(MouseEvent.MOUSE_UP, numStageMouseUp);
+		//}
 		
 		override protected function updateSize():void 
 		{

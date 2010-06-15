@@ -1,6 +1,7 @@
 package net.wonderfl.editor 
 {
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
 	import flash.text.engine.ElementFormat;
 	import flash.text.engine.FontDescription;
@@ -8,6 +9,8 @@ package net.wonderfl.editor
 	import flash.text.engine.TextElement;
 	import flash.text.engine.TextLine;
 	import flash.text.TextFormat;
+	import flash.ui.Mouse;
+	import flash.ui.MouseCursor;
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.core.FTETextField;
 	import net.wonderfl.editor.utils.calcFontBox;
@@ -27,13 +30,66 @@ package net.wonderfl.editor
 		{
 			_fte = $fte;
 			_block = new TextBlock;
-			mouseChildren = mouseEnabled = false;
+			mouseChildren = false;
 			
 			_defaultTextFormat = $fte.defaultTextFormat;
 			_fte.addEventListener(Event.SCROLL, onScroll);
 			_width = 0;
 			
+			addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+			addEventListener(MouseEvent.MOUSE_OVER, function ():void {
+				Mouse.cursor = MouseCursor.ARROW;
+			});
+			
 			onScroll(null);
+		}
+		
+		
+		private function mouseDown(e:MouseEvent):void 
+		{
+			var pos:int;
+			var lineStart:int;
+			var lineEnd:int;
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
+			
+			lineStart = lineEnd = getPos();
+			updateSelection();
+			
+			function mouseMove(e:MouseEvent):void {
+				lineEnd = getPos();
+				updateSelection();
+			}
+			function mouseUp(e:MouseEvent):void {
+				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+				stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
+				mouseMove(null);
+			}
+			function updateSelection():void {
+				var s:int = lineStart;
+				var e:int = lineEnd;
+				if (s > e) {
+					var t:int = s;
+					s = e;
+					e = t;
+				}
+				var i:int = 0;
+				var selStart:int = _fte.firstPos;
+				var selEnd:int;
+				while (i < s) {
+					selStart = _fte.text.indexOf(FTETextField.NL, selStart) + 1;
+					++i;
+				}
+				selEnd = selStart;
+				while (i <= e) {
+					selEnd = _fte.text.indexOf(FTETextField.NL, selEnd) + 1;
+					++i;
+				}
+				_fte.setSelection(selStart, selEnd);
+			}
+			function getPos():int {
+				return (mouseY / _fte.boxHeight) >> 0;
+			}
 		}
 		
 		private function onScroll(e:Event):void 

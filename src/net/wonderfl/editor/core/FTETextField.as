@@ -61,8 +61,8 @@ package net.wonderfl.editor.core
 		
 		protected var _scrollY:int = 0;
 		protected var _scrollH:int = 0;
-		private var firstPos:int = 0;
-		private var lastPos:int = 0;
+		private var _firstPos:int = 0;
+		private var _lastPos:int = 0;
 		protected var _maxScrollV:int = 0;
 		protected var _maxScrollH:int = 0;
 		
@@ -194,12 +194,12 @@ package net.wonderfl.editor.core
 			//for (i = _scrollY, pos=0; i > 0; i--)
 				//pos = _text.indexOf(NL, pos)+1;
 			
-			firstPos = (_scrollY > 0) ? _textLineCache[_scrollY] + 1 : 0;
+			_firstPos = (_scrollY > 0) ? _textLineCache[_scrollY] + 1 : 0;
 			
 			i = Math.min(visibleRows, _numLines) + _scrollY;
 			
 			pos = (i < _textLineCache.length) ? _textLineCache[i] : _text.length;
-			lastPos = pos;
+			_lastPos = pos;
 			updateVisibleText();
 		}
 		
@@ -254,8 +254,8 @@ package net.wonderfl.editor.core
 				_selStart = tmp;
 			}
 			
-			var i0:int = Math.max(_selStart, firstPos);
-			var i1:int = Math.min(_selEnd, lastPos);
+			var i0:int = Math.max(_selStart, _firstPos);
+			var i1:int = Math.min(_selEnd, _lastPos);
 			
 			var p0:Point = getPointForIndex(i0);
 			var p1:Point;
@@ -264,7 +264,7 @@ package net.wonderfl.editor.core
 			trace('start draw selection ' + p0 + p1);
 			var g:Graphics = _selectionShape.graphics;
 			g.clear();
-			if (_selStart != _selEnd && _selStart <= lastPos && _selEnd >= firstPos)
+			if (_selStart != _selEnd && _selStart <= _lastPos && _selEnd >= _firstPos)
 			{
 				g.beginFill(0x663333);
 				if (p0.y == p1.y)
@@ -277,7 +277,7 @@ package net.wonderfl.editor.core
 						g.drawRect(1, p0.y + boxHeight, _maxWidth, boxHeight * (rows - 1));
 					}
 					//if selection is past last visible pos, we draw a full line
-					g.drawRect(1, p0.y + boxHeight * Math.max(1, rows), lastPos >= _selEnd ? p1.x : _maxWidth, boxHeight);
+					g.drawRect(1, p0.y + boxHeight * Math.max(1, rows), _lastPos >= _selEnd ? p1.x : _maxWidth, boxHeight);
 				}
 			}
 			
@@ -341,7 +341,7 @@ package net.wonderfl.editor.core
 				updateScrollProps();
 			}
 			else
-				lastPos += text.length;
+				_lastPos += text.length;
 			
 			var o:Object;//the run
 			
@@ -438,19 +438,19 @@ package net.wonderfl.editor.core
 					while ((getTimer() - tick) < 5) {
 						o = runs[i++];
 						if (o == null) break;
-						if (o.end < firstPos) continue;
-						if (o.begin > lastPos) {
+						if (o.end < _firstPos) continue;
+						if (o.begin > _lastPos) {
 							return false;
 						}
 						
-						if (o.begin >= firstPos) {
-							str = _text.substring((oo ? oo.end : firstPos), o.begin);
+						if (o.begin >= _firstPos) {
+							str = _text.substring((oo ? oo.end : _firstPos), o.begin);
 							elf = new ElementFormat(font, _defaultTextFormat.size + 0, 0xffffff);
 							if (killFlag) return false;
 							replaceURLString();
 						}
 						
-						str = _text.substring(Math.max(o.begin, firstPos), Math.min(o.end, lastPos));
+						str = _text.substring(Math.max(o.begin, _firstPos), Math.min(o.end, _lastPos));
 						elf = new ElementFormat(
 								new FontDescription(_defaultTextFormat.font, (o.bold ? FontWeight.BOLD : FontWeight.NORMAL), (o.italic ? FontPosture.ITALIC : FontPosture.NORMAL)),
 								_defaultTextFormat.size + 0, parseInt("0x" + o.color));
@@ -466,12 +466,12 @@ package net.wonderfl.editor.core
 				function ():Boolean {
 					if (killFlag) return false;
 					
-					if (pos < lastPos) {
-						str = _text.substring(oo ? oo.end : firstPos, lastPos);
+					if (pos < _lastPos) {
+						str = _text.substring(oo ? oo.end : _firstPos, _lastPos);
 						elf = new ElementFormat(font, _defaultTextFormat.size + 0, 0xffffff);
 						
 						replaceURLString();
-						pos = lastPos;
+						pos = _lastPos;
 					}
 					
 					var group:GroupElement = new GroupElement;
@@ -650,15 +650,15 @@ package net.wonderfl.editor.core
 			var pos:int;
 			var delta:int;
 			// check vertical scroll
-			if (_caret > lastPos)
+			if (_caret > _lastPos)
 			{
-				result = countNewLines(lastPos, _caret);
+				result = countNewLines(_lastPos, _caret);
 				_igonoreCursor = true;
 				scrollY += result.numNewLines;
 			}
-			if (_caret < firstPos)
+			if (_caret < _firstPos)
 			{
-				result = countNewLines(_caret, firstPos);
+				result = countNewLines(_caret, _firstPos);
 				_igonoreCursor = true;
 				scrollY -= result.numNewLines;
 			}
@@ -706,7 +706,7 @@ package net.wonderfl.editor.core
 		
 		protected function getIndexForPoint(p:Point):int
 		{
-			if (p.y < 0) return firstPos;
+			if (p.y < 0) return _firstPos;
 			p.x -= _container.x;
 			var t:int = getTimer();
 			var pos:int = 0;
@@ -715,7 +715,7 @@ package net.wonderfl.editor.core
 			while (p.y + _scrollY*boxHeight > y)
 			{
 				pos = _text.indexOf(NL, pos)+1;
-				if (pos > lastPos) return lastPos;
+				if (pos > _lastPos) return _lastPos;
 				
 				if (pos==0)
 				{
@@ -730,8 +730,8 @@ package net.wonderfl.editor.core
 			var i:int;
 			l -= _scrollY;
 			
-			if (l < 0) return firstPos;
-			if (l >= _textLineContainer.numChildren) return lastPos;
+			if (l < 0) return _firstPos;
+			if (l >= _textLineContainer.numChildren) return _lastPos;
 			//
 			i = 0;
 			var line:TextLine = _block.firstLine;
@@ -760,11 +760,11 @@ package net.wonderfl.editor.core
 			var index:int = $index;
 			
 			// give up providing proper value for these indeces
-			if (index < firstPos) return new Point(cursor.x, -boxHeight);
-			if (index > lastPos) return new Point(cursor.x, boxHeight * (1 + visibleRows) + 2);
+			if (index < _firstPos) return new Point(cursor.x, -boxHeight);
+			if (index > _lastPos) return new Point(cursor.x, boxHeight * (1 + visibleRows) + 2);
 			
 			var lines:int = 0;
-			pos = firstPos;
+			pos = _firstPos;
 			
 			while (true)
 			{
@@ -840,6 +840,9 @@ package net.wonderfl.editor.core
 		{
 			_igonoreCursor = value;
 		}
+		
+		public function get firstPos():int { return _firstPos; }
+		public function get lastPos():int { return _lastPos; }
 
 		public function addFormatRun(beginIndex:int, endIndex:int, bold:Boolean, italic:Boolean, color:String):void
 		{

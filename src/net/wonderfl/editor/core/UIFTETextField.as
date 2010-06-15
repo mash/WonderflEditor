@@ -65,9 +65,10 @@ package net.wonderfl.editor.core
 				e.stopImmediatePropagation();
 			});
 			addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			
-			
 			addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+			addEventListener(MouseEvent.MOUSE_OVER, function ():void {
+				Mouse.cursor = MouseCursor.IBEAM;
+			});
 			
 			
 			addEventListener(Event.COPY, bind(_clipboardManager.copy));
