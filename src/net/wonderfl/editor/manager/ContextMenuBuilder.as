@@ -6,6 +6,7 @@ package net.wonderfl.editor.manager
 	import flash.events.Event;
 	import flash.net.navigateToURL;
 	import flash.net.URLRequest;
+	import flash.system.Capabilities;
 	import flash.ui.ContextMenu;
 	import flash.ui.ContextMenuItem;
 	import net.wonderfl.editor.IEditor;
@@ -15,13 +16,14 @@ package net.wonderfl.editor.manager
 	 */
 	public class ContextMenuBuilder
 	{
-		private static const COPY:String = 'Copy (C-c)';
-		private static const CUT:String = 'Cut (C-x)';
-		private static const UNDO:String = 'Undo (C-z)';
-		private static const REDO:String = 'Redo (C-y)';
-		private static const PASTE:String = 'Paste (C-v)';
-		private static const SELECT_ALL:String = 'Select All (C-a)';
-		private static const SAVE:String = 'Save (C-s)';
+		private static function get COPY():String { return  'Copy (C-c)'.replace(C, replacement); }
+		private static function get CUT():String { return  'Cut (C-x)'.replace(C, replacement); }
+		private static function get UNDO():String { return  'Undo (C-z)'.replace(C, replacement); }
+		private static function get REDO():String { return  'Redo (C-y)'.replace(C, replacement); }
+		private static function get PASTE():String { return  'Paste (C-v)'.replace(C, replacement); }
+		private static function get SELECT_ALL():String { return  'Select All (C-a)'.replace(C, replacement); }
+		private static function get SAVE():String { return  'Save (C-s)'.replace(C, replacement); }
+		private static const C:RegExp = /\(C-(\w)\)/;
 		private static const MINI_BUILDER:String = 'MiniBuilder';
 		private static var _this:ContextMenuBuilder;
 		private var _editor:IEditor;
@@ -32,6 +34,10 @@ package net.wonderfl.editor.manager
 		private var _itemCopy:ContextMenuItem;
 		private var _itemUndo:ContextMenuItem;
 		private var _itemRedo:ContextMenuItem;
+		
+		private static function replacement($match:String, $key:String, $index:int, $str:String):String {
+			return <>({(Capabilities.os.indexOf('Mac') != -1) ? "Cmd" : "Ctrl"}-{$key})</>;
+		}
 		
 		public static function getInstance():ContextMenuBuilder { return (_this ||= new ContextMenuBuilder); }
 		public function buildMenu($menuContainer:InteractiveObject, $editor:IEditor, $editable:Boolean = false):void
