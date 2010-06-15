@@ -28,6 +28,7 @@ package net.wonderfl.editor.core
 	import flash.text.TextFormat;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
+	import flash.utils.ByteArray;
 	import flash.utils.clearTimeout;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
@@ -565,21 +566,21 @@ package net.wonderfl.editor.core
 			
 			function replaceURLString():void {
 				index = 0;
-				str.replace(
-					new RegExp("https?://[-_.!~*a-zA-Z0-9;/?:@&=+$,%#]+", "g"),
-					function ($url:String, $begin:int, $str:String):String {
-						te = new TextElement($str.substring(index, $begin), elf.clone());
-						elements.push(te);
-						
-						te = new TextElement($url, elf.clone());
-						te.eventMirror = new LinkElementEventMirror(_textLineContainer, _textDecorationContainer, te, boxHeight);
-						elements.push(te);
-						
-						index = $begin + $url.length;
-						
-						return $url;
-					}
-				);
+				var regURL:RegExp = new RegExp("https?://[-_.!~*a-zA-Z0-9;/?:@&=+$,%#]+", "g");
+				var url:Object;
+				var s:String;
+				while (true) {
+					url = regURL.exec(str);
+					if (!url) break;
+					te = new TextElement(str.substring(index, url.index), elf.clone());
+					elements.push(te);
+					
+					s = url.toString();
+					te = new TextElement(s, elf.clone());
+					te.eventMirror = new LinkElementEventMirror(_textLineContainer, _textDecorationContainer, te, boxHeight);
+					elements.push(te);
+					index = url.index + s.length;
+				}
 				if (index < str.length) {
 					elements.push(new TextElement(str.substr(index), elf.clone()));
 				}
