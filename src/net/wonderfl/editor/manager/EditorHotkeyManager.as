@@ -97,6 +97,12 @@ package net.wonderfl.editor.manager
 			case 88: // Ctrl + X
 				if (mac) ClipboardManager.getInstance().cut();
 				break;
+			case 89: // Ctrl + Y
+				if (mac) HistoryManager.getInstance().redo();
+				break;
+			case 90:
+				if (mac) HistoryManager.getInstance().undo();
+				break;
 			default : 
 				result = false;
 			}
