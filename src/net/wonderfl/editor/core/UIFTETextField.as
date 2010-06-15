@@ -118,6 +118,7 @@ package net.wonderfl.editor.core
 		{
 			var p:Point = new Point;
 			
+			we_internal::_preventHScroll = true;
 			p.x = mouseX; p.y = mouseY;
 			var dragStart:int;
 			if (e.shiftKey)
@@ -140,6 +141,8 @@ package net.wonderfl.editor.core
 			
 			function onMouseMove(e:Event):void
 			{
+				we_internal::_preventHScroll = true;
+				
 				if (mouseY < 0)
 					scrollDelta = -1;
 				else if (mouseY > height)
@@ -162,6 +165,7 @@ package net.wonderfl.editor.core
 			{
 				stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 				stage.removeEventListener(Event.ENTER_FRAME, onMouseMove);
+				we_internal::_preventHScroll = true;
 				
 				var t:int = getTimer();
 				if (t - prevMouseUpTime < 250) {

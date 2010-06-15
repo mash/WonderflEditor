@@ -88,6 +88,9 @@ package net.wonderfl.editor.core
 		private var _scrollYEngine:Sprite = new Sprite;
 		private var _charHighlight:CharHighlighter = new CharHighlighter;
 		protected var _igonoreCursor:Boolean = false;
+		we_internal var _preventHScroll:Boolean = false;
+		private var _setSelectionPromise:SetSelection = null;
+		
 		
 		use namespace we_internal;
 		
@@ -383,8 +386,6 @@ package net.wonderfl.editor.core
 			we_internal::__replaceText(startIndex, endIndex, text);
 		}
 		
-		private var _setSelectionPromise:SetSelection = null;
-		
 		private function updateVisibleText():void {
 			CONFIG::benchmark { trace('updateVisibleText'); }
 			var t:int = getTimer();
@@ -662,12 +663,16 @@ package net.wonderfl.editor.core
 				scrollY -= result.numNewLines;
 			}
 			
+			if (_preventHScroll) {
+				_preventHScroll = false;
+				return;
+			}
+			
 			var maxCols:int = Math.ceil(_maxWidth / boxWidth);
 			var currentCols:int = (cursor.getX() / boxWidth) >> 0;
 			var numCols:int = (_width / boxWidth) >> 0;
 			var tolerance:int = 1 << 3;
 			var scroll:int;
-			
 			// check horizontal scroll
 			if (currentCols > numCols - tolerance) {
 				scroll += (currentCols - numCols + tolerance);
