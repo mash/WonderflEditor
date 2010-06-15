@@ -4,6 +4,7 @@ package net.wonderfl.editor.manager
 	import flash.desktop.ClipboardFormats;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.system.Capabilities;
 	import flash.ui.Keyboard;
 	import net.wonderfl.editor.core.UIFTETextField;
 	
@@ -43,7 +44,9 @@ package net.wonderfl.editor.manager
 		public function copy():void {
 			if (_field.selectionBeginIndex != _field.selectionEndIndex) {
 				try {
-					Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, _field.text.substring(_field.selectionBeginIndex, _field.selectionEndIndex));
+					var text:String = _field.text.substring(_field.selectionBeginIndex, _field.selectionEndIndex);
+					text = (Capabilities.os.indexOf('Windows') != -1) ? text.replace(/\n/gm, "\r\n") : text;
+					Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, text);
 				} catch (e:SecurityError) {}// cannot copy
 			}
 		}

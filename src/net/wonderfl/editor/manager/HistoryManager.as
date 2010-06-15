@@ -26,6 +26,7 @@ package net.wonderfl.editor.manager
 		public static function getInstance():HistoryManager { return _this; }
 		
 		public function pushReplaceOperation($startIndex:int, $endIndex:int, $text:String):void {
+			$text = $text.replace(/\r/gm, FTETextField.NL).replace(/\t/gm, "    ");
 			var undo:ReplaceText = new ReplaceText($startIndex, $startIndex + $text.length, _field.text.substring($startIndex, $endIndex));
 			if (_undoStack) {
 				_undoStack.next = undo;

@@ -89,7 +89,7 @@ package net.wonderfl.editor.manager
 		
 		public function saveCode():void
 		{
-			var text:String = (Capabilities.os.indexOf('Windows') != -1) ? _field.text.replace(/\n/g, '\r\n') : _field.text;
+			var text:String = (Capabilities.os.indexOf('Windows') != -1) ? _field.text.replace(/\n/gm, '\r\n') : _field.text;
 			var localName:String = CodeUtil.getDefinitionLocalName(text);
 			localName ||= "untitled";
 			fileRef = new FileReference();

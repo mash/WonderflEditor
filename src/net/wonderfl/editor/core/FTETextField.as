@@ -319,7 +319,7 @@ package net.wonderfl.editor.core
 		
 		we_internal function __replaceText(startIndex:int, endIndex:int, text:String):void {
 			var t:int = getTimer();
-			_text = escapeNewLine(_text.substr(0, startIndex) + text + _text.substr(endIndex)).replace("\t", "    ");
+			_text = escapeNewLine(_text.substr(0, startIndex) + text + _text.substr(endIndex)).replace(/\t/gm, "    ");
 			
 			_numLines = _text.split(NL).length;
 			_maxScrollV = Math.max(0, _numLines - visibleRows);
