@@ -143,7 +143,10 @@ package ro.minibuilder.asparser
 				else
 				{
 					//look for regexp syntax
-					lt = tokens[tokens.length-1].string;
+					//if (tokens[tokens.length - 1] == null) return;
+					var lastToken:Token = tokens[tokens.length - 1];
+					if (!lastToken) return null;
+					lt = lastToken.string;
 					if (lt=='=' || lt==',' || lt=='[' || lt=='(' || lt=='}' || lt=='{' || lt==';' || lt=='&' || lt=='|')
 					{
 						skipUntilWithEscNL('/');
