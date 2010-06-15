@@ -331,7 +331,7 @@ package ro.minibuilder.asparser
 			resolvedIsClass = false;
 			
 			var t0:Token = tokenizer.tokenByPos(pos);
-			if (t0.type == Token.COMMENT)
+			if (t0 && t0.type == Token.COMMENT)
 				return;			
 			
 			var bp:BackwardsParser = new BackwardsParser;
