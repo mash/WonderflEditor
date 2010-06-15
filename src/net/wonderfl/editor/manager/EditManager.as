@@ -83,11 +83,14 @@ package net.wonderfl.editor.manager
 			var str:String = _text.substring(i + 1, _caret).match(/^\s*/)[0];
 			if (_text.charAt(_caret - 1) == '{') {
 				if (autoBraceInsertion) {
-					var text:String = FTETextField.NL + str + '    ';
-					str = text + FTETextField.NL + str + '}' + FTETextField.NL;
-					_field.replaceText(_field.selectionBeginIndex, _field.selectionEndIndex, str);
-					_field.setSelection(_field.selectionBeginIndex + text.length, _field.selectionBeginIndex + text.length);
-					return;
+					// do rough check
+					if (_text.split("{").length != _text.split("}").length){
+						var text:String = FTETextField.NL + str + '    ';
+						str = text + FTETextField.NL + str + '}' + FTETextField.NL;
+						_field.replaceText(_field.selectionBeginIndex, _field.selectionEndIndex, str);
+						_field.setSelection(_field.selectionBeginIndex + text.length, _field.selectionBeginIndex + text.length);
+						return;
+					}
 				}
 				// else just insert the white space
 				str += '    ';
