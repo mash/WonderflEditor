@@ -191,6 +191,8 @@ package net.wonderfl.editor.core
 				return;
 			}
 			
+			if (e.text.charCodeAt(0) < 0x20) return;
+			
 			if (e.text in MATCH) {
 				findPreviousMatch(MATCH[e.text], e.text, _caret)
 			}

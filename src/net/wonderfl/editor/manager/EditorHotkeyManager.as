@@ -81,9 +81,11 @@ package net.wonderfl.editor.manager
 				handleJ($event);
 				break;
 			case 78: // Ctrl + N
+				saveLastCol();
 				nextLine();
 				break;
 			case 80: // Ctrl + P
+				saveLastCol();
 				previousLine();
 				break;
 			case 83: // Ctrl + S
@@ -102,9 +104,13 @@ package net.wonderfl.editor.manager
 			return result;
 		}
 		
+		public function saveLastCol():void
+		{
+			_lastCol = _field.caretIndex - _field.text.lastIndexOf(FTETextField.NL, _field.caretIndex - 1) - 1;
+		}
+		
 		private function selectAll():void
 		{
-			if (_field is UIFTETextInput) _field["preventFollowingTextInput"]();
 			_field.setSelection(0, _field.length);
 		}
 		
@@ -113,7 +119,7 @@ package net.wonderfl.editor.manager
 			var text:String = (Capabilities.os.indexOf('Windows') != -1) ? _field.text.replace(/\n/gm, '\r\n') : _field.text;
 			var localName:String = CodeUtil.getDefinitionLocalName(text);
 			localName ||= "untitled";
-			fileRef = new FileReference();
+			fileRef = new FileReference;
 			fileRef.save(text, localName + (isMXML(text) ? ".mxml" : ".as"));
 		}
 		
