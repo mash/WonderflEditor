@@ -7,11 +7,11 @@
 		</define>
 		<define>
 			<name>CONFIG::debug</name>
-			<value>false</value>
+			<value>true</value>
 		</define>
 		<define>
 			<name>Thread::debug</name>
-			<value>false</value>
+			<value>true</value>
 		</define>
 		<incremental>true</incremental>
 		<source-path>

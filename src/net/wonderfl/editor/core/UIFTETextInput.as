@@ -135,8 +135,9 @@ package net.wonderfl.editor.core
 			
 			var len:int = _plugins.length;
 			for (i = 0; i < len; ++i) {
-				if (_plugins[i].keyDownHandler(e))
+				if (_plugins[i].keyDownHandler(e)) {
 					return;
+				}
 			}
 			
 			// to treat escape in some plug-ins
@@ -186,7 +187,9 @@ package net.wonderfl.editor.core
 		
 		protected function onInputText(e:TextEvent):void
 		{
-			if (_preventDefault) return;
+			if (_preventDefault) {
+				return;
+			}
 			
 			if (e.text in MATCH) {
 				findPreviousMatch(MATCH[e.text], e.text, _caret)

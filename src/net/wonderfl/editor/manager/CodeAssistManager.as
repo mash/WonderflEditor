@@ -334,7 +334,7 @@ package net.wonderfl.editor.manager
 		private function rePositionMenu():void
 		{
 			var i:int = fld.caretIndex;
-			if (fld.text.charAt(i) == FTETextField.NL) --i;
+			if (fld.text.charAt(i) == FTETextField.NL) --i;4
 			while (/[^.();{}\[\]\s:]/.test(fld.text.charAt(i))) --i;
 			var p:Point = fld.getPointForIndex(i);
 		
@@ -384,12 +384,15 @@ package net.wonderfl.editor.manager
 				{
 					switch (String.fromCharCode($event.charCode)) {
 					case 'n' :
+						fld.preventFollowingTextInput();
 						menu.selectedIndex++;
 						return true;
 					case 'p' :
+						fld.preventFollowingTextInput();
 						menu.selectedIndex--;
 						return true;
 					case ' ' :
+						fld.preventFollowingTextInput();
 						return filterMenu();
 					default :
 						break;

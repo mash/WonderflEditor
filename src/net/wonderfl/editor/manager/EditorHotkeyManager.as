@@ -7,6 +7,7 @@ package net.wonderfl.editor.manager
 	import jp.psyark.utils.CodeUtil;
 	import net.wonderfl.editor.core.FTETextField;
 	import net.wonderfl.editor.core.UIFTETextField;
+	import net.wonderfl.editor.core.UIFTETextInput;
 	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.utils.isMXML;
 	import ro.minibuilder.main.editor.Location;
@@ -58,9 +59,17 @@ package net.wonderfl.editor.manager
 		private function handleKeybinds($event:KeyboardEvent):Boolean
 		{
 			var result:Boolean = true;
+			var mac:Boolean = (Capabilities.os.indexOf('Mac') != -1);
+			
 			switch($event.keyCode) {
+			case 65: // Ctrl + A
+				if (mac) selectAll();
+				break;
 			case 66: // Ctrl + B
 				prevChar();
+				break;
+			case 67: // Ctrl + C
+				if (mac) ClipboardManager.getInstance().copy();
 				break;
 			case 68: // Ctrl + D
 				deleteNextChar();
@@ -80,11 +89,23 @@ package net.wonderfl.editor.manager
 			case 83: // Ctrl + S
 				saveCode();
 				break;
+			case 86: // Ctrl + V
+				if (mac) ClipboardManager.getInstance().paste();
+				break;
+			case 88: // Ctrl + X
+				if (mac) ClipboardManager.getInstance().cut();
+				break;
 			default : 
 				result = false;
 			}
 			
 			return result;
+		}
+		
+		private function selectAll():void
+		{
+			if (_field is UIFTETextInput) _field["preventFollowingTextInput"]();
+			_field.setSelection(0, _field.length);
 		}
 		
 		public function saveCode():void
