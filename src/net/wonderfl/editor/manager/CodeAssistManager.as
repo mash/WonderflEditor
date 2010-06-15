@@ -382,12 +382,12 @@ package net.wonderfl.editor.manager
 				var c:int = fld.caretIndex;
 				if ($event.ctrlKey)
 				{
-					switch (String.fromCharCode($event.charCode)) {
-					case 'n' :
+					switch (String.fromCharCode($event.keyCode)) {
+					case 'N' :
 						fld.preventFollowingTextInput();
 						menu.selectedIndex++;
 						return true;
-					case 'p' :
+					case 'P' :
 						fld.preventFollowingTextInput();
 						menu.selectedIndex--;
 						return true;
