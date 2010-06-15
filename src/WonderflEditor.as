@@ -16,6 +16,7 @@ package
 	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
 	import net.wonderfl.editor.manager.ContextMenuBuilder;
+	import net.wonderfl.editor.manager.LocalSettingManager;
 	import net.wonderfl.editor.utils.bind;
 	import org.libspark.ui.SWFWheel;
 	
@@ -39,6 +40,7 @@ package
 		
 		public function WonderflEditor() 
 		{
+			LocalSettingManager.initialize();
 			new LiveCoding;
 			addChild(_editor = new AS3Editor);
 			LiveCoding.editor = _editor;

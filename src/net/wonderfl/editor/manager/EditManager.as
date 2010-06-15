@@ -10,6 +10,7 @@ package net.wonderfl.editor.manager
 	 */
 	public class EditManager
 	{
+		public static var autoBraceInsertion:Boolean = true;
 		private var _field:FTETextField;
 		private var _text:String;
 		private var _selStart:int;
@@ -80,7 +81,17 @@ package net.wonderfl.editor.manager
 		private function handleEnterKey($event:KeyboardEvent):void {
 			var i:int = _text.lastIndexOf(FTETextField.NL, _caret - 1); 
 			var str:String = _text.substring(i + 1, _caret).match(/^\s*/)[0];
-			if (_text.charAt(_caret - 1) == '{') str += '    ';
+			if (_text.charAt(_caret - 1) == '{') {
+				if (autoBraceInsertion) {
+					var text:String = FTETextField.NL + str + '    ';
+					str = text + FTETextField.NL + str + '}' + FTETextField.NL;
+					_field.replaceText(_field.selectionBeginIndex, _field.selectionEndIndex, str);
+					_field.setSelection(_field.selectionBeginIndex + text.length, _field.selectionBeginIndex + text.length);
+					return;
+				}
+				// else just insert the white space
+				str += '    ';
+			}
 			_field.replaceSelection(FTETextField.NL + str);
 		}
 		

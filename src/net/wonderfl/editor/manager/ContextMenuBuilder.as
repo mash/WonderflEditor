@@ -23,6 +23,7 @@ package net.wonderfl.editor.manager
 		private static function get PASTE():String { return  'Paste (C-v)'.replace(C, replacement); }
 		private static function get SELECT_ALL():String { return  'Select All (C-a)'.replace(C, replacement); }
 		private static function get SAVE():String { return  'Save (C-s)'.replace(C, replacement); }
+		private static function get AUTO_BRACE_INSERTION():String { return <>Auto Brace Insertion ({EditManager.autoBraceInsertion ? "enabled" : "disabled"})</>; }
 		private static const C:RegExp = /\(C-(\w)\)/;
 		private static const MINI_BUILDER:String = 'MiniBuilder';
 		private static var _this:ContextMenuBuilder;
@@ -34,6 +35,7 @@ package net.wonderfl.editor.manager
 		private var _itemCopy:ContextMenuItem;
 		private var _itemUndo:ContextMenuItem;
 		private var _itemRedo:ContextMenuItem;
+		private var _itemBraceInsertion:ContextMenuItem;
 		
 		private static function replacement($match:String, $key:String, $index:int, $str:String):String {
 			return <>({(Capabilities.os.indexOf('Mac') != -1) ? "Cmd" : "Ctrl"}-{$key})</>;
@@ -51,11 +53,12 @@ package net.wonderfl.editor.manager
 			if ($editable) {
 				menuCaptions.splice(1, 0, CUT, PASTE);
 				menuCaptions.splice(4, 0, UNDO, REDO);
+				menuCaptions.splice(8, 0, AUTO_BRACE_INSERTION);
 			}
 			
 			_menu.customItems = menuCaptions.map(
 				function ($caption:String, $index:int, $arr:Array):ContextMenuItem {
-					var item:ContextMenuItem = new ContextMenuItem($caption, $caption == MINI_BUILDER || $caption == SAVE || $caption == UNDO);
+					var item:ContextMenuItem = new ContextMenuItem($caption, $caption == MINI_BUILDER || $caption == SAVE || $caption == UNDO || $caption == AUTO_BRACE_INSERTION);
 					item.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onMenuItemSelected);
 					
 					switch($caption) {
@@ -73,6 +76,9 @@ package net.wonderfl.editor.manager
 						break;
 					case REDO:
 						_itemRedo = item;
+						break;
+					case AUTO_BRACE_INSERTION:
+						_itemBraceInsertion = item;
 						break;
 					case PASTE:
 						item.enabled = false; // cannot paste from context menu due to the security problem
@@ -95,6 +101,7 @@ package net.wonderfl.editor.manager
 				_itemCut.enabled = hasSelectionArea;
 				_itemUndo.enabled = (HistoryManager.getInstance().undoStack != null);
 				_itemRedo.enabled = (HistoryManager.getInstance().redoStack != null);
+				_itemBraceInsertion.caption = AUTO_BRACE_INSERTION;
 			}
 		}
 		
@@ -115,6 +122,9 @@ package net.wonderfl.editor.manager
 				break;
 			case SAVE : 
 				_editor.saveCode();
+				break;
+			case AUTO_BRACE_INSERTION:
+				LocalSettingManager.getInstance().autoBraceInsertion = !EditManager.autoBraceInsertion;
 				break;
 			case UNDO:
 				HistoryManager.getInstance().undo();
