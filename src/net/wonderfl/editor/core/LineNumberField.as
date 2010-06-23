@@ -1,4 +1,4 @@
-package net.wonderfl.editor 
+package net.wonderfl.editor.core 
 {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -83,8 +83,10 @@ package net.wonderfl.editor
 				selEnd = selStart;
 				while (i <= e) {
 					selEnd = _fte.text.indexOf(FTETextField.NL, selEnd) + 1;
+					if (selEnd == 0) break;
 					++i;
 				}
+				selEnd = (selEnd == 0) ? _fte.length : selEnd;
 				_fte.setSelection(selStart, selEnd);
 			}
 			function getPos():int {

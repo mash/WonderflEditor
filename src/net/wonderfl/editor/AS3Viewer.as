@@ -6,6 +6,7 @@ package net.wonderfl.editor
 	import flash.events.MouseEvent;
 	import mx.events.ScrollEvent;
 	import mx.events.ScrollEventDirection;
+	import net.wonderfl.editor.core.LineNumberField;
 	import net.wonderfl.editor.core.UIComponent;
 	import net.wonderfl.editor.core.UIFTETextField;
 	import net.wonderfl.editor.manager.ClipboardManager;
