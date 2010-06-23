@@ -104,7 +104,7 @@
 		}
 		
 		private function checkCount():void {
-			if (++_commandCount == 499) sendCurrentText();
+			if (++_commandCount == 99) sendCurrentText();
 		}
 		
 		public function closeLiveCoding():void
