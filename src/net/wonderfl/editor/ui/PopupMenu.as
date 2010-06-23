@@ -3,6 +3,7 @@ package net.wonderfl.editor.ui
 	import flash.display.DisplayObjectContainer;
 	import flash.text.engine.ContentElement;
 	import flash.text.engine.ElementFormat;
+	import flash.text.engine.FontDescription;
 	import flash.text.engine.GroupElement;
 	import flash.text.engine.TextBlock;
 	import flash.text.engine.TextElement;
@@ -23,6 +24,7 @@ package net.wonderfl.editor.ui
 		private var _factory:TextBlock;
 		private const BACKGROUND_COLOR:uint = 0xe4e4e4;
 		private const SELECT_COLOR:uint = 0xCC6666;
+		private var _fontName:String = '_sans';
 		
 		public function PopupMenu() 
 		{
@@ -41,7 +43,7 @@ package net.wonderfl.editor.ui
 			
 			var end:int = _scrollPos + MAX_ENTRIES;
 			end = (end >= _data.length) ? _data.length : end;
-			var elf:ElementFormat = new ElementFormat;
+			var elf:ElementFormat = new ElementFormat(new FontDescription(_fontName));
 			_factory.content = new GroupElement(Vector.<ContentElement>(
 				_data.slice(_scrollPos, end).map(function ($item:String, $index:int, $array:Array):TextElement {
 					elf = elf.clone();
@@ -111,6 +113,11 @@ package net.wonderfl.editor.ui
 		}
 		
 		public function get selectedIndex():int { return _selectedIndex; }
+		
+		public function set fontName(value:String):void 
+		{
+			_fontName = value;
+		}
 		
 		override protected function updateSize():void 
 		{

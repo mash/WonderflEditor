@@ -25,7 +25,7 @@ package net.wonderfl.editor.ui
 		{
 			_width = _height = 0;
 			_factory = new TextBlock;
-			_elf = new ElementFormat;
+			_elf = new ElementFormat();
 			_elf.color = 0;
 			
 			updateSize();
@@ -80,6 +80,12 @@ package net.wonderfl.editor.ui
 			graphics.beginFill(BACKGROUND_COLOR);
 			graphics.drawRect(_rect.left - 2, 0, _rect.width + 4, _rect.height + 2);
 			graphics.endFill();
+		}
+		
+		public function set fontName(value:String):void 
+		{
+			_elf = _elf.clone();
+			_elf.fontDescription = new FontDescription(value);
 		}
 		
 	}

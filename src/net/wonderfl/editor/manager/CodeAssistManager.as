@@ -72,14 +72,18 @@ package net.wonderfl.editor.manager
 			this.ctrl = ctrl;
 			this.onComplete = onComplete;
 			this.stage = stage;
+			
+			var fontName:String = fld.defaultTextFormat.font;
 
 			menu = new PopupMenu;
+			menu.fontName = fontName;
 			//restore the focus to the textfield, delayed			
 			menu.addEventListener(Event.REMOVED_FROM_STAGE, onMenuRemoved);
 			//menu in action
 			//menu.addEventListener(KeyboardEvent.KEY_DOWN, onMenuKey);
 			
 			tooltip = new ToolTip;
+			tooltip.fontName = fontName;
 			fld.addChild(tooltip);
 		}
 		
