@@ -27,6 +27,7 @@ package net.wonderfl.editor.core
 	import net.wonderfl.editor.manager.KeyDownProxy;
 	import net.wonderfl.editor.manager.SelectionManager;
 	import net.wonderfl.editor.utils.bind;
+	import org.libspark.ui.SWFWheel;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -196,6 +197,11 @@ package net.wonderfl.editor.core
 					_setSelection(dragStart, getIndexForPoint(p));
 				}
 			}
+		}
+		
+		override protected function drawComplete():Boolean { 
+			SWFWheel.item = this;
+			return false;
 		}
 		
 		private function onTrippleClick():void

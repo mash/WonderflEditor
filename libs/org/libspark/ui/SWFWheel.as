@@ -107,6 +107,11 @@ package org.libspark.ui
         {
             _browserScroll = value;
         }
+		
+		static public function set item(value:InteractiveObject):void 
+		{
+			_item = value;
+		}
 
         /**
          *  will execute when mouse moved.
