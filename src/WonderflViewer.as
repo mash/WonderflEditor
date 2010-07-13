@@ -67,6 +67,7 @@
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
 			SWFWheel.initialize(stage);
+			SWFWheel.browserScroll = false;
 			
 			_scaleDownButton = new Sprite;
 			_scaleDownButton.addChild(new _image_out_);

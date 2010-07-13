@@ -125,6 +125,7 @@ package
 			CONFIG::useExternalInterface {
 				if (ExternalInterface.available) {
 					SWFWheel.initialize(stage);
+					SWFWheel.browserScroll = false;
 					
 					var code:String = ExternalInterface.call("Wonderfl.Compiler.get_initial_code");
 					_editor.text = (code) ? code : "";

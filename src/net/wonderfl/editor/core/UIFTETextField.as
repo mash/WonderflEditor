@@ -202,11 +202,6 @@ package net.wonderfl.editor.core
 			}
 		}
 		
-		override protected function drawComplete():Boolean { 
-			SWFWheel.item = this;
-			return false;
-		}
-		
 		private function onTrippleClick():void
 		{
 			_double = false;
