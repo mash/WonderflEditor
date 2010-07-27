@@ -13,7 +13,7 @@ package net.wonderfl.chat
 	import flash.text.engine.TextElement;
 	import flash.text.engine.TextLine;
 	import net.wonderfl.component.core.UIComponent;
-	import net.wonderfl.font.FontSetting;
+	import net.wonderfl.editor.font.FontSetting;
 	import net.wonderfl.utils.listenOnce;
 	/**
 	 * ...

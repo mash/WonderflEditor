@@ -5,6 +5,7 @@ package net.wonderfl.editor.livecoding{
 		public static const JOINED          :String = "LiveCodingEvent_JOINED";
         public static const RELAYED         :String = "LiveCodingEvent_RELAYED";
         public static const MEMBERS_UPDATED :String = "LiveCodingEvent_MEMBERS_UPDATED";
+        public static const CHAT_RECEIVED   :String = "LiveCodingEvent_CHAT_RECEIVED";
         public static const ERROR           :String = "LiveCodingEvent_ERROR";
         public var data :Object;
 

@@ -1,4 +1,4 @@
-package net.wonderfl.editor.livecoding{
+package net.wonderfl.editor.livecoding {
     import flash.events.*;
     import flash.net.Socket;
     import flash.utils.Timer;
@@ -10,6 +10,7 @@ package net.wonderfl.editor.livecoding{
 	[Event(name = 'LiveCodingEvent_JOINED', type = 'net.wonderfl.editor.livecoding.LiveCodingEvent')]
 	[Event(name = 'LiveCodingEvent_RELAYED', type = 'net.wonderfl.editor.livecoding.LiveCodingEvent')]
 	[Event(name = 'LiveCodingEvent_MEMBERS_UPDATED', type = 'net.wonderfl.editor.livecoding.LiveCodingEvent')]
+	[Event(name = 'LiveCodingEvent_CHAT_RECEIVED', type = 'net.wonderfl.editor.livecoding.LiveCodingEvent')]
 	[Event(name = 'LiveCodingEvent_ERROR', type = 'net.wonderfl.editor.livecoding.LiveCodingEvent')]
 	[Event(name = 'close', type = 'flash.events.Event')]
 	[Event(name = 'connect', type = 'flash.events.Event')]
@@ -21,6 +22,8 @@ package net.wonderfl.editor.livecoding{
         private var host   :String;
         private var port   :int;
         private var remainingString :String = "";
+        
+
         Security.allowDomain('*');
 
         public function SocketBroadCaster( _host :String = null, _port :int = 0 ){
@@ -47,7 +50,7 @@ package net.wonderfl.editor.livecoding{
             if ( _host ) { host = _host; }
             if ( _port ) { port = _port; }
             if ( ! host || ! port ) {
-                throw new Error('specify host and port');
+                throw('specify host and port');
             }
 
             socket.connect( host, port );
@@ -58,7 +61,7 @@ package net.wonderfl.editor.livecoding{
         }
 
         private function call( method :String, args :Object ) :void {
-           // logger("[call]method: "+method+" args: ",args);
+            logger("[call]method: "+method+" args: ",args);
 
             var obj  :Object = { method : method, args : args };
             var json :String = JSON.encode( obj );
@@ -77,6 +80,7 @@ package net.wonderfl.editor.livecoding{
             }
         }
 
+        // TODO: parseできなかったら、長いjsonの途中かもしれないから、parseできなかった分とっといてあとに回す？
         private function parse( str :String ) :Object {
             if ( !str || str.match(/^\r?\n?$/)) {
                 return null;
@@ -86,7 +90,7 @@ package net.wonderfl.editor.livecoding{
 
             var obj :Object;
             try {
-                obj = ( new JSONDecoder(remainingString, true) ).getValue();
+                obj = ( new JSONDecoder(remainingString, false) ).getValue();
             } catch(err :Error) {
                 logger("failed to parse: " + remainingString + " error: " + err);
                 return null;
@@ -110,6 +114,9 @@ package net.wonderfl.editor.livecoding{
             else if ( obj.method && obj.method == 'relay' ) {
                 dispatchEvent( new LiveCodingEvent( LiveCodingEvent.RELAYED, obj.args ) );
             }
+            else if ( obj.method && obj.method == 'chat' ) {
+                dispatchEvent( new LiveCodingEvent( LiveCodingEvent.CHAT_RECEIVED, obj.args ) );
+            }
         }
 
         public function send( command :String, ... args ) :void {
@@ -118,15 +125,19 @@ package net.wonderfl.editor.livecoding{
             call( 'relay', { command: command, args: args } );
         }
 
+        public function chat( text :String, name :String, icon :String ) :void {
+            if ( ! socket || ! socket.connected ) { return; }
+
+            call( 'chat', { text : text, name : name, icon : icon } );
+        }
+
         // to notify the end of live coding
         public function close():void {
-			if (socket.connected) socket.close();
+            socket.close();
         }
 
         private function logger(... args):void {
-			CONFIG::debug {
-				//trace.apply(null, (["[SocketBroadCaster]"]).concat(args));
-			}
+            CONFIG::debug { log.apply(null, (new Array("[SocketBroadCaster]")).concat(args)); }
         }
     }
 }

@@ -21,9 +21,8 @@ package net.wonderfl.chat
 	import flash.text.engine.TextLine;
 	import flash.text.engine.TextLineMirrorRegion;
 	import flash.utils.getTimer;
-	import net.wonderfl.chat.emoticons.EmoticonElement;
 	import net.wonderfl.component.core.UIComponent;
-	import net.wonderfl.font.FontSetting;
+	import net.wonderfl.editor.font.FontSetting;
 	import net.wonderfl.utils.listenOnce;
 	import net.wonderfl.utils.removeFromParent;
 	/**
@@ -147,7 +146,7 @@ package net.wonderfl.chat
 				parseEmoticons(_text.substring(i, url.index), i);
 				
 				textElement = new TextElement(str = url.toString(), _elf.clone());
-				textElement.eventMirror = new LinkElementEventMirror(this, _decorationContainer, textElement, FontSetting.LINE_HEIGHT);
+				textElement.eventMirror = new ChatLinkElementEventMirror(this, _decorationContainer, textElement, FontSetting.LINE_HEIGHT);
 				content.push(textElement);
 				i = url.index + str.length;
 			}
@@ -161,10 +160,10 @@ package net.wonderfl.chat
 				var length:int;
 				var i:int = 0;
 				while (emoticon = regEmoticons.exec($str))
-					if (EmoticonElement.isValidEmoticon(str = emoticon[1])) {
+					if (ChatEmoticonElement.isValidEmoticon(str = emoticon[1])) {
 						length = emoticon[0].length;
 						content.push(new TextElement($str.substring(i, emoticon.index), _elf.clone()));
-						content.push(new EmoticonElement(str, _elf.clone()).graphic);
+						content.push(new ChatEmoticonElement(str, _elf.clone()).graphic);
 						_emoticonPositions.push( { index:$baseIndex + emoticon.index, length:length } );
 						i = emoticon.index + length;
 					}
@@ -324,11 +323,11 @@ package net.wonderfl.chat
 		private function drawRegions($regions:Vector.<TextLineMirrorRegion>):void {
 			var len:int = $regions.length;
 			var region:TextLineMirrorRegion;
-			var linkMirror:LinkElementEventMirror;
+			var linkMirror:ChatLinkElementEventMirror;
 			for (var i:int = 0; i < len; ++i) 
 			{
 				region = $regions[i];
-				linkMirror = region.mirror as LinkElementEventMirror;
+				linkMirror = region.mirror as ChatLinkElementEventMirror;
 				linkMirror.draw(region);
 			}			
 		}
