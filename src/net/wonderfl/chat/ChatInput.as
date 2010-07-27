@@ -12,7 +12,7 @@ package net.wonderfl.chat
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	import net.wonderfl.component.core.UIComponent;
-	import net.wonderfl.font.FontSetting;
+	import net.wonderfl.editor.font.FontSetting;
 	import net.wonderfl.utils.listenOnce;
 	/**
 	 * ...

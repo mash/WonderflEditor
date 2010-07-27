@@ -13,7 +13,7 @@ package net.wonderfl.chat
 	import flash.utils.Timer;
 	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.component.scroll.VScrollBar;
-	import net.wonderfl.font.FontSetting;
+	import net.wonderfl.editor.font.FontSetting;
 	import net.wonderfl.utils.bind;
 	import net.wonderfl.utils.listenOnce;
 	import net.wonderfl.utils.removeFromParent;

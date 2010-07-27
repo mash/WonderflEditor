@@ -21,7 +21,7 @@ package net.wonderfl.chat
 	 * ...
 	 * @author kobayashi-taro
 	 */
-	public class LinkElementEventMirror extends EventDispatcher
+	public class ChatLinkElementEventMirror extends EventDispatcher
 	{
 		private var _decorationContainer:DisplayObjectContainer;
 		private var _textLineContainer:DisplayObjectContainer;
@@ -37,7 +37,7 @@ package net.wonderfl.chat
 		private var _over:Boolean = false;
 		private var _linkSprite:Sprite;
 
-		public function LinkElementEventMirror($textLineContainer:DisplayObjectContainer, $decorationContainer:DisplayObjectContainer, $text:TextElement, $lineHeight:int) 
+		public function ChatLinkElementEventMirror($textLineContainer:DisplayObjectContainer, $decorationContainer:DisplayObjectContainer, $text:TextElement, $lineHeight:int) 
 		{
 			_textLineContainer = $textLineContainer;
 			_decorationContainer = $decorationContainer;

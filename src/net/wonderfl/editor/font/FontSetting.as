@@ -1,4 +1,4 @@
-package net.wonderfl.font 
+package net.wonderfl.editor.font 
 {
 	import net.wonderfl.utils.findFont;
 	/**
