@@ -150,7 +150,10 @@ package net.wonderfl.editor.minibuilder
 		
 		public function sourceChanged(source:String, fileName:String):Boolean
 		{
-			if (source && source.charAt(0) == "<" && isMXML(source)) return false;
+			if (source && source.charAt(0) == "<" && isMXML(source)) {
+				dispatchEvent(new Event(Event.COMPLETE));
+				return false;
+			}
 			//source = source.replace(/\n|\r\n/g, '\r');
 			
 			t0 = getTimer();
