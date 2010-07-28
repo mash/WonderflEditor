@@ -22,7 +22,7 @@ package
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
 	import net.wonderfl.editor.manager.ContextMenuBuilder;
 	import net.wonderfl.editor.manager.LocalSettingManager;
-	import net.wonderfl.editor.utils.bind;
+	import net.wonderfl.utils.bind;
 	import org.libspark.ui.SWFWheel;
 	
 	//import net.wonderfl.editor.WonderflEditor;

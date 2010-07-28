@@ -39,9 +39,9 @@ package net.wonderfl.editor.core
 	import net.wonderfl.editor.error.ErrorMessageLayer;
 	import net.wonderfl.editor.ITextArea;
 	import net.wonderfl.editor.operations.SetSelection;
-	import net.wonderfl.editor.utils.removeAllChildren;
+	import net.wonderfl.utils.removeAllChildren;
 	import net.wonderfl.editor.we_internal;
-	import net.wonderfl.editor.utils.calcFontBox;
+	import net.wonderfl.utils.calcFontBox;
 	import net.wonderfl.thread.ThreadTask;
 	import net.wonderfl.thread.ThreadExecuter;
 	import ro.victordramba.scriptarea.ScriptCursor;

@@ -6,7 +6,7 @@ package net.wonderfl.editor.scroll
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import net.wonderfl.editor.core.FTETextField;
-	import net.wonderfl.editor.utils.calcFontBox;
+	import net.wonderfl.utils.calcFontBox;
 	/**
 	 * ...
 	 * @author kobayashi-taro

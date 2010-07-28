@@ -6,8 +6,8 @@ package net.wonderfl.editor.error
 	import flash.utils.Timer;
 	import net.wonderfl.editor.we_internal;
 	import net.wonderfl.editor.core.FTETextField;
-	import net.wonderfl.editor.utils.removeAllChildren;
-	import net.wonderfl.editor.utils.removeFromParent;
+	import net.wonderfl.utils.removeAllChildren;
+	import net.wonderfl.utils.removeFromParent;
 	
 	/**
 	 * ...

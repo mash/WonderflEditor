@@ -44,7 +44,7 @@ package net.wonderfl.editor.manager
 	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.ui.PopupMenu;
 	import net.wonderfl.editor.ui.ToolTip;
-	import net.wonderfl.editor.utils.removeFromParent;
+	import net.wonderfl.utils.removeFromParent;
 	import ro.minibuilder.asparser.Field;
 	import ro.victordramba.util.vectorToArray;
 	
