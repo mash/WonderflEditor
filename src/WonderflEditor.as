@@ -10,8 +10,13 @@ package
 	import flash.events.TimerEvent;
 	import flash.external.ExternalInterface;
 	import flash.utils.clearTimeout;
+	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 	import flash.utils.Timer;
+	import net.wonderfl.chat.Chat;
+	import net.wonderfl.chat.ChatButton;
+	import net.wonderfl.chat.ChatClient;
+	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.editor.AS3Editor;
 	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
@@ -25,7 +30,7 @@ package
 	/**
 	 * @author kobayashi-taro
 	 */
-	public class WonderflEditor extends Sprite
+	public class WonderflEditor extends UIComponent
 	{
 		[Embed(source = '../assets/btn_smallscreen.jpg')]
 		private var _image_out_:Class;
@@ -36,7 +41,11 @@ package
 		private var _scaleDownButton:Sprite;
 		private var _editor:AS3Editor;
 		private var _compileTimer:Timer;
+		private var _client:ChatClient;
 		private var _mouseUIFlag:Boolean = false;
+		private var _chatButton:ChatButton;
+		private var _chat:Chat;
+		private const CHAT_BUTTON_MIN_WIDTH:int = 80;
 		
 		public function WonderflEditor() 
 		{
@@ -106,10 +115,6 @@ package
 			if (loaderInfo.parameters)
 				LiveCodingSettings.setUpParameters(loaderInfo.parameters);
 				
-			stage.scaleMode = StageScaleMode.NO_SCALE;
-			stage.align = StageAlign.TOP_LEFT;
-			stage.addEventListener(Event.RESIZE, onResize);
-			stage.dispatchEvent(new Event(Event.RESIZE));
 			
 			var resetTimer:Function;
 			
@@ -122,6 +127,70 @@ package
 			stage.addEventListener(MouseEvent.MOUSE_UP, clearMouseUIFlag);
 			
 			ContextMenuBuilder.getInstance().buildMenu(this, _editor, true);
+			
+			_client = new ChatClient;
+			_client.init(root.loaderInfo.parameters);
+			
+			_chatButton = new ChatButton;
+			var duration:int = 300;
+			var startTime:int;
+			var tweening:Boolean = false;
+			var buttonXTo:int, buttonXFrom:int, chatXTo:int, chatXFrom:int;
+			const LEFT:uint = _width - 288;
+			_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
+			
+			_chatButton.addEventListener(MouseEvent.CLICK, function ():void {
+				if (tweening) return;
+				
+				tweening = true;
+				_chatButton.toggle();
+				if (_chatButton.isOpen()) {
+					buttonXTo = chatXTo = _width - 288;
+					buttonXFrom = _width - CHAT_BUTTON_MIN_WIDTH;
+					chatXFrom = _width;
+				} else {
+					buttonXFrom = chatXFrom = _width - 288;
+					buttonXTo = _width - CHAT_BUTTON_MIN_WIDTH;
+					chatXTo = _width;
+					updateSize();
+				}
+				
+				startTime = getTimer();
+				addEventListener(Event.ENTER_FRAME, tweener);
+			});
+			
+			function tweener(e:Event):void {
+				var time:int = getTimer() - startTime;
+				
+				if (time > duration) {
+					_chatButton.x = buttonXTo; _chat.x = chatXTo;
+					removeEventListener(Event.ENTER_FRAME, tweener);
+					tweening = false;
+					if (_chatButton.isOpen()) updateSize();
+					return;
+				}
+				
+				var t:Number = time / duration;
+				var u:Number;
+				t = t * (2 - t);
+				u = 1 - t;
+				
+				_chatButton.x = t * buttonXTo + u * buttonXFrom;
+				_chat.x = t * chatXTo + u * chatXFrom;
+			}
+			
+			_chat = new Chat(_client);
+			_chat.x = _width - 288;
+			_chat.y = 20;
+			addChild(_chat);
+			
+			addChild(_chatButton);
+			_chatButton.setSize(288, 20);
+			
+			stage.scaleMode = StageScaleMode.NO_SCALE;
+			stage.align = StageAlign.TOP_LEFT;
+			stage.addEventListener(Event.RESIZE, onResize);
+			stage.dispatchEvent(new Event(Event.RESIZE));
 			
 			CONFIG::useExternalInterface {
 				if (ExternalInterface.available) {
@@ -153,10 +222,31 @@ package
 				}
 			}
 			
-			_editor.width = w;
-			_editor.height = h;
-			_scaleDownButton.x = w - _scaleDownButton.width - 15;
-			_scaleDownButton.visible = (w > 465 || h > 465);
+			setSize(w, h);
+		}
+		
+		override protected function updateSize():void 
+		{
+			if (_chatButton.isOpen()) {
+				_editor.setSize(_width - 288, _height);
+				_scaleDownButton.x = _width - _scaleDownButton.width - 288 -15;
+				_scaleDownButton.y = 0;
+			} else {
+				_editor.setSize(_width, _height);
+				_scaleDownButton.x = _width - _scaleDownButton.width - 15;
+				_scaleDownButton.y = 20;
+				
+			}
+			_scaleDownButton.visible = (_width > 465 || _height > 465);
+			
+			if (_chatButton.isOpen()) {
+				_chat.x = _width - 288;
+				_chatButton.x = _width -288;
+			} else {
+				_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
+				_chat.x = _width;
+			}
+			_chat.setSize(288, _height - 20);
 		}
 	}
 }

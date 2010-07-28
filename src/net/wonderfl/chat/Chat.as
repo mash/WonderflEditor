@@ -1,6 +1,5 @@
 package net.wonderfl.chat 
 {
-	import com.bit101.components.PushButton;
 	import flash.display.Sprite;
 	import flash.events.DataEvent;
 	import flash.events.Event;
