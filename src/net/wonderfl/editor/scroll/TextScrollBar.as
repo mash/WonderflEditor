@@ -32,11 +32,21 @@ package net.wonderfl.editor.scroll
 			_handle.addEventListener(MouseEvent.MOUSE_DOWN, _onDrag);
 			addChild(_handle);
 			
-			addEventListener(MouseEvent.MOUSE_OVER, function ():void {
-				Mouse.cursor = MouseCursor.BUTTON;
+			var _this:TextScrollBar = this;
+			var _prevCursor:String;
+			
+			addEventListener(MouseEvent.MOUSE_OVER, function (e:MouseEvent):void {
+				if (e.target == _this) {
+					_prevCursor = Mouse.cursor;
+					Mouse.cursor = MouseCursor.BUTTON;
+				}
+				e.stopPropagation();
 			});
-			addEventListener(MouseEvent.MOUSE_OUT, function ():void {
-				Mouse.cursor = MouseCursor.IBEAM;
+			addEventListener(MouseEvent.MOUSE_OUT, function (e:MouseEvent):void {
+				if (e.target == this) {
+					Mouse.cursor = _prevCursor;
+				}
+				e.stopPropagation();
 			});
 			addEventListener(MouseEvent.MOUSE_UP, _onTrackMouseUp);
 		}

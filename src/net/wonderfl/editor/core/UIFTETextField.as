@@ -70,8 +70,16 @@ package net.wonderfl.editor.core
 				removeEventListener(Event.ADDED_TO_STAGE, __init);
 				stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
 			});
-			addEventListener(MouseEvent.MOUSE_OVER, function ():void {
-				Mouse.cursor = MouseCursor.IBEAM;
+			var prevMouse:String;
+			addEventListener(MouseEvent.MOUSE_OVER, function (e:MouseEvent):void {
+				if (e.target == _this) {
+					prevMouse = Mouse.cursor;
+					Mouse.cursor = MouseCursor.IBEAM;
+				}
+			});
+			addEventListener(MouseEvent.MOUSE_OUT, function (e:Event):void {
+				if (e.target == _this) 
+					Mouse.cursor = prevMouse;
 			});
 			
 			
