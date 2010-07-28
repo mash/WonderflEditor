@@ -6,6 +6,10 @@
 			<value>false</value>
 		</define>
 		<define>
+			<name>CONFIG::editor</name>
+			<value>false</value>
+		</define>
+		<define>
 			<name>CONFIG::debug</name>
 			<value>true</value>
 		</define>
