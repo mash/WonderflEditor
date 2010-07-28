@@ -45,13 +45,14 @@ package net.wonderfl.chat
 			
 			_this = this;
 			focusRect = false;
-			stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+			addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			
 			addEventListener(MouseEvent.ROLL_OVER, onThisRollOver);
 			addEventListener(MouseEvent.ROLL_OUT, onRollOut);
 			addEventListener(Event.COPY, onCopy);
 			addEventListener(MouseEvent.MOUSE_WHEEL, function (e:MouseEvent):void {
-				scrollV = _scrollV + e.delta;
+				scrollV = _scrollV - e.delta;
+				e.stopPropagation();
 			});
 			
 			var timer:Timer = new Timer(5000);
@@ -140,6 +141,7 @@ package net.wonderfl.chat
 				setSelection(dragStart.subtract(new Point(0, FontSetting.LINE_HEIGHT * (_scrollV - prevScrollV))), p);
 				if (stage.focus != _this)
 					stage.focus = _this;
+				e.stopPropagation();
 			}
 		}
 		
@@ -280,7 +282,6 @@ package net.wonderfl.chat
 			var message:ChatMessage;
 			var messageHeight:int;
 			var yPos:int = -FontSetting.LINE_HEIGHT * (_scrollV - 1);
-			trace("_scrollV : " + _scrollV);
 			
 			for (var i:int = 0; i < len; ++i) 
 			{
@@ -300,6 +301,7 @@ package net.wonderfl.chat
 				
 				yPos += messageHeight + FontSetting.LINE_HEIGHT;
 			}
+			if (_scroll) _scroll.value = _scrollV;
 		}
 		
 		override protected function updateSize():void 
