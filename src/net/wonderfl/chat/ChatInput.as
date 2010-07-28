@@ -13,6 +13,7 @@ package net.wonderfl.chat
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
+	import flash.ui.Keyboard;
 	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.editor.font.FontSetting;
 	import net.wonderfl.utils.listenOnce;
@@ -68,12 +69,16 @@ package net.wonderfl.chat
 		
 		private function keyDown(e:KeyboardEvent):void 
 		{
-			
+			if (e.shiftKey && e.keyCode == Keyboard.ENTER) {
+				_input.replaceSelectedText('\n');
+			}
 		}
 		
 		private function textInput(e:TextEvent):void 
 		{
 			if (e.text == '\n') {
+				_defaultHandler(null);
+				e.preventDefault();
 			}
 		}
 		
