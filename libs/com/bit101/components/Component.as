@@ -47,7 +47,7 @@ package com.bit101.components
 		// Use the embedAsCFF="false" param to switch back to DefineFont4. In earlier Flex 4 SDKs this was cff="false".
 		// So if you are using the Flex 3.x sdk compiler, switch the embed statment below to expose the correct version.
 		
-		 Flex 4.x sdk:
+		 //Flex 4.x sdk:
 		[Embed(source="../../../../assets/pf_ronda_seven.ttf", embedAsCFF="false", fontName="PF Ronda Seven", mimeType="application/x-font")]
 		// Flex 3.x sdk:
 //		[Embed(source="/assets/pf_ronda_seven.ttf", fontName="PF Ronda Seven", mimeType="application/x-font")]

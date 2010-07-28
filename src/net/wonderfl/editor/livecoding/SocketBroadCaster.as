@@ -137,7 +137,7 @@ package net.wonderfl.editor.livecoding {
         }
 
         private function logger(... args):void {
-            CONFIG::debug { log.apply(null, (new Array("[SocketBroadCaster]")).concat(args)); }
+            //CONFIG::debug { log.apply(null, (new Array("[SocketBroadCaster]")).concat(args)); }
         }
     }
 }

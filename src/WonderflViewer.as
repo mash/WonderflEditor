@@ -34,14 +34,7 @@
 	{
 		private static const TICK:int = 33;
 		
-		[Embed(source = '../assets/btn_smallscreen.jpg')]
-		private var _image_out_:Class;
-		
-		[Embed(source = '../assets/btn_smallscreen_o.jpg')]
-		private var _image_over_:Class;
-		
 		private var _viewer:AS3Viewer;
-		private var _scaleDownButton:Sprite;
 		private var broadcaster:SocketBroadCaster = new SocketBroadCaster;
 		private var _source:String ='';
 		private var _commandList:Array = [];
@@ -69,30 +62,11 @@
 			SWFWheel.initialize(stage);
 			SWFWheel.browserScroll = false;
 			
-			_scaleDownButton = new Sprite;
-			_scaleDownButton.addChild(new _image_out_);
-			var bm:Bitmap = new _image_over_;
-			bm.visible = false;
 			focusRect = null;
-			
-			_scaleDownButton.addChild(bm);
-			_scaleDownButton.buttonMode = true;
-			_scaleDownButton.tabEnabled = false;
-			_scaleDownButton.visible = false;
-			_scaleDownButton.addEventListener(MouseEvent.CLICK, function ():void {
-				if (ExternalInterface.available) ExternalInterface.call("Wonderfl.Codepage.scale_down");
-			});
-			_scaleDownButton.addEventListener(MouseEvent.MOUSE_OVER, function ():void {
-				bm.visible = true;
-			});
-			_scaleDownButton.addEventListener(MouseEvent.MOUSE_OUT, function ():void {
-				bm.visible = false;
-			});
 			
 			_viewer = new AS3Viewer;
 			_viewer.addEventListener(Event.COMPLETE, onColoringComplete);
 			addChild(_viewer);
-			addChild(_scaleDownButton);
 			
 			if (loaderInfo.parameters)
 				LiveCodingSettings.setUpParameters(loaderInfo.parameters);
@@ -166,22 +140,19 @@
 				}
 			}
 			
-			width = (w > 465) ? w - 465 : w;
-			height = h;
+			setSize(w, h);
 		}
 		
 		override protected function updateSize():void 
 		{
-			_viewer.width = width;
-			_scaleDownButton.x = width - _scaleDownButton.width - 15;
-			_scaleDownButton.visible = (width > 464 || height > 466);
+			_viewer.width = _width;
 			if (_isLive) {
-				_infoPanel.width = _scaleDownButton.visible ? _scaleDownButton.x  : width - 15;
+				_infoPanel.width = _width - 15;
 				_viewer.y = _infoPanel.height;
 				_viewer.height = height - _infoPanel.height;
 			} else {
 				_viewer.y = 0;
-				_viewer.height = height;
+				_viewer.height = _height;
 			}
 		}
 		
