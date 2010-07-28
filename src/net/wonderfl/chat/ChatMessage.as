@@ -53,6 +53,8 @@ package net.wonderfl.chat
 			
 			return true;
 		})();
+		
+		
 		private var _maxTextWidth:int = 0;
 		private var _iconURL:String;
 		private var _text:String;
@@ -106,7 +108,6 @@ package net.wonderfl.chat
 		
 		public function updateTime():void {
 			var timeStr:String = ChatTimeRule.getTimeStr(((new Date).getTime() - _localJoinedAt) / 1000 + _seconds);
-			
 			if (_timeStr == timeStr) return;
 			
 			_timeStr = timeStr;
@@ -194,7 +195,6 @@ package net.wonderfl.chat
 		}
 		
 		public function selectArea($start:Point, $end:Point):void {
-			trace("ChatMessage.selectArea > $start : " + $start + ", $end : " + $end + ", _startY : " + _startY);
 			var time:int = getTimer();
 			var startLine:int, endLine:int;
 			var selectedFromBegining:Boolean;
@@ -214,7 +214,6 @@ package net.wonderfl.chat
 				endLine = _textLines.length;
 			}
 			$end.y = endLine * FontSetting.LINE_HEIGHT + _startY;
-			trace('startLine : ' + $start + startLine + ', endLine : ' + $end + endLine);
 			
 			var line:TextLine;
 			var startX:int, endX:int = 0, yPos:int;
@@ -270,14 +269,9 @@ package net.wonderfl.chat
 					_selectionGraphics.drawRect(startX, yPos, endX - startX, FontSetting.LINE_HEIGHT);
 			}
 			_selectionGraphics.endFill();
-			
-			trace('start : ' + _startAtomIndex + ', end : ' + _endAtomIndex);
-			
-			trace('drawSelection : ' + (getTimer() - time) + ' [ms]');
 		}
 		
 		public function selectAll():void {
-			trace("ChatMessage.selectAll");
 			var len:int = _textLines.length;
 			var line:TextLine, yPos:int;
 			_selectionGraphics.clear();

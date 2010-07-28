@@ -203,8 +203,6 @@ package net.wonderfl.chat
 					break;
 				}
 			}
-			//var pos:int = getIndexForPoint(new Point(mouseX, mouseY));
-			//_setSelection(findWordBound(pos, true), findWordBound(pos, false), true);
 		}
 		
 		public function appendItem($message:ChatMessage):void
