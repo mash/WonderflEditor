@@ -32,13 +32,6 @@ package
 	 */
 	public class WonderflEditor extends UIComponent
 	{
-		[Embed(source = '../assets/btn_smallscreen.jpg')]
-		private var _image_out_:Class;
-		
-		[Embed(source = '../assets/btn_smallscreen_o.jpg')]
-		private var _image_over_:Class;
-		
-		private var _scaleDownButton:Sprite;
 		private var _editor:AS3Editor;
 		private var _compileTimer:Timer;
 		private var _client:ChatClient;
@@ -59,26 +52,7 @@ package
 			
 			_editor.setFontSize(12);
 			
-			addChild(_scaleDownButton = new Sprite);
-			_scaleDownButton.addChild(new _image_out_);
-			var bm:Bitmap = new _image_over_;
-			bm.visible = false;
 			focusRect = null;
-			
-			_scaleDownButton.addChild(bm);
-			_scaleDownButton.buttonMode = true;
-			_scaleDownButton.tabEnabled = false;
-			_scaleDownButton.addEventListener(MouseEvent.CLICK, function ():void {
-				CONFIG::useExternalInterface {
-					if (ExternalInterface.available) ExternalInterface.call("Wonderfl.Compiler.scale_down");
-				}
-			});
-			_scaleDownButton.addEventListener(MouseEvent.MOUSE_OVER, function ():void {
-				bm.visible = true;
-			});
-			_scaleDownButton.addEventListener(MouseEvent.MOUSE_OUT, function ():void {
-				bm.visible = false;
-			});
 			
 			addEventListener(Event.ADDED_TO_STAGE, init);
 			
@@ -228,15 +202,10 @@ package
 		{
 			if (_chatButton.isOpen()) {
 				_editor.setSize(_width - 288, _height);
-				_scaleDownButton.x = _width - _scaleDownButton.width - 288 -15;
-				_scaleDownButton.y = 0;
 			} else {
 				_editor.setSize(_width, _height);
-				_scaleDownButton.x = _width - _scaleDownButton.width - 15;
-				_scaleDownButton.y = 20;
 				
 			}
-			_scaleDownButton.visible = (_width > 465 || _height > 465);
 			
 			if (_chatButton.isOpen()) {
 				_chat.x = _width - 288;
