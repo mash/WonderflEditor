@@ -10,7 +10,7 @@
 	import flash.text.TextFormat;
 	import flash.utils.describeType;
 	import flash.utils.getTimer;
-	import net.wonderfl.editor.core.UIComponent;
+	import net.wonderfl.component.core.UIComponent;
 	/**
 	 * ...
 	 * @author kobayashi-taro

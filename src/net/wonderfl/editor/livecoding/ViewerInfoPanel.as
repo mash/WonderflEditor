@@ -9,7 +9,7 @@
 	import flash.text.TextFormat;
 	import flash.utils.getTimer;
 	import mx.effects.easing.Quadratic;
-	import net.wonderfl.editor.core.UIComponent;
+	import net.wonderfl.component.core.UIComponent;;
 	/**
 	 * @author kobayashi-taro
 	 */
