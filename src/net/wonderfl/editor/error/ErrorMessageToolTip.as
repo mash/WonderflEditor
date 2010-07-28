@@ -5,7 +5,7 @@ package net.wonderfl.editor.error
 	import flash.text.engine.TextBlock;
 	import flash.text.engine.TextElement;
 	import flash.text.engine.TextLine;
-	import net.wonderfl.editor.utils.removeAllChildren;
+	import net.wonderfl.utils.removeAllChildren;
 	/**
 	 * ...
 	 * @author kobayashi-taro

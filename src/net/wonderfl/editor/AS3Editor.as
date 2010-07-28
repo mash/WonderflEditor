@@ -22,7 +22,7 @@ package net.wonderfl.editor
 	import net.wonderfl.editor.minibuilder.ASParserController;
 	import net.wonderfl.editor.scroll.TextHScroll;
 	import net.wonderfl.editor.scroll.TextVScroll;
-	import net.wonderfl.editor.utils.calcFontBox;
+	import net.wonderfl.utils.calcFontBox;
 	import ro.minibuilder.main.editor.Location;
 	/**
 	 * ...

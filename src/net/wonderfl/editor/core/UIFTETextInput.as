@@ -22,8 +22,8 @@ package net.wonderfl.editor.core
 	import net.wonderfl.editor.manager.SelectionManager;
 	import net.wonderfl.editor.operations.ReplaceText;
 	import net.wonderfl.editor.operations.SetSelection;
-	import net.wonderfl.editor.utils.bind;
-	import net.wonderfl.editor.utils.versionTest;
+	import net.wonderfl.utils.bind;
+	import net.wonderfl.utils.versionTest;
 	import net.wonderfl.editor.we_internal;
 	/**
 	 * ...

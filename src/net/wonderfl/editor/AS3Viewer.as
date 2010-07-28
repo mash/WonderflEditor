@@ -15,7 +15,7 @@ package net.wonderfl.editor
 	import net.wonderfl.editor.operations.SetSelection;
 	import net.wonderfl.editor.scroll.TextHScroll;
 	import net.wonderfl.editor.scroll.TextVScroll;
-	import net.wonderfl.editor.utils.calcFontBox;
+	import net.wonderfl.utils.calcFontBox;
 	/**
 	 * ...
 	 * @author kobayashi-taro

@@ -35,7 +35,7 @@ package net.wonderfl.editor.minibuilder
 	import flash.utils.ByteArray;
 	import flash.utils.getTimer;
 	import net.wonderfl.editor.ITextArea;
-	import net.wonderfl.editor.utils.isMXML;
+	import net.wonderfl.utils.isMXML;
 	import ro.minibuilder.asparser.Field;
 	import ro.minibuilder.asparser.Parser;
 	import ro.minibuilder.asparser.TypeDB;

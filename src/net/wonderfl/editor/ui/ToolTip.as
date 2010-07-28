@@ -7,7 +7,7 @@ package net.wonderfl.editor.ui
 	import flash.text.engine.TextElement;
 	import flash.text.engine.TextLine;
 	import net.wonderfl.component.core.UIComponent;;
-	import net.wonderfl.editor.utils.removeAllChildren;
+	import net.wonderfl.utils.removeAllChildren;
 	/**
 	 * ...
 	 * @author kobayashi-taro

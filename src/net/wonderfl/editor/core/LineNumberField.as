@@ -13,7 +13,7 @@ package net.wonderfl.editor.core
 	import flash.ui.MouseCursor;
 	import net.wonderfl.component.core.UIComponent;;
 	import net.wonderfl.editor.core.FTETextField;
-	import net.wonderfl.editor.utils.calcFontBox;
+	import net.wonderfl.utils.calcFontBox;
 	/**
 	 * ...
 	 * @author kobayashi-taro

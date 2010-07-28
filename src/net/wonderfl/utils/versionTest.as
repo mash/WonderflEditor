@@ -1,4 +1,4 @@
-package net.wonderfl.editor.utils 
+package net.wonderfl.utils 
 {
 	import flash.system.Capabilities;
 	/**

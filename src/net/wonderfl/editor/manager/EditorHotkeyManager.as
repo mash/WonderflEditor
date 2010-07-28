@@ -9,7 +9,7 @@ package net.wonderfl.editor.manager
 	import net.wonderfl.editor.core.UIFTETextField;
 	import net.wonderfl.editor.core.UIFTETextInput;
 	import net.wonderfl.editor.minibuilder.ASParserController;
-	import net.wonderfl.editor.utils.isMXML;
+	import net.wonderfl.utils.isMXML;
 	import ro.minibuilder.main.editor.Location;
 	/**
 	 * ...
