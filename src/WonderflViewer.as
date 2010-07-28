@@ -18,7 +18,7 @@
 	import flash.utils.setTimeout;
 	import jp.psyark.utils.CodeUtil;
 	import net.wonderfl.editor.AS3Viewer;
-	import net.wonderfl.editor.core.UIComponent;
+	import net.wonderfl.component.core.UIComponent;;
 	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingEvent;
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;

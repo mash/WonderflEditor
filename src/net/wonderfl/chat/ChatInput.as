@@ -2,7 +2,9 @@ package net.wonderfl.chat
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.events.TextEvent;
 	import flash.text.engine.ElementFormat;
 	import flash.text.engine.FontDescription;
 	import flash.text.engine.TextBlock;
@@ -36,6 +38,10 @@ package net.wonderfl.chat
 			_input = new TextField;
 			_input.type = TextFieldType.INPUT;
 			_input.defaultTextFormat = new TextFormat(FontSetting.GOTHIC_FONT);
+			_input.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
+			_input.addEventListener(TextEvent.TEXT_INPUT, textInput);
+			
+			
 			_input.border = true;
 			_input.borderColor = 0x666666;
 			_input.background = true;
@@ -58,6 +64,17 @@ package net.wonderfl.chat
 			_spButton.buttonMode = true;
 			_spButton.addEventListener(MouseEvent.CLICK, _defaultHandler);
 			addChild(_spButton);
+		}
+		
+		private function keyDown(e:KeyboardEvent):void 
+		{
+			
+		}
+		
+		private function textInput(e:TextEvent):void 
+		{
+			if (e.text == '\n') {
+			}
 		}
 		
 		override protected function updateSize():void 

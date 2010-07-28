@@ -34,6 +34,7 @@ package net.wonderfl.editor.core
 	import flash.utils.setTimeout;
 	import mx.events.ScrollEvent;
 	import mx.events.ScrollEventDirection;
+	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.editor.error.ErrorMessage;
 	import net.wonderfl.editor.error.ErrorMessageLayer;
 	import net.wonderfl.editor.ITextArea;

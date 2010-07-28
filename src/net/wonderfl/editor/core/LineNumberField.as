@@ -11,7 +11,7 @@ package net.wonderfl.editor.core
 	import flash.text.TextFormat;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
-	import net.wonderfl.editor.core.UIComponent;
+	import net.wonderfl.component.core.UIComponent;;
 	import net.wonderfl.editor.core.FTETextField;
 	import net.wonderfl.editor.utils.calcFontBox;
 	/**

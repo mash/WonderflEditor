@@ -7,7 +7,7 @@ package net.wonderfl.editor
 	import mx.events.ScrollEvent;
 	import mx.events.ScrollEventDirection;
 	import net.wonderfl.editor.core.LineNumberField;
-	import net.wonderfl.editor.core.UIComponent;
+	import net.wonderfl.component.core.UIComponent;;
 	import net.wonderfl.editor.core.UIFTETextField;
 	import net.wonderfl.editor.manager.ClipboardManager;
 	import net.wonderfl.editor.manager.EditorHotkeyManager;

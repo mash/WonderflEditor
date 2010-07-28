@@ -12,7 +12,7 @@ package net.wonderfl.editor
 	import net.wonderfl.editor.events.EditorEvent;
 	import net.wonderfl.editor.ITextArea;
 	import net.wonderfl.editor.core.LineNumberField;
-	import net.wonderfl.editor.core.UIComponent;
+	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.editor.core.UIFTETextField;
 	import net.wonderfl.editor.error.ErrorMessage;
 	import net.wonderfl.editor.livecoding.LiveCodingControllerView;
