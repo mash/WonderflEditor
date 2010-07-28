@@ -220,7 +220,7 @@ package net.wonderfl.chat
 			var startX:int, endX:int = 0, yPos:int;
 			var boundary:Rectangle;
 			_selectionGraphics.clear();
-			_selectionGraphics.beginFill(0xcccccc);
+			_selectionGraphics.beginFill(ChatStyle.SELECTION_COLOR);
 			for (var i:int = startLine; i < endLine; ++i) 
 			{
 				startX = LEFT_OF_TEXT;
@@ -281,7 +281,7 @@ package net.wonderfl.chat
 			var len:int = _textLines.length;
 			var line:TextLine, yPos:int;
 			_selectionGraphics.clear();
-			_selectionGraphics.beginFill(0xcccccc);
+			_selectionGraphics.beginFill(ChatStyle.SELECTION_COLOR);
 			for (var i:int = 0; i < len; ++i) 
 			{
 				line = _textLines[i];
