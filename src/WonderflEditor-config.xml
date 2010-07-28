@@ -5,6 +5,10 @@
 			<value>true</value>
 		</define>
 		<define>
+			<name>CONFIG::editor</name>
+			<value>false</value>
+		</define>
+		<define>
 			<name>CONFIG::benchmark</name>
 			<value>false</value>
 		</define>

@@ -53,11 +53,13 @@ package net.wonderfl.editor.minibuilder
 
 	public class ASParserController extends EventDispatcher
 	{
-		[Embed(source="../../../../../assets/globals.amf", mimeType="application/octet-stream")]
-		private static var GlobalTypesAsset:Class;
-		
-		[Embed(source="../../../../../assets/playerglobals.amf", mimeType="application/octet-stream")]
-		private static var PlayerglobalAsset:Class;
+		CONFIG::editor {
+			[Embed(source="../../../../../assets/globals.amf", mimeType="application/octet-stream")]
+			private static var GlobalTypesAsset:Class;
+			
+			[Embed(source="../../../../../assets/playerglobals.amf", mimeType="application/octet-stream")]
+			private static var PlayerglobalAsset:Class;
+		}
 		
 		
 		
@@ -80,8 +82,11 @@ package net.wonderfl.editor.minibuilder
 			if (!tc)
 			{
 				tc = new ThreadsController(stage);
-				TypeDB.setDB('global', TypeDB.fromByteArray(new GlobalTypesAsset));
-				TypeDB.setDB('playerglobal', TypeDB.fromByteArray(new PlayerglobalAsset));
+				
+				CONFIG::editor {
+					TypeDB.setDB('global', TypeDB.fromByteArray(new GlobalTypesAsset));
+					TypeDB.setDB('playerglobal', TypeDB.fromByteArray(new PlayerglobalAsset));
+				}
 			}
 			parser = new Parser;
 			
