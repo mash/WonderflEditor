@@ -103,7 +103,7 @@ package net.wonderfl.chat
 			_sp.graphics.drawRect(0, 0, _width, h);
 			_sp.graphics.endFill();
 			
-			_resizeButton.setSize(_width, 20);
+			_resizeButton.setSize(_width, 18);
 			
 			_area.y = h;
 			_area.setSize(_width, _height - h);
