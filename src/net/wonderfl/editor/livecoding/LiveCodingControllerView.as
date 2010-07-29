@@ -1,6 +1,5 @@
 ﻿package net.wonderfl.editor.livecoding 
 {
-	import com.bit101.components.Style;
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -11,14 +10,12 @@
 	import flash.utils.describeType;
 	import flash.utils.getTimer;
 	import net.wonderfl.component.core.UIComponent;
+	import net.wonderfl.editor.font.FontSetting;
 	/**
 	 * ...
 	 * @author kobayashi-taro
 	 */
-	public class LiveCodingControllerView extends UIComponent	{
-		[Embed(source='../../../../../assets/pf_ronda_seven.ttf', fontName='PF Ronda Seven',  embedAsCFF='false', mimeType='application/x-font')]
-		private var __pf_ronda_seven:Class;
-		
+	public class LiveCodingControllerView extends UIComponent {
 		[Embed(source = '../../../../../assets/on_live.png')]
 		private var _onClass:Class;
 		private var _onImage:Bitmap = new _onClass;
@@ -73,7 +70,7 @@
 			
 			_tfTimer.embedFonts = _tfViewer.embedFonts = true;
 			
-			var tfm:TextFormat = new TextFormat("PF Ronda Seven", 8, Style.BACKGROUND);
+			var tfm:TextFormat = new TextFormat(FontSetting.GOTHIC_FONT, 8, 0xffffff);
 			_tfTimer.defaultTextFormat = tfm;
 			_tfViewer.defaultTextFormat = tfm;
 			
