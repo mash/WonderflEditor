@@ -10,6 +10,7 @@
 	import flash.utils.getTimer;
 	import mx.effects.easing.Quadratic;
 	import net.wonderfl.component.core.UIComponent;;
+	import net.wonderfl.editor.font.FontSetting;
 	/**
 	 * @author kobayashi-taro
 	 */
@@ -39,14 +40,13 @@
 			addChild(_tfTimer = new TextField);
 			addChild(_tfViewer = new TextField);
 			
-			var tfm:TextFormat = new TextFormat("PF Ronda Seven", 8, Style.LABEL_TEXT)
+			var tfm:TextFormat = new TextFormat(FontSetting.GOTHIC_FONT, 10, 0xffffff)
 			_tfTimer.defaultTextFormat = tfm;
 			_tfViewer.defaultTextFormat = tfm;
-			_tfTimer.embedFonts = _tfViewer.embedFonts = true;
 			_tfTimer.text = 'Time: ';
 			_tfViewer.text = 'viewer: ';
 			
-			_syncButton = new CheckBox(this, _onImage.width + 5, 5, 'Sync', function ():void {
+			_syncButton = new CheckBox(this, _onImage.width + 5, 5, '', function ():void {
 				_isSync = !_isSync;
 			});
 			_syncButton.selected = true;
