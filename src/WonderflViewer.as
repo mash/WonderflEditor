@@ -17,6 +17,9 @@
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 	import jp.psyark.utils.CodeUtil;
+	import net.wonderfl.chat.Chat;
+	import net.wonderfl.chat.ChatButton;
+	import net.wonderfl.chat.ChatClient;
 	import net.wonderfl.editor.AS3Viewer;
 	import net.wonderfl.component.core.UIComponent;;
 	import net.wonderfl.editor.livecoding.LiveCoding;
@@ -33,6 +36,7 @@
 	public class WonderflViewer extends UIComponent
 	{
 		private static const TICK:int = 33;
+		private const CHAT_BUTTON_MIN_WIDTH:int = 80;
 		
 		private var _viewer:AS3Viewer;
 		private var broadcaster:SocketBroadCaster = new SocketBroadCaster;
@@ -46,6 +50,9 @@
 		private var _ignoreSelection:Boolean;
 		private var _prevText:String;
 		private var _selectionObject:Object;
+		private var _client:ChatClient;
+		private var _chatButton:ChatButton;
+		private var _chat:Chat;
 		
 		public function WonderflViewer() 
 		{
@@ -94,6 +101,67 @@
 			}
 			
 			ContextMenuBuilder.getInstance().buildMenu(this, _viewer);
+			
+			_client = new ChatClient;
+			_client.init(root.loaderInfo.parameters);
+			
+			_chatButton = new ChatButton;
+			var duration:int = 300;
+			var startTime:int;
+			var tweening:Boolean = false;
+			var buttonXTo:int, buttonXFrom:int, chatXTo:int, chatXFrom:int;
+			const LEFT:uint = _width - 288;
+			_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
+			
+			_chatButton.addEventListener(MouseEvent.CLICK, function ():void {
+				if (tweening) return;
+				
+				tweening = true;
+				_chatButton.toggle();
+				if (_chatButton.isOpen()) {
+					buttonXTo = chatXTo = _width - 288;
+					buttonXFrom = _width - CHAT_BUTTON_MIN_WIDTH;
+					chatXFrom = _width;
+				} else {
+					buttonXFrom = chatXFrom = _width - 288;
+					buttonXTo = _width - CHAT_BUTTON_MIN_WIDTH;
+					chatXTo = _width;
+					updateSize();
+				}
+				
+				startTime = getTimer();
+				addEventListener(Event.ENTER_FRAME, tweener);
+			});
+			
+			function tweener(e:Event):void {
+				var time:int = getTimer() - startTime;
+				
+				if (time > duration) {
+					_chatButton.x = buttonXTo; _chat.x = chatXTo;
+					removeEventListener(Event.ENTER_FRAME, tweener);
+					tweening = false;
+					if (_chatButton.isOpen()) updateSize();
+					return;
+				}
+				
+				var t:Number = time / duration;
+				var u:Number;
+				t = t * (2 - t);
+				u = 1 - t;
+				
+				_chatButton.x = t * buttonXTo + u * buttonXFrom;
+				_chat.x = t * chatXTo + u * chatXFrom;
+			}
+			
+			_chat = new Chat(_client);
+			_chat.x = _width - 288;
+			_chat.y = 20;
+			addChild(_chat);
+			
+			addChild(_chatButton);
+			_chatButton.setSize(288, 20);
+			
+			
 			stage.dispatchEvent(new Event(Event.RESIZE));
 		}
 		
@@ -147,13 +215,31 @@
 		{
 			_viewer.width = _width;
 			if (_isLive) {
-				_infoPanel.width = _width - 15;
+				_infoPanel.width = _width - 15 - (_width - _chatButton.x);
 				_viewer.y = _infoPanel.height;
 				_viewer.height = height - _infoPanel.height;
 			} else {
 				_viewer.y = 0;
 				_viewer.height = _height;
 			}
+			
+			
+			if (_chatButton.isOpen()) {
+				_viewer.setSize(_width - 288, _height);
+			} else {
+				_viewer.setSize(_width, _height);
+				
+			}
+			
+			if (_chatButton.isOpen()) {
+				_chat.x = _width - 288;
+				_chatButton.x = _width -288;
+			} else {
+				_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
+				_chat.x = _width;
+			}
+			_chat.setSize(288, _height - 20);
+			
 		}
 		
 		private function onRelayed(e:LiveCodingEvent):void 
