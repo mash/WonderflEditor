@@ -5,12 +5,16 @@
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.text.TextField;
-	import flash.text.TextFormat;
+	import flash.text.engine.ElementFormat;
+	import flash.text.engine.FontDescription;
+	import flash.text.engine.TextBlock;
+	import flash.text.engine.TextElement;
+	import flash.text.engine.TextLine;
 	import flash.utils.getTimer;
 	import mx.effects.easing.Quadratic;
 	import net.wonderfl.component.core.UIComponent;;
 	import net.wonderfl.editor.font.FontSetting;
+	import net.wonderfl.utils.removeFromParent;
 	/**
 	 * @author kobayashi-taro
 	 */
@@ -19,15 +23,18 @@
 		[Embed(source = '../../../../../assets/on_live.png')]
 		private var _onClass:Class;
 		private var _onImage:Bitmap = new _onClass;
-		private var _tfTimer:TextField;
-		private var _tfViewer:TextField;
 		private var _elapsed_time:int = 0;
 		private var _timerCounter:int;
+		private var _factory:TextBlock;
+		private var _elf:ElementFormat;
 		private var _time:int;
 		private var _blink_count:int = 0;
 		private var _isSync:Boolean = true;
 		private const BLINK_PERIOD:int = 50;
 		private var _syncButton:CheckBox;
+		private var _label:TextLine;
+		private var _strTime:String = '--:--';
+		private var _strViewer:String = '-';
 		
 		public function ViewerInfoPanel() 
 		{
@@ -37,46 +44,35 @@
 			sp.addChild(_onImage);
 			addChild(sp);
 			
-			addChild(_tfTimer = new TextField);
-			addChild(_tfViewer = new TextField);
-			
-			var tfm:TextFormat = new TextFormat(FontSetting.GOTHIC_FONT, 10, 0xffffff)
-			_tfTimer.defaultTextFormat = tfm;
-			_tfViewer.defaultTextFormat = tfm;
-			_tfTimer.text = 'Time: ';
-			_tfViewer.text = 'viewer: ';
+			_factory = new TextBlock;
+			_elf = new ElementFormat(new FontDescription(FontSetting.GOTHIC_FONT));
+			_elf.color = 0xffffff;
 			
 			_syncButton = new CheckBox(this, _onImage.width + 5, 5, '', function ():void {
 				_isSync = !_isSync;
 			});
 			_syncButton.selected = true;
 			
-			_tfTimer.width = _tfViewer.width = 0;
-			_tfTimer.height = _tfTimer.textHeight + 4;
-			_tfViewer.height = _tfViewer.textHeight + 4;
-			updatePosition();
-			height = sp.height;
+			height = 20;
 			
-			setViewCount(0);
+			updateView(_strViewer, _strTime);
 		}
 		
-		public function updatePosition():void {
-			var w:int;
-			w = _tfViewer.textWidth + 4;
-			_tfViewer.width = (w > _tfViewer.width) ? w : _tfViewer.width;
-			w = _tfTimer.textWidth + 4;
-			_tfTimer.width = (w > _tfTimer.width) ? w : _tfTimer.width;
-			_tfTimer.x = _onImage.width + _syncButton.width + 10;
-			_tfViewer.x = _tfTimer.x + _tfTimer.width + 10;
+		private function updateView($time:String, $viewer:String):void {
+			_strTime = $time;
+			_strViewer = $viewer;
+			removeFromParent(_label);
+			_factory.content = new TextElement(
+				<>Sync    Time: {$time}  Viewer: {$viewer}</>.toString(), _elf.clone()
+			);
+			_label = _factory.createTextLine();
+			_label.y = _label.height + 2;
+			_label.x = 115;
+			addChild(_label);
 		}
 		
 		public function onMemberUpdate($event:LiveCodingEvent):void {
-			setViewCount(parseInt($event.data.count));
-		}
-		
-		private function setViewCount($count:int):void {
-			_tfViewer.text = 'Viewer' + (($count > 1) ? 's' : '')+ ': ' + $count;
-			updatePosition();
+			updateView(_strTime, $event.data.count);
 		}
 		
 		public function set elapsed_time(value:int):void 
@@ -111,8 +107,7 @@
 		private function updateTimer(e:Event):void 
 		{
 			if (_timerCounter++ == 9) {
-				_tfTimer.text = 'Time: ' + calcTimeString(_elapsed_time + (getTimer() - _time)/1000);
-				updatePosition();
+				updateView(calcTimeString(_elapsed_time + (getTimer() - _time) / 1000), _strViewer);
 				_timerCounter = 0;
 			}
 		}
