@@ -37,6 +37,7 @@ package net.wonderfl.editor.core
 		private var _lineHeight:int;
 		private var _over:Boolean = false;
 		private var _linkSprite:Sprite;
+		private var _prevMouse:String;
 		
 		public function LinkElementEventMirror($textLineContainer:DisplayObjectContainer, $decorationContainer:DisplayObjectContainer, $text:TextElement, $lineHeight:int) 
 		{
@@ -97,6 +98,7 @@ package net.wonderfl.editor.core
 			
 			_text.elementFormat = _overFormat.clone();
 			ThreadExecuter.addTask(new Function, updateView).run();
+			_prevMouse = Mouse.cursor;
 			Mouse.cursor = MouseCursor.BUTTON;
 		}
 		
@@ -107,7 +109,7 @@ package net.wonderfl.editor.core
 			
 			_text.elementFormat = _outFormat.clone();
 			ThreadExecuter.addTask(new Function, updateView).run();
-			Mouse.cursor = MouseCursor.IBEAM;
+			Mouse.cursor = _prevMouse;
 		}
 		
 		private function updateView():Boolean
@@ -115,14 +117,12 @@ package net.wonderfl.editor.core
 			var block:TextBlock = _line.textBlock;
 			while (_textLineContainer.numChildren) _textLineContainer.removeChildAt(0);
 			
-			var line:TextLine = block.createTextLine(null, TextLine.MAX_LINE_WIDTH);
+			var line:TextLine = null;
 			var i:int = 0;	
-			while (line) {
+			while (line = block.createTextLine(line)) {
 				line.x = 4;
-				
 				line.y = _lineHeight * ++i - 2;
 				_textLineContainer.addChild(line);
-				line = block.createTextLine(line, TextLine.MAX_LINE_WIDTH);
 			}
 			
 			_hover.visible = _over;
