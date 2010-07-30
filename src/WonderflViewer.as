@@ -87,6 +87,38 @@
 			if (LiveCodingSettings.server && LiveCodingSettings.port) {
 				broadcaster.connect(LiveCodingSettings.server, LiveCodingSettings.port);
 				_setInitialCodeForLiveCoding = true;
+				
+				
+				_client = new ChatClient;
+				_client.init(root.loaderInfo.parameters);
+				
+				_chatButton = new ChatButton;
+				var duration:int = 300;
+				var startTime:int;
+				var tweening:Boolean = false;
+				var buttonXTo:int, buttonXFrom:int, chatXTo:int, chatXFrom:int;
+				const LEFT:uint = _width - 288;
+				_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
+				
+				_chatButton.addEventListener(MouseEvent.CLICK, function ():void {
+					if (tweening) return;
+					
+					tweening = true;
+					_chatButton.toggle();
+					if (_chatButton.isOpen()) {
+						buttonXTo = chatXTo = _width - 288;
+						buttonXFrom = _width - CHAT_BUTTON_MIN_WIDTH;
+						chatXFrom = _width;
+					} else {
+						buttonXFrom = chatXFrom = _width - 288;
+						buttonXTo = _width - CHAT_BUTTON_MIN_WIDTH;
+						chatXTo = _width;
+						updateSize();
+					}
+					
+					startTime = getTimer();
+					addEventListener(Event.ENTER_FRAME, tweener);
+				});
 			}
 			
 			if (ExternalInterface.available) {
@@ -102,36 +134,6 @@
 			
 			ContextMenuBuilder.getInstance().buildMenu(this, _viewer);
 			
-			_client = new ChatClient;
-			_client.init(root.loaderInfo.parameters);
-			
-			_chatButton = new ChatButton;
-			var duration:int = 300;
-			var startTime:int;
-			var tweening:Boolean = false;
-			var buttonXTo:int, buttonXFrom:int, chatXTo:int, chatXFrom:int;
-			const LEFT:uint = _width - 288;
-			_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
-			
-			_chatButton.addEventListener(MouseEvent.CLICK, function ():void {
-				if (tweening) return;
-				
-				tweening = true;
-				_chatButton.toggle();
-				if (_chatButton.isOpen()) {
-					buttonXTo = chatXTo = _width - 288;
-					buttonXFrom = _width - CHAT_BUTTON_MIN_WIDTH;
-					chatXFrom = _width;
-				} else {
-					buttonXFrom = chatXFrom = _width - 288;
-					buttonXTo = _width - CHAT_BUTTON_MIN_WIDTH;
-					chatXTo = _width;
-					updateSize();
-				}
-				
-				startTime = getTimer();
-				addEventListener(Event.ENTER_FRAME, tweener);
-			});
 			
 			function tweener(e:Event):void {
 				var time:int = getTimer() - startTime;
@@ -140,7 +142,7 @@
 					_chatButton.x = buttonXTo; _chat.x = chatXTo;
 					removeEventListener(Event.ENTER_FRAME, tweener);
 					tweening = false;
-					if (_chatButton.isOpen()) updateSize();
+					updateSize();
 					return;
 				}
 				
@@ -153,14 +155,15 @@
 				_chat.x = t * chatXTo + u * chatXFrom;
 			}
 			
-			_chat = new Chat(_client);
-			_chat.x = _width - 288;
-			_chat.y = 20;
-			addChild(_chat);
-			
-			addChild(_chatButton);
-			_chatButton.setSize(288, 20);
-			
+			if (_client) {
+				_chat = new Chat(_client);
+				_chat.x = _width - 288;
+				_chat.y = 20;
+				addChild(_chat);
+				
+				addChild(_chatButton);
+				_chatButton.setSize(288, 20);
+			}
 			
 			stage.dispatchEvent(new Event(Event.RESIZE));
 		}
@@ -224,12 +227,14 @@
 			}
 			
 			
-			if (_chatButton.isOpen()) {
+			if (_chatButton && _chatButton.isOpen()) {
 				_viewer.setSize(_width - 288, _height);
 			} else {
 				_viewer.setSize(_width, _height);
 				
 			}
+			
+			if (!_chat) return;
 			
 			if (_chatButton.isOpen()) {
 				_chat.x = _width - 288;
@@ -304,6 +309,8 @@
 		private function restart():void {
 			trace('restart');
 			addChild(_infoPanel);
+			addChild(_chat);
+			addChild(_chatButton);
 			_infoPanel.restart();
 			_isLive = true;
 			updateSize();
@@ -320,6 +327,8 @@
 			_isLive = true;
 			
 			addChild(_infoPanel = new ViewerInfoPanel);
+			addChild(_chat);
+			addChild(_chatButton);
 			_infoPanel.elapsed_time = e.data ? e.data.elapsed_time : 0;
 			broadcaster.addEventListener(LiveCodingEvent.MEMBERS_UPDATED, _infoPanel.onMemberUpdate);
 			updateSize();
