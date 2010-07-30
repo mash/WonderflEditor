@@ -40,7 +40,7 @@ package net.wonderfl.chat
 			tabEnabled = false;
 			buttonMode = true;
 			
-			_elf = new ElementFormat(new FontDescription(FontSetting.GOTHIC_FONT));
+			_elf = new ElementFormat(new FontDescription(FontSetting.GOTHIC_FONT), 10);
 			_elf.color = 0xffffff;
 			_elf.dominantBaseline = TextBaseline.IDEOGRAPHIC_CENTER;
 			
@@ -68,7 +68,7 @@ package net.wonderfl.chat
 				new TextElement('Chat' + ($number ? ' : ' + $number : ''), _elf.clone())
 			]));
 			_label = _factory.createTextLine();
-			_label.y = _label.height + 2;
+			_label.y = _label.height + 4;
 			_label.x = LEFT_OF_TEXT;
 			addChild(_label);
 			

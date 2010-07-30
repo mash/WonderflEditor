@@ -22,6 +22,7 @@ package net.wonderfl.chat
 	import flash.text.engine.TextLineMirrorRegion;
 	import flash.utils.getTimer;
 	import net.wonderfl.component.core.UIComponent;
+	import net.wonderfl.editor.core.LinkElementEventMirror;
 	import net.wonderfl.editor.font.FontSetting;
 	import net.wonderfl.utils.listenOnce;
 	import net.wonderfl.utils.removeFromParent;
@@ -31,7 +32,7 @@ package net.wonderfl.chat
 	 */
 	public class ChatMessage extends UIComponent
 	{
-		private static const LEFT_OF_TEXT:uint = 28;
+		public static const LEFT_OF_TEXT:uint = 28;
 		private static var _factory:TextBlock;
 		private static var _elf:ElementFormat;
 		private static var _headerFormat:ElementFormat;
@@ -70,6 +71,7 @@ package net.wonderfl.chat
 		private var _emoticonPositions:Array = [];
 		private var _selectionGraphics:Graphics;
 		private var _textLineContainer:Sprite;
+		private var _linkLineContainer:Sprite;
 		private var _tlTime:TextLine;
 		private var _seconds:int;
 		private var _localJoinedAt:Number;
@@ -84,8 +86,11 @@ package net.wonderfl.chat
 			addChild(shp);
 			_selectionGraphics = shp.graphics;
 			addChild(_decorationContainer = new Sprite);
+			addChild(_linkLineContainer = new Sprite);
 			addChild(_textLineContainer = new Sprite);
 			addChild(_icon = new ChatMessageIcon($initData.icon));
+			_linkLineContainer.mouseChildren = _linkLineContainer.mouseEnabled = false;
+			_textLineContainer.mouseEnabled = _textLineContainer.mouseChildren = false;
 			
 			_icon.x = 5;
 			_text = $initData.text;
@@ -147,7 +152,7 @@ package net.wonderfl.chat
 				parseEmoticons(_text.substring(i, url.index), i);
 				
 				textElement = new TextElement(str = url.toString(), _elf.clone());
-				textElement.eventMirror = new ChatLinkElementEventMirror(this, _decorationContainer, textElement, FontSetting.LINE_HEIGHT);
+				textElement.eventMirror = new ChatLinkElementEventMirror(this, _textLineContainer, _decorationContainer, textElement, FontSetting.LINE_HEIGHT);
 				content.push(textElement);
 				i = url.index + str.length;
 			}
@@ -294,7 +299,6 @@ package net.wonderfl.chat
 			begin = _startAtomIndex;
 			end = _endAtomIndex + 1;
 			end = (end >= _text.length) ? _text.length : end;
-			trace(<>getSelectedText : begin {begin}, end : {end}</>);
 			
 			var len:int = _emoticonPositions.length;
 			var pos:Object;
@@ -323,7 +327,7 @@ package net.wonderfl.chat
 				region = $regions[i];
 				linkMirror = region.mirror as ChatLinkElementEventMirror;
 				linkMirror.draw(region);
-			}			
+			}
 		}
 		
 		public function updateView():void {
@@ -349,7 +353,7 @@ package net.wonderfl.chat
 		
 		override protected function updateSize():void 
 		{
-			_textWidth = _width - 80;
+			_textWidth = _width - 60;
 			graphics.clear();
 			graphics.beginFill(ChatStyle.MESSAGE_ITEM_HEADER);
 			graphics.drawRect(0, 0, _width, _icon.height);
@@ -362,6 +366,8 @@ package net.wonderfl.chat
 		{
 			_viewHeight = value;
 		}
+		
+		public function get textWidth():int { return _textWidth; }
 		
 	}
 

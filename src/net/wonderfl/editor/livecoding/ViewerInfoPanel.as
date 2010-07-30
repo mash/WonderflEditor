@@ -7,6 +7,7 @@
 	import flash.events.Event;
 	import flash.text.engine.ElementFormat;
 	import flash.text.engine.FontDescription;
+	import flash.text.engine.TextBaseline;
 	import flash.text.engine.TextBlock;
 	import flash.text.engine.TextElement;
 	import flash.text.engine.TextLine;
@@ -45,8 +46,9 @@
 			addChild(sp);
 			
 			_factory = new TextBlock;
-			_elf = new ElementFormat(new FontDescription(FontSetting.GOTHIC_FONT));
+			_elf = new ElementFormat(new FontDescription(FontSetting.GOTHIC_FONT), 10);
 			_elf.color = 0xffffff;
+			_elf.alignmentBaseline = TextBaseline.IDEOGRAPHIC_BOTTOM;
 			
 			_syncButton = new CheckBox(this, _onImage.width + 5, 5, '', function ():void {
 				_isSync = !_isSync;
@@ -102,7 +104,6 @@
 		public function restart():void {
 			addEventListener(Event.ENTER_FRAME, update);
 		}
-		
 		
 		private function updateTimer(e:Event):void 
 		{
