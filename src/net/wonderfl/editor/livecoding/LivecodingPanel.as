@@ -3,6 +3,8 @@ package net.wonderfl.editor.livecoding
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.text.engine.ElementFormat;
+	import flash.text.engine.FontDescription;
+	import flash.text.engine.TextBaseline;
 	import flash.text.engine.TextBlock;
 	import flash.text.engine.TextElement;
 	import flash.text.engine.TextLine;
@@ -10,6 +12,7 @@ package net.wonderfl.editor.livecoding
 	import net.wonderfl.chat.Chat;
 	import net.wonderfl.chat.ChatButton;
 	import net.wonderfl.component.core.UIComponent;
+	import net.wonderfl.editor.font.FontSetting;
 	import net.wonderfl.editor.livecoding.LiveCodingEvent;
 	import net.wonderfl.utils.listenOnce;
 	import net.wonderfl.utils.removeFromParent;
@@ -24,6 +27,8 @@ package net.wonderfl.editor.livecoding
 		protected var _host:String;
 		protected var _port:int;
 		protected var _isLive:Boolean = false;
+		protected var _userName:String;
+		protected var _iconURL:String;
 		private var _chatButton:ChatButton;
 		private var _chat:Chat;
 		private var _elapsed_time:int;
@@ -40,9 +45,13 @@ package net.wonderfl.editor.livecoding
 			_host = params.server;
 			_port = parseInt(params.port);
 			
+			_factory = new TextBlock;
+			_elf = new ElementFormat(new FontDescription(FontSetting.GOTHIC_FONT), 10);
+			_elf.color = 0xffffff;
+			_elf.alignmentBaseline = TextBaseline.IDEOGRAPHIC_BOTTOM;
+			
 			_socket = new SocketBroadCaster;
 			listenOnce(_socket, Event.CONNECT, _socket.join, [params.root, params.ticket]);
-			_socket.addEventListener(LiveCodingEvent.CHAT_RECEIVED, chatRecieved);
 			_socket.addEventListener(LiveCodingEvent.JOINED, joined);
 			_socket.addEventListener(LiveCodingEvent.MEMBERS_UPDATED, membersUpdated);
 			
@@ -96,7 +105,7 @@ package net.wonderfl.editor.livecoding
 				_chat.x = t * chatXTo + u * chatXFrom;
 			}
 			
-			_chat = new Chat(_socket);
+			_chat = new Chat(_socket, params["viewer.displayName"], params["viewer.iconURL"]);
 			_chat.x = _width - 288;
 			_chat.y = 20;
 			addChild(_chat);
@@ -105,9 +114,13 @@ package net.wonderfl.editor.livecoding
 			_chatButton.setSize(288, 20);
 		}
 		
-		private function membersUpdated(e:LiveCodingEvent):void 
+		public function isChatWindowOpen():Boolean {
+			return _chatButton.isOpen();
+		}
+		
+		private function membersUpdated($event:LiveCodingEvent):void 
 		{
-			
+			updateView(_strTime, $event.data.count);
 		}
 		
 		private function updateView($time:String, $viewer:String):void {
@@ -134,10 +147,6 @@ package net.wonderfl.editor.livecoding
 			_elapsed_time = e.data ? e.data.elapsed_time : 0;
 		}
 		
-		protected function chatRecieved(e:LiveCodingEvent):void 
-		{
-		}
-		
 		protected function chat($message:String):void {
 			_socket.chat($message, _userName, _iconURL);
 		}
@@ -146,11 +155,11 @@ package net.wonderfl.editor.livecoding
 			_socket.connect(_host, _port);
 		}
 		
-		protected function start():void {
+		public function start():void {
 			
 		}
 		
-		protected function stop():void {
+		public function stop():void {
 			
 		}
 		

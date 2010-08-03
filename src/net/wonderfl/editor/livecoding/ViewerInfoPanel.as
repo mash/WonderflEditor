@@ -21,9 +21,6 @@
 	 */
 	public class ViewerInfoPanel extends UIComponent
 	{
-		[Embed(source = '../../../../../assets/on_live.png')]
-		private var _onClass:Class;
-		private var _onImage:Bitmap = new _onClass;
 		private var _elapsed_time:int = 0;
 		private var _timerCounter:int;
 		private var _factory:TextBlock;
@@ -50,10 +47,6 @@
 			_elf.color = 0xffffff;
 			_elf.alignmentBaseline = TextBaseline.IDEOGRAPHIC_BOTTOM;
 			
-			_syncButton = new CheckBox(this, _onImage.width + 5, 5, '', function ():void {
-				_isSync = !_isSync;
-			});
-			_syncButton.selected = true;
 			
 			height = 20;
 			
@@ -73,10 +66,6 @@
 			addChild(_label);
 		}
 		
-		public function onMemberUpdate($event:LiveCodingEvent):void {
-			updateView(_strTime, $event.data.count);
-		}
-		
 		public function set elapsed_time(value:int):void 
 		{
 			_elapsed_time = value;
@@ -87,23 +76,6 @@
 		
 		public function get isSync():Boolean { return _isSync; }
 		
-		private function update(e:Event):void 
-		{
-			_onImage.alpha = Quadratic.easeOut((_blink_count > BLINK_PERIOD) ? 2 * BLINK_PERIOD - _blink_count : _blink_count,
-											  0, 1, BLINK_PERIOD);
-			_blink_count++;
-			_blink_count %= 2 * BLINK_PERIOD;
-			
-			updateTimer(e);
-		}
-		
-		public function stop():void {
-			removeEventListener(Event.ENTER_FRAME, update);
-		}
-		
-		public function restart():void {
-			addEventListener(Event.ENTER_FRAME, update);
-		}
 		
 		private function updateTimer(e:Event):void 
 		{
@@ -119,22 +91,6 @@
 			graphics.beginFill(0x222222);
 			graphics.drawRect(0, 0, _width, _height);
 			graphics.endFill();
-		}
-		
-		private function calcTimeString($time:int):String
-		{
-			var result:Array = [];
-			var i:int = 0;
-			while (i++ < 2 || $time > 0) {
-				result.unshift(fillString($time % 60));
-				$time /= 60;
-			} 
-			
-			return result.join(':');
-		}
-		
-		private function fillString($n:int):String {
-			return ($n < 10) ? '0' + $n : '' + $n;
 		}
 	}
 }
