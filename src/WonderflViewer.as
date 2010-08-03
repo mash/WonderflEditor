@@ -87,38 +87,11 @@
 			if (LiveCodingSettings.server && LiveCodingSettings.port) {
 				broadcaster.connect(LiveCodingSettings.server, LiveCodingSettings.port);
 				_setInitialCodeForLiveCoding = true;
+				//
+				//
+				//_client = new ChatClient;
+				//_client.init(root.loaderInfo.parameters);
 				
-				
-				_client = new ChatClient;
-				_client.init(root.loaderInfo.parameters);
-				
-				_chatButton = new ChatButton;
-				var duration:int = 300;
-				var startTime:int;
-				var tweening:Boolean = false;
-				var buttonXTo:int, buttonXFrom:int, chatXTo:int, chatXFrom:int;
-				const LEFT:uint = _width - 288;
-				_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
-				
-				_chatButton.addEventListener(MouseEvent.CLICK, function ():void {
-					if (tweening) return;
-					
-					tweening = true;
-					_chatButton.toggle();
-					if (_chatButton.isOpen()) {
-						buttonXTo = chatXTo = _width - 288;
-						buttonXFrom = _width - CHAT_BUTTON_MIN_WIDTH;
-						chatXFrom = _width;
-					} else {
-						buttonXFrom = chatXFrom = _width - 288;
-						buttonXTo = _width - CHAT_BUTTON_MIN_WIDTH;
-						chatXTo = _width;
-						updateSize();
-					}
-					
-					startTime = getTimer();
-					addEventListener(Event.ENTER_FRAME, tweener);
-				});
 			}
 			
 			if (ExternalInterface.available) {
@@ -133,37 +106,6 @@
 			}
 			
 			ContextMenuBuilder.getInstance().buildMenu(this, _viewer);
-			
-			
-			function tweener(e:Event):void {
-				var time:int = getTimer() - startTime;
-				
-				if (time > duration) {
-					_chatButton.x = buttonXTo; _chat.x = chatXTo;
-					removeEventListener(Event.ENTER_FRAME, tweener);
-					tweening = false;
-					updateSize();
-					return;
-				}
-				
-				var t:Number = time / duration;
-				var u:Number;
-				t = t * (2 - t);
-				u = 1 - t;
-				
-				_chatButton.x = t * buttonXTo + u * buttonXFrom;
-				_chat.x = t * chatXTo + u * chatXFrom;
-			}
-			
-			if (_client) {
-				_chat = new Chat(_client);
-				_chat.x = _width - 288;
-				_chat.y = 20;
-				addChild(_chat);
-				
-				addChild(_chatButton);
-				_chatButton.setSize(288, 20);
-			}
 			
 			stage.dispatchEvent(new Event(Event.RESIZE));
 		}
@@ -247,45 +189,6 @@
 			
 		}
 		
-		private function onRelayed(e:LiveCodingEvent):void 
-		{
-			if (!_isLive) {
-				restart();
-			}
-			
-			var method:Function;
-			switch (e.data.command) {
-			case LiveCoding.REPLACE_TEXT:
-				method = onReplaceText;
-				break;
-			case LiveCoding.SET_SELECTION:
-				method = onSetSelection;
-				break;
-			case LiveCoding.SEND_CURRENT_TEXT:
-				method = onSendCurrentText;
-				break;
-			case LiveCoding.SWF_RELOADED:
-				method = onSWFReloaded;
-				break;
-			case LiveCoding.CLOSED:
-				method = onClosed;
-				break;
-			case LiveCoding.SCROLL_V:
-				method = onScrollV;
-				break;
-			case LiveCoding.SCROLL_H:
-				method = onScrollH;
-				break;
-			}
-			
-			if (method != null) {
-				var args:Array = e.data.args;
-				_commandList[_commandList.length] = {
-					method : method,
-					args : args
-				}
-			}
-		}
 		
 		private function onScrollH($scrollH:int):void
 		{
@@ -329,9 +232,9 @@
 			addChild(_infoPanel = new ViewerInfoPanel);
 			addChild(_chat);
 			addChild(_chatButton);
-			_infoPanel.elapsed_time = e.data ? e.data.elapsed_time : 0;
-			broadcaster.addEventListener(LiveCodingEvent.MEMBERS_UPDATED, _infoPanel.onMemberUpdate);
-			updateSize();
+			//_infoPanel.elapsed_time = e.data ? e.data.elapsed_time : 0;
+			//broadcaster.addEventListener(LiveCodingEvent.MEMBERS_UPDATED, _infoPanel.onMemberUpdate);
+			//updateSize();
 			
 			setTimeout(function ():void {
 				_setInitialCodeForLiveCoding = true;
