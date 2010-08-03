@@ -31,7 +31,7 @@
 		private var _time:int;
 		private var _blink_count:int = 0;
 		private var _isSync:Boolean = true;
-		private const BLINK_PERIOD:int = 50;
+		private const BLINK_PERIOD:int = 48;
 		private var _syncButton:CheckBox;
 		private var _label:TextLine;
 		private var _strTime:String = '--:--';
