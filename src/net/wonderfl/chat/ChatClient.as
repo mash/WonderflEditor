@@ -24,11 +24,6 @@ package net.wonderfl.chat
 			broadcaster = new SocketBroadCaster;
 			broadcaster.addEventListener(LiveCodingEvent.CHAT_RECEIVED, dispatchEvent);
 			broadcaster.addEventListener(LiveCodingEvent.JOINED, dispatchEvent);
-			broadcaster.addEventListener(Event.CONNECT, function connect(e:Event):void {
-				broadcaster.removeEventListener(Event.CONNECT, connect);
-				broadcaster.join($initObject.room, $initObject.ticket);
-			});
-			broadcaster.connect($initObject.server, $initObject.port);
 		}
 		
 		public function chat($message:String):void {

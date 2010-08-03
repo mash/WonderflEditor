@@ -78,7 +78,7 @@
 			if (loaderInfo.parameters)
 				LiveCodingSettings.setUpParameters(loaderInfo.parameters);
 			
-			broadcaster.addEventListener(Event.CONNECT, function ():void {
+			broadcaster.addEventListener(Event.CONNECT, function connect():void {
 				broadcaster.join(LiveCodingSettings.room, LiveCodingSettings.ticket);
 			});
 			broadcaster.addEventListener(LiveCodingEvent.JOINED, startListening);
