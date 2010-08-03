@@ -9,6 +9,7 @@ package net.wonderfl.chat
 	import flash.text.TextFieldType;
 	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.editor.livecoding.LiveCodingEvent;
+	import net.wonderfl.editor.livecoding.SocketBroadCaster;
 	import net.wonderfl.utils.listenOnce;
 	/**
 	 * ...
@@ -17,18 +18,22 @@ package net.wonderfl.chat
 	public class Chat extends UIComponent
 	{
 		private static const MARGIN:int = 20;
+		protected var _userName:String;
+		protected var _iconURL:String;
 		private var _area:ChatArea;
 		private var _resizeButton:ChatResizeButton;
 		private var _input:ChatInput;
-		private var _client:ChatClient;
+		private var _client:SocketBroadCaster;
 		private var _sp:Sprite;
 		private var _diffY:int;
 		private var _joinedAt:Number;
 		private var _localJoinedAt:Number;
 		
-		public function Chat($client:ChatClient) 
+		public function Chat($client:SocketBroadCaster, $userName:String, $iconURL:String) 
 		{
 			_client = $client;
+			_userName = $userName;
+			_iconURL = $iconURL;
 			_client.addEventListener(LiveCodingEvent.JOINED, function joined(e:LiveCodingEvent):void {
 				_client.removeEventListener(LiveCodingEvent.JOINED, joined);
 				_joinedAt = Number(e.data.now);
@@ -85,7 +90,7 @@ package net.wonderfl.chat
 		private function onClick(e:MouseEvent):void {
 			if (_input.text) {
 				var message:String = _input.text.replace(/\t/g, "    ").replace(/\r/g, "\n");
-				_client.chat(message);
+				_client.chat(message, _userName, _iconURL);
 			}
 			_input.text = "";
 		}
@@ -103,7 +108,7 @@ package net.wonderfl.chat
 			_sp.graphics.drawRect(0, 0, _width, h);
 			_sp.graphics.endFill();
 			
-			_resizeButton.setSize(_width, 18);
+			_resizeButton.setSize(_width, 20);
 			
 			_area.y = h;
 			_area.setSize(_width, _height - h);

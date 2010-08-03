@@ -17,17 +17,16 @@
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 	import jp.psyark.utils.CodeUtil;
-	import net.wonderfl.chat.Chat;
-	import net.wonderfl.chat.ChatButton;
-	import net.wonderfl.chat.ChatClient;
 	import net.wonderfl.editor.AS3Viewer;
 	import net.wonderfl.component.core.UIComponent;;
 	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingEvent;
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
+	import net.wonderfl.editor.livecoding.LiveCodingViewerPanel;
 	import net.wonderfl.editor.livecoding.SocketBroadCaster;
 	import net.wonderfl.editor.livecoding.ViewerInfoPanel;
 	import net.wonderfl.editor.manager.ContextMenuBuilder;
+	import net.wonderfl.utils.bind;
 	import org.libspark.ui.SWFWheel;
 	/**
 	 * ...
@@ -46,13 +45,10 @@
 		private var _parseTime:int;
 		private var _setInitialCodeForLiveCoding:Boolean = false;
 		private var _isLive:Boolean = false;
-		private var _infoPanel:ViewerInfoPanel;
+		private var _infoPanel:LiveCodingViewerPanel;
 		private var _ignoreSelection:Boolean;
 		private var _prevText:String;
 		private var _selectionObject:Object;
-		private var _client:ChatClient;
-		private var _chatButton:ChatButton;
-		private var _chat:Chat;
 		
 		public function WonderflViewer() 
 		{
@@ -75,24 +71,15 @@
 			_viewer.addEventListener(Event.COMPLETE, onColoringComplete);
 			addChild(_viewer);
 			
-			if (loaderInfo.parameters)
-				LiveCodingSettings.setUpParameters(loaderInfo.parameters);
-			
-			broadcaster.addEventListener(Event.CONNECT, function connect():void {
-				broadcaster.join(LiveCodingSettings.room, LiveCodingSettings.ticket);
-			});
-			broadcaster.addEventListener(LiveCodingEvent.JOINED, startListening);
-			broadcaster.addEventListener(LiveCodingEvent.RELAYED, onRelayed);
-			
-			if (LiveCodingSettings.server && LiveCodingSettings.port) {
-				broadcaster.connect(LiveCodingSettings.server, LiveCodingSettings.port);
-				_setInitialCodeForLiveCoding = true;
-				//
-				//
-				//_client = new ChatClient;
-				//_client.init(root.loaderInfo.parameters);
-				
+			if (loaderInfo.parameters.server) {
+				_infoPanel = new LiveCodingViewerPanel(_viewer);
+				_infoPanel.addEventListener(Event.CLOSE, bind(updateSize));
+				addChild(_infoPanel);
+				_infoPanel.init();
 			}
+			//if (LiveCodingSettings.server && LiveCodingSettings.port) {
+				//_setInitialCodeForLiveCoding = true;
+			//}
 			
 			if (ExternalInterface.available) {
 				var code:String = ExternalInterface.call("Wonderfl.Codepage.get_initial_code");
@@ -100,10 +87,10 @@
 				_viewer.text = _source;
  			}
 			
-			if (_setInitialCodeForLiveCoding) {
-				addEventListener(Event.ENTER_FRAME, setupInitialCode);
-				_setInitialCodeForLiveCoding = false;
-			}
+			//if (_setInitialCodeForLiveCoding) {
+				//addEventListener(Event.ENTER_FRAME, setupInitialCode);
+				//_setInitialCodeForLiveCoding = false;
+			//}
 			
 			ContextMenuBuilder.getInstance().buildMenu(this, _viewer);
 			
@@ -112,33 +99,33 @@
 		
 		private function onColoringComplete(e:Event):void 
 		{
-			if (_selectionObject)
-				onSetSelection(_selectionObject.index, _selectionObject.index);
+			//if (_selectionObject)
+				//setSelection(_selectionObject.index, _selectionObject.index);
 				
 			_selectionObject = null;
 		}
 		
-		private function setupInitialCode(e:Event):void 
-		{
-			if (_commandList.length) {
-				var t:int = getTimer();
-				var command:Object;
-				
-				while (getTimer() - t < TICK) {
-					if (_commandList.length == 0) break;
-					
-					command = _commandList.shift();
-					if (command.method == LiveCoding.SEND_CURRENT_TEXT || command.method == LiveCoding.REPLACE_TEXT)
-						command.method.apply(null, command.args);
-				}
-			} else {
-				if (_setInitialCodeForLiveCoding) {
-					removeEventListener(Event.ENTER_FRAME, setupInitialCode);
-					_executer.addEventListener(Event.ENTER_FRAME, execute);
-					_viewer.onChange(null);
-				}
-			}
-		}
+		//private function setupInitialCode(e:Event):void 
+		//{
+			//if (_commandList.length) {
+				//var t:int = getTimer();
+				//var command:Object;
+				//
+				//while (getTimer() - t < TICK) {
+					//if (_commandList.length == 0) break;
+					//
+					//command = _commandList.shift();
+					//if (command.method == LiveCoding.SEND_CURRENT_TEXT || command.method == LiveCoding.REPLACE_TEXT)
+						//command.method.apply(null, command.args);
+				//}
+			//} else {
+				//if (_setInitialCodeForLiveCoding) {
+					//removeEventListener(Event.ENTER_FRAME, setupInitialCode);
+					//_executer.addEventListener(Event.ENTER_FRAME, execute);
+					//_viewer.onChange(null);
+				//}
+			//}
+		//}
 		
 		private function onResize(e:Event):void 
 		{
@@ -160,7 +147,7 @@
 		{
 			_viewer.width = _width;
 			if (_isLive) {
-				_infoPanel.width = _width - 15 - (_width - _chatButton.x);
+				_infoPanel.width = _width;
 				_viewer.y = _infoPanel.height;
 				_viewer.height = height - _infoPanel.height;
 			} else {
@@ -168,70 +155,34 @@
 				_viewer.height = _height;
 			}
 			
-			
-			if (_chatButton && _chatButton.isOpen()) {
+			if (_infoPanel && _infoPanel.isChatWindowOpen()) {
 				_viewer.setSize(_width - 288, _height);
 			} else {
 				_viewer.setSize(_width, _height);
 				
 			}
-			
-			if (!_chat) return;
-			
-			if (_chatButton.isOpen()) {
-				_chat.x = _width - 288;
-				_chatButton.x = _width -288;
-			} else {
-				_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
-				_chat.x = _width;
-			}
-			_chat.setSize(288, _height - 20);
-			
 		}
 		
 		
-		private function onScrollH($scrollH:int):void
-		{
-			if (_infoPanel.isSync) _viewer.scrollH = $scrollH;
-		}
-		
-		private function onScrollV($scrollV:int):void
-		{
-			if (_infoPanel.isSync) _viewer.scrollY = $scrollV;
-		}
-		
-		private function onClosed():void
-		{
-			trace('on closed');
-			_infoPanel.stop();
-			if (_infoPanel.parent) _infoPanel.parent.removeChild(_infoPanel);
-			_isLive = false;
-			updateSize();
-		}
 		
 		private function restart():void {
 			trace('restart');
 			addChild(_infoPanel);
-			addChild(_chat);
-			addChild(_chatButton);
-			_infoPanel.restart();
+			//addChild(_chat);
+			//addChild(_chatButton);
+			_infoPanel.start();
 			_isLive = true;
 			updateSize();
 		}
 		
-		private function onSWFReloaded():void
-		{
-			if (ExternalInterface.available)
-				ExternalInterface.call('Wonderfl.Codepage.reload_swf');
-		}
 		
 		private function startListening(e:LiveCodingEvent):void 
 		{
 			_isLive = true;
 			
-			addChild(_infoPanel = new ViewerInfoPanel);
-			addChild(_chat);
-			addChild(_chatButton);
+			//addChild(_infoPanel = new ViewerInfoPanel);
+			//addChild(_chat);
+			//addChild(_chatButton);
 			//_infoPanel.elapsed_time = e.data ? e.data.elapsed_time : 0;
 			//broadcaster.addEventListener(LiveCodingEvent.MEMBERS_UPDATED, _infoPanel.onMemberUpdate);
 			//updateSize();
@@ -241,58 +192,11 @@
 			}, 1000);
 		}
 		
-		private function execute(e:Event):void 
-		{
-			if (_commandList.length) {
-				var t:int = getTimer();
-				var command:Object;
-				
-				while (getTimer() - t < TICK) {
-					if (_commandList.length == 0) return;
-					
-					command = _commandList.shift();
-					command.method.apply(null, command.args);
-				}
-			}
-		}
-
-		
 		private function substring($begin:int, $end:int = 0x7fffffff):String {
 			var str:String = _source.substring($begin, $end);
 			
 			return (str) ? str : '';
 		}
 		
-		
-		private function onReplaceText($beginIndex:int, $endIndex:int, $newText:String):void 
-		{
-			if ($beginIndex == $endIndex && $newText.length == 0) return;
-			
-			_viewer.slowDownParser();
-			_source = _source.substring(0, $beginIndex) + $newText + substring($endIndex);
-			//_viewer.text = _source;
-			_viewer.onReplaceText($beginIndex, $endIndex, $newText);
-			_selectionObject = {
-				index : $endIndex + $newText.length
-			}
-			_viewer.updateLineNumbers();
-		}
-		
-		private function onSetSelection($selectionBeginIndex:int, $selectionEndIndex:int):void
-		{
-			if (_viewer.selectionBeginIndex == $selectionBeginIndex && _viewer.selectionEndIndex == $selectionEndIndex)
-				return;
-			
-			_ignoreSelection = false;
-			_viewer.onSetSelection($selectionBeginIndex, $selectionEndIndex);
-			_selectionObject = {
-				index : $selectionEndIndex
-			};
-		}
-		
-		private function onSendCurrentText($text:String):void 
-		{
-			_viewer.text = _source = $text;
-		}		
 	}
 }
