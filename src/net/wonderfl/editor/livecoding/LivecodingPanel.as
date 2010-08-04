@@ -2,6 +2,7 @@ package net.wonderfl.editor.livecoding
 {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
 	import flash.text.engine.ElementFormat;
 	import flash.text.engine.FontDescription;
 	import flash.text.engine.TextBaseline;
@@ -9,6 +10,7 @@ package net.wonderfl.editor.livecoding
 	import flash.text.engine.TextElement;
 	import flash.text.engine.TextLine;
 	import flash.utils.getTimer;
+	import flash.utils.Timer;
 	import net.wonderfl.chat.Chat;
 	import net.wonderfl.chat.ChatButton;
 	import net.wonderfl.component.core.UIComponent;
@@ -20,7 +22,7 @@ package net.wonderfl.editor.livecoding
 	 * ...
 	 * @author kobayashi-taro
 	 */
-	public class LivecodingPanel extends UIComponent
+	public class LiveCodingPanel extends UIComponent
 	{
 		protected static const CHAT_BUTTON_MIN_WIDTH:int = 80;
 		protected var _socket:SocketBroadCaster;
@@ -37,13 +39,19 @@ package net.wonderfl.editor.livecoding
 		private var _label:TextLine;
 		private var _strTime:String = '--:--';
 		private var _strViewer:String = '-';
+		private var _time:int;
+		private var _timer:Timer;
 		
 		public function init():void {
+			trace("LiveCodingPanel.init");
 			if (!root) throw new Error('add this compoent to the stage first. then, call this method!');
 			
 			var params:Object = root.loaderInfo.parameters;
 			_host = params.server;
 			_port = parseInt(params.port);
+			
+			_timer = new Timer(100);
+			_timer.addEventListener(TimerEvent.TIMER, timer);
 			
 			_factory = new TextBlock;
 			_elf = new ElementFormat(new FontDescription(FontSetting.GOTHIC_FONT), 10);
@@ -51,9 +59,10 @@ package net.wonderfl.editor.livecoding
 			_elf.alignmentBaseline = TextBaseline.IDEOGRAPHIC_BOTTOM;
 			
 			_socket = new SocketBroadCaster;
-			listenOnce(_socket, Event.CONNECT, _socket.join, [params.root, params.ticket]);
 			_socket.addEventListener(LiveCodingEvent.JOINED, joined);
 			_socket.addEventListener(LiveCodingEvent.MEMBERS_UPDATED, membersUpdated);
+			listenOnce(_socket, Event.CONNECT, _socket.join, [params.root, params.ticket]);
+			_socket.addEventListener(Event.CONNECT, trace);
 			
 			_chatButton = new ChatButton;
 			var duration:int = 300;
@@ -76,6 +85,8 @@ package net.wonderfl.editor.livecoding
 					buttonXFrom = chatXFrom = _width - 288;
 					buttonXTo = _width - CHAT_BUTTON_MIN_WIDTH;
 					chatXTo = _width;
+					dispatchEvent(new LiveCodingPanelEvent(LiveCodingPanelEvent.CHAT_WINDOW_CLOSE));
+					
 					updateSize();
 				}
 				
@@ -91,6 +102,8 @@ package net.wonderfl.editor.livecoding
 					_chatButton.x = buttonXTo; _chat.x = chatXTo;
 					removeEventListener(Event.ENTER_FRAME, tweener);
 					tweening = false;
+					if (_chatButton.isOpen())
+						dispatchEvent(new LiveCodingPanelEvent(LiveCodingPanelEvent.CHAT_WINDOW_OPEN));
 					
 					updateSize();
 					return;
@@ -112,6 +125,9 @@ package net.wonderfl.editor.livecoding
 			
 			addChild(_chatButton);
 			_chatButton.setSize(288, 20);
+			_chatButton.x = LEFT;
+			
+			_height = 20;
 		}
 		
 		public function isChatWindowOpen():Boolean {
@@ -121,6 +137,23 @@ package net.wonderfl.editor.livecoding
 		private function membersUpdated($event:LiveCodingEvent):void 
 		{
 			updateView(_strTime, $event.data.count);
+		}
+		
+		
+		private function calcTimeString($time:int):String
+		{
+			var result:Array = [];
+			var i:int = 0;
+			while (i++ < 2 || $time > 0) {
+				result.unshift(fillString($time % 60));
+				$time /= 60;
+			} 
+			
+			return result.join(':');
+		}
+		
+		private function fillString($n:int):String {
+			return ($n < 10) ? '0' + $n : '' + $n;
 		}
 		
 		private function updateView($time:String, $viewer:String):void {
@@ -138,13 +171,20 @@ package net.wonderfl.editor.livecoding
 			addChild(_label);
 		}
 		
-		private function onMemberUpdate($event:LiveCodingEvent):void {
+		private function timer(e:TimerEvent):void {
+			updateView(calcTimeString(_elapsed_time + (getTimer() - _time) / 1000), _strViewer);
+		}
+		
+		private function memberUpdate($event:LiveCodingEvent):void {
 			updateView(_strTime, $event.data.count);
 		}
 		
 		protected function joined(e:LiveCodingEvent):void 
 		{
+			trace("LiveCodingPanel.joined > e : " + e);
 			_elapsed_time = e.data ? e.data.elapsed_time : 0;
+			
+			start();
 		}
 		
 		protected function chat($message:String):void {
@@ -152,11 +192,15 @@ package net.wonderfl.editor.livecoding
 		}
 		
 		public function connect():void {
+			trace("LiveCodingPanel.connect");
 			_socket.connect(_host, _port);
 		}
 		
 		public function start():void {
-			
+			_time = getTimer();
+			timer(null);
+			_timer.start();
+			_isLive = true;
 		}
 		
 		public function stop():void {
@@ -165,7 +209,18 @@ package net.wonderfl.editor.livecoding
 		
 		override protected function updateSize():void 
 		{
+			_chat.setSize(288, parent.height - 20);
+			if (_chatButton.isOpen()) {
+				_chat.x = _width - _chatButton.width;
+				_chatButton.x = _width - _chatButton.width;
+			} else {
+				_chat.x = _width;
+				_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
+			}
 			
+			graphics.clear();
+			graphics.beginFill(0);
+			graphics.drawRect(0, 0, _width, _height);
 		}
 	}
 

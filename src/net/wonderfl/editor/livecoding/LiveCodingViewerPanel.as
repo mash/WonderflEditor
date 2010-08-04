@@ -12,7 +12,7 @@ package net.wonderfl.editor.livecoding
 	 * @author kobayashi-taro
 	 */
 	[Event(name = 'close', type = 'flash.events.Event')]
-	public class LiveCodingViewerPanel extends LivecodingPanel
+	public class LiveCodingViewerPanel extends LiveCodingPanel
 	{
 		[Embed(source = '../../../../../assets/on_live.png')]
 		private var _onClass:Class;
@@ -43,6 +43,7 @@ package net.wonderfl.editor.livecoding
 		
 		private function relayed(e:LiveCodingEvent):void 
 		{
+			trace(">>> e : " + e);
 			if (!_isLive) {
 				start();
 			}
@@ -150,22 +151,6 @@ package net.wonderfl.editor.livecoding
 											  0, 1, BLINK_PERIOD);
 			_blink_count++;
 			_blink_count %= 2 * BLINK_PERIOD;
-		}
-		
-		private function calcTimeString($time:int):String
-		{
-			var result:Array = [];
-			var i:int = 0;
-			while (i++ < 2 || $time > 0) {
-				result.unshift(fillString($time % 60));
-				$time /= 60;
-			} 
-			
-			return result.join(':');
-		}
-		
-		private function fillString($n:int):String {
-			return ($n < 10) ? '0' + $n : '' + $n;
 		}
 		
 		public function get isSync():Boolean { return _isSync; }
