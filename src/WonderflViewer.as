@@ -1,5 +1,6 @@
 ﻿package  
 {
+	import com.adobe.serialization.json.JSON;
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
@@ -21,6 +22,7 @@
 	import net.wonderfl.component.core.UIComponent;;
 	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingEvent;
+	import net.wonderfl.editor.livecoding.LiveCodingPanelEvent;
 	import net.wonderfl.editor.livecoding.LiveCodingSettings;
 	import net.wonderfl.editor.livecoding.LiveCodingViewerPanel;
 	import net.wonderfl.editor.livecoding.SocketBroadCaster;
@@ -38,7 +40,7 @@
 		private const CHAT_BUTTON_MIN_WIDTH:int = 80;
 		
 		private var _viewer:AS3Viewer;
-		private var broadcaster:SocketBroadCaster = new SocketBroadCaster;
+		//private var broadcaster:SocketBroadCaster = new SocketBroadCaster;
 		private var _source:String ='';
 		private var _commandList:Array = [];
 		private var _executer:Sprite = new Sprite;
@@ -66,16 +68,24 @@
 			SWFWheel.browserScroll = false;
 			
 			focusRect = null;
+			trace(JSON.encode(loaderInfo.parameters));
 			
 			_viewer = new AS3Viewer;
 			_viewer.addEventListener(Event.COMPLETE, onColoringComplete);
 			addChild(_viewer);
 			
+			var resize:Function = bind(updateSize);
+			
 			if (loaderInfo.parameters.server) {
+				_isLive = true;
 				_infoPanel = new LiveCodingViewerPanel(_viewer);
-				_infoPanel.addEventListener(Event.CLOSE, bind(updateSize));
+				_infoPanel.addEventListener(Event.CLOSE, resize);
+				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_OPEN, resize);
+				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_CLOSE, resize);
 				addChild(_infoPanel);
 				_infoPanel.init();
+				_infoPanel.connect();
+				_infoPanel.start();
 			}
 			//if (LiveCodingSettings.server && LiveCodingSettings.port) {
 				//_setInitialCodeForLiveCoding = true;
@@ -105,28 +115,7 @@
 			_selectionObject = null;
 		}
 		
-		//private function setupInitialCode(e:Event):void 
-		//{
-			//if (_commandList.length) {
-				//var t:int = getTimer();
-				//var command:Object;
-				//
-				//while (getTimer() - t < TICK) {
-					//if (_commandList.length == 0) break;
-					//
-					//command = _commandList.shift();
-					//if (command.method == LiveCoding.SEND_CURRENT_TEXT || command.method == LiveCoding.REPLACE_TEXT)
-						//command.method.apply(null, command.args);
-				//}
-			//} else {
-				//if (_setInitialCodeForLiveCoding) {
-					//removeEventListener(Event.ENTER_FRAME, setupInitialCode);
-					//_executer.addEventListener(Event.ENTER_FRAME, execute);
-					//_viewer.onChange(null);
-				//}
-			//}
-		//}
-		
+
 		private function onResize(e:Event):void 
 		{
 			var w:int = stage.stageWidth;
@@ -165,11 +154,8 @@
 		
 		
 		
-		private function restart():void {
-			trace('restart');
+		private function start():void {
 			addChild(_infoPanel);
-			//addChild(_chat);
-			//addChild(_chatButton);
 			_infoPanel.start();
 			_isLive = true;
 			updateSize();
@@ -179,13 +165,6 @@
 		private function startListening(e:LiveCodingEvent):void 
 		{
 			_isLive = true;
-			
-			//addChild(_infoPanel = new ViewerInfoPanel);
-			//addChild(_chat);
-			//addChild(_chatButton);
-			//_infoPanel.elapsed_time = e.data ? e.data.elapsed_time : 0;
-			//broadcaster.addEventListener(LiveCodingEvent.MEMBERS_UPDATED, _infoPanel.onMemberUpdate);
-			//updateSize();
 			
 			setTimeout(function ():void {
 				_setInitialCodeForLiveCoding = true;
