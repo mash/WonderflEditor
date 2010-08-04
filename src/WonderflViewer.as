@@ -1,32 +1,18 @@
 ﻿package  
 {
 	import com.adobe.serialization.json.JSON;
-	import flash.display.Bitmap;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
-	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
-	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
-	import flash.net.navigateToURL;
-	import flash.net.URLRequest;
-	import flash.system.Capabilities;
-	import flash.ui.ContextMenu;
-	import flash.ui.ContextMenuItem;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
-	import jp.psyark.utils.CodeUtil;
+	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.editor.AS3Viewer;
-	import net.wonderfl.component.core.UIComponent;;
-	import net.wonderfl.editor.livecoding.LiveCoding;
 	import net.wonderfl.editor.livecoding.LiveCodingEvent;
 	import net.wonderfl.editor.livecoding.LiveCodingPanelEvent;
-	import net.wonderfl.editor.livecoding.LiveCodingSettings;
 	import net.wonderfl.editor.livecoding.LiveCodingViewerPanel;
-	import net.wonderfl.editor.livecoding.SocketBroadCaster;
-	import net.wonderfl.editor.livecoding.ViewerInfoPanel;
 	import net.wonderfl.editor.manager.ContextMenuBuilder;
 	import net.wonderfl.utils.bind;
 	import org.libspark.ui.SWFWheel;
