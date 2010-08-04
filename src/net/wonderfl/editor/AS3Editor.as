@@ -42,7 +42,7 @@ package net.wonderfl.editor
 		private var _this:AS3Editor;
 		private var _parser:ASParserController;
 		private var _errorEngine:Sprite = new Sprite;
-		private var _liveCodingController:LiveCodingControllerView;
+		//private var _liveCodingController:LiveCodingControllerView;
 		private var _blackShade:Shape;
 		
 		public function AS3Editor() 
@@ -88,7 +88,7 @@ package net.wonderfl.editor
 			addChild(_blackShade);
 			addChild(_vScroll);
 			addChild(_hScroll);
-			addChild(_liveCodingController = new LiveCodingControllerView);
+			//addChild(_liveCodingController = new LiveCodingControllerView);
 			
 			
 			addEventListener(Event.ADDED_TO_STAGE, init);
@@ -187,18 +187,18 @@ package net.wonderfl.editor
 		
 		override protected function updateSize():void 
 		{
-			_liveCodingController.width = _width - _vScroll.width;
-			_field.setSize(_width - lineNums.width - _vScroll.width, _height - _hScroll.height - _liveCodingController.height); 
-			_field.y = _liveCodingController.height;
-			_vScroll.height = _height - _liveCodingController.height - _hScroll.height;
+			//_liveCodingController.width = _width - _vScroll.width;
+			_field.setSize(_width - lineNums.width - _vScroll.width, _height - _hScroll.height - 20); 
+			_field.y = 20;
+			_vScroll.height = _height - 20 - _hScroll.height;
 			_hScroll.width = _width - _vScroll.width;
 			_vScroll.x = _width - _vScroll.width;
-			_vScroll.y = _liveCodingController.height;
-			_hScroll.y = _field.height + _liveCodingController.height;
+			_vScroll.y = 20;
+			_hScroll.y = _field.height + 20;
 			_blackShade.x = _vScroll.x;
 			_blackShade.y = _hScroll.y;
 			lineNums.height = _field.height;
-			lineNums.y = _liveCodingController.height;
+			lineNums.y = 20;
 		}
 		
 		public function clearErrors():void {

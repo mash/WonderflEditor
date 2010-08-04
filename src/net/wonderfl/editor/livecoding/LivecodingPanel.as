@@ -204,7 +204,8 @@ package net.wonderfl.editor.livecoding
 		}
 		
 		public function stop():void {
-			
+			_timer.stop();
+			_isLive = false;
 		}
 		
 		override protected function updateSize():void 

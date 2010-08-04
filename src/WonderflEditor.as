@@ -1,7 +1,5 @@
 package  
 {
-	import flash.display.Bitmap;
-	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
@@ -9,20 +7,18 @@ package
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.external.ExternalInterface;
-	import flash.utils.clearTimeout;
-	import flash.utils.getTimer;
-	import flash.utils.setTimeout;
 	import flash.utils.Timer;
-	import net.wonderfl.chat.Chat;
-	import net.wonderfl.chat.ChatButton;
 	import net.wonderfl.chat.ChatClient;
 	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.editor.AS3Editor;
 	import net.wonderfl.editor.livecoding.LiveCoding;
-	import net.wonderfl.editor.livecoding.LiveCodingSettings;
+	import net.wonderfl.editor.livecoding.LiveCodingEditorPanel;
+	import net.wonderfl.editor.livecoding.LiveCodingPanelEvent;
+	import net.wonderfl.editor.livecoding.LiveCodingViewerPanel;
 	import net.wonderfl.editor.manager.ContextMenuBuilder;
 	import net.wonderfl.editor.manager.LocalSettingManager;
 	import net.wonderfl.utils.bind;
+	import net.wonderfl.utils.listenOnce;
 	import org.libspark.ui.SWFWheel;
 	
 	//import net.wonderfl.editor.WonderflEditor;
@@ -36,16 +32,12 @@ package
 		private var _compileTimer:Timer;
 		private var _client:ChatClient;
 		private var _mouseUIFlag:Boolean = false;
-		private var _chatButton:ChatButton;
-		private var _chat:Chat;
-		private const CHAT_BUTTON_MIN_WIDTH:int = 80;
+		private var _infoPanel:LiveCodingEditorPanel;
 		
 		public function WonderflEditor() 
 		{
 			LocalSettingManager.initialize();
-			new LiveCoding;
 			addChild(_editor = new AS3Editor);
-			LiveCoding.editor = _editor;
 			_compileTimer = new Timer(1500, 1);
 			_compileTimer.addEventListener(TimerEvent.TIMER, bind(compile));
 			_editor.addEventListener(Event.COMPLETE, bind(_compileTimer.start));
@@ -54,7 +46,7 @@ package
 			
 			focusRect = null;
 			
-			addEventListener(Event.ADDED_TO_STAGE, init);
+			listenOnce(this, Event.ADDED_TO_STAGE, init);
 			
 			CONFIG::useExternalInterface {
 				if (ExternalInterface.available) {
@@ -82,12 +74,10 @@ package
 			return encodeURIComponent(_editor.text);
 		}
 		
-		private function init(e:Event):void 
+		private function init():void 
 		{
-			removeEventListener(Event.ADDED_TO_STAGE, init);
-			
-			if (loaderInfo.parameters)
-				LiveCodingSettings.setUpParameters(loaderInfo.parameters);
+			//if (loaderInfo.parameters)
+				//LiveCodingSettings.setUpParameters(loaderInfo.parameters);
 				
 			
 			var resetTimer:Function;
@@ -101,65 +91,19 @@ package
 			stage.addEventListener(MouseEvent.MOUSE_UP, clearMouseUIFlag);
 			
 			ContextMenuBuilder.getInstance().buildMenu(this, _editor, true);
+			var resize:Function = bind(updateSize);
 			
-			_client = new ChatClient;
-			_client.init(root.loaderInfo.parameters);
-			
-			_chatButton = new ChatButton;
-			var duration:int = 300;
-			var startTime:int;
-			var tweening:Boolean = false;
-			var buttonXTo:int, buttonXFrom:int, chatXTo:int, chatXFrom:int;
-			const LEFT:uint = _width - 288;
-			_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
-			
-			_chatButton.addEventListener(MouseEvent.CLICK, function ():void {
-				if (tweening) return;
+			if (loaderInfo.parameters.server) {
+				_infoPanel = new LiveCodingEditorPanel(_editor);
+				_infoPanel.addEventListener(Event.CLOSE, resize);
+				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_OPEN, resize);
+				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_CLOSE, resize);
+				addChild(_infoPanel);
+				_infoPanel.init();
 				
-				tweening = true;
-				_chatButton.toggle();
-				if (_chatButton.isOpen()) {
-					buttonXTo = chatXTo = _width - 288;
-					buttonXFrom = _width - CHAT_BUTTON_MIN_WIDTH;
-					chatXFrom = _width;
-				} else {
-					buttonXFrom = chatXFrom = _width - 288;
-					buttonXTo = _width - CHAT_BUTTON_MIN_WIDTH;
-					chatXTo = _width;
-					updateSize();
-				}
-				
-				startTime = getTimer();
-				addEventListener(Event.ENTER_FRAME, tweener);
-			});
-			
-			function tweener(e:Event):void {
-				var time:int = getTimer() - startTime;
-				
-				if (time > duration) {
-					_chatButton.x = buttonXTo; _chat.x = chatXTo;
-					removeEventListener(Event.ENTER_FRAME, tweener);
-					tweening = false;
-					if (_chatButton.isOpen()) updateSize();
-					return;
-				}
-				
-				var t:Number = time / duration;
-				var u:Number;
-				t = t * (2 - t);
-				u = 1 - t;
-				
-				_chatButton.x = t * buttonXTo + u * buttonXFrom;
-				_chat.x = t * chatXTo + u * chatXFrom;
-			}
-			
-			_chat = new Chat(_client);
-			_chat.x = _width - 288;
-			_chat.y = 20;
-			addChild(_chat);
-			
-			addChild(_chatButton);
-			_chatButton.setSize(288, 20);
+				LiveCoding.getInstance().setSocket(_infoPanel.getSocket());
+				LiveCoding.getInstance().setEditor(_editor);
+			}	
 			
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
@@ -201,21 +145,15 @@ package
 		
 		override protected function updateSize():void 
 		{
-			if (_chatButton.isOpen()) {
-				_editor.setSize(_width - 288, _height);
-			} else {
-				_editor.setSize(_width, _height);
-				
+			_infoPanel.width = _width;
+			if (_infoPanel) {
+				if (_infoPanel.isChatWindowOpen()) {
+					_editor.setSize(_width - 288, _height);
+				} else {
+					_editor.setSize(_width, _height);
+					
+				}
 			}
-			
-			if (_chatButton.isOpen()) {
-				_chat.x = _width - 288;
-				_chatButton.x = _width -288;
-			} else {
-				_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
-				_chat.x = _width;
-			}
-			_chat.setSize(288, _height - 20);
 		}
 	}
 }
