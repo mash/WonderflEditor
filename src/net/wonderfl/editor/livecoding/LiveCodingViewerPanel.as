@@ -34,7 +34,8 @@ package net.wonderfl.editor.livecoding
 		{
 			super.init();
 			
-			_syncButton = new CheckBox(this, _onImage.width + 5, 5, '', function ():void {
+			addChild(_onImage);
+			_syncButton = new CheckBox(this, _onImage.width + 5, 5, 'Sync', function ():void {
 				_isSync = !_isSync;
 			});
 			_syncButton.selected = true;
@@ -128,6 +129,18 @@ package net.wonderfl.editor.livecoding
 		{
 			_viewer.text = _source = $text;
 		}		
+		
+		override public function start():void 
+		{
+			super.start();
+			addEventListener(Event.ENTER_FRAME, update);
+		}
+		
+		override public function stop():void 
+		{
+			super.stop();
+			removeEventListener(Event.ENTER_FRAME, update);
+		}
 		
 		private function scrollH($scrollH:int):void
 		{
