@@ -17,7 +17,7 @@ package net.wonderfl.editor.scroll
 		protected var _target:FTETextField;
 		protected var _handle:TextScrollBarHandle;
 		protected var _prevMouse:int;
-		protected var _diff:Number;
+		protected var _diff:Number = 0;
 		protected var _handleMax:int;
 		protected var _value:int = 0;
 		protected var _min:int;
