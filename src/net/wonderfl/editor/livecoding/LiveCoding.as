@@ -24,14 +24,17 @@
 		public function LiveCoding() 
 		{
 			_this = this;
-			_broadCaster = new LiveCodingBroadcaster;
+		}
+		
+		public function setSocket($socket:SocketBroadCaster):void {
+			_broadCaster = new LiveCodingBroadcaster($socket);
 		}
 		
 		public static function getInstance():LiveCoding {
-			return _this;
+			return _this ||= new LiveCoding;
 		}
 		
-		public static function set editor(value:ITextArea):void {
+		public function setEditor(value:ITextArea):void {
 			_broadCaster.editor = value;
 		}
 		
@@ -78,12 +81,12 @@
 		
 		public function get prevText():String { return _prevText; }
 		
-		public static function set onJoin(value:Function):void 
+		public function set onJoin(value:Function):void 
 		{
 			_broadCaster.onJoin = value;
 		}
 		
-		public static function set onMemberUpdate(value:Function):void {
+		public function set onMemberUpdate(value:Function):void {
 			_broadCaster.onMemberUpdate = value;
 		}
 		

@@ -13,19 +13,17 @@
 	{
 		private var _onJoin:Function;
 		private var _onMemberUpdate:Function;
-		private static const TICK:int = 6;
+		private static const TICK:int = 50;
 		private var _queue:LiveCommandQueue = new LiveCommandQueue;
 		private var _executer:Sprite = new Sprite;
 		private var _isReady:Boolean;
-		private var _broadcaster:SocketBroadCaster = new SocketBroadCaster;
+		private var _broadcaster:SocketBroadCaster;
 		private var _commandCount:int;
 		private var _editor:ITextArea;
 				
-		public function LiveCodingBroadcaster() 
+		public function LiveCodingBroadcaster($broadcaster:SocketBroadCaster) 
 		{
-			_broadcaster.addEventListener(Event.CONNECT, function ():void {
-				_broadcaster.join( LiveCodingSettings.room, LiveCodingSettings.ticket);
-			});
+			_broadcaster = $broadcaster;
 			_broadcaster.addEventListener(LiveCodingEvent.JOINED, startBroadCasting);
 			_broadcaster.addEventListener(LiveCodingEvent.MEMBERS_UPDATED, __onMemberUpdate);
 			_broadcaster.addEventListener(IOErrorEvent.IO_ERROR, new Function);
@@ -33,7 +31,7 @@
 		
 		public function startLiveCoding():void {
 			_isReady = false;
-			_broadcaster.connect(LiveCodingSettings.server, LiveCodingSettings.port);
+			//_broadcaster.connect(LiveCodingSettings.server, LiveCodingSettings.port);
 			_queue.length = 0;
 			_executer.addEventListener(Event.ENTER_FRAME, execute);
 		}
@@ -41,7 +39,9 @@
 		public function endLiveCoding():void {
 			closeLiveCoding();
 			flush();
-			_broadcaster.close();
+			try {
+				_broadcaster.close();
+			} catch (e:Error) { } // do nothing
 			_executer.removeEventListener(Event.ENTER_FRAME, execute);
 		}
 		
