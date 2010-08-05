@@ -100,7 +100,7 @@ package net.wonderfl.chat
 			h += 20;
 			
 			_sp.graphics.clear();
-			_sp.graphics.beginFill(ChatStyle.CHAT_BACKGROUND);
+			_sp.graphics.beginFill(ChatStyle.CHAT_BACKGROUND, ChatStyle.CHAT_BACKGROUND_ALPHA);
 			_sp.graphics.drawRect(0, 0, _width, h);
 			_sp.graphics.endFill();
 			
