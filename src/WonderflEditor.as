@@ -99,7 +99,7 @@ package
 				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_OPEN, resize);
 				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_CLOSE, resize);
 				addChild(_infoPanel);
-				_infoPanel.init();
+				_infoPanel.init(true);
 				
 				LiveCoding.getInstance().setSocket(_infoPanel.getSocket());
 				LiveCoding.getInstance().setEditor(_editor);
@@ -145,14 +145,15 @@ package
 		
 		override protected function updateSize():void 
 		{
-			_infoPanel.width = _width;
 			if (_infoPanel) {
-				if (_infoPanel.isChatWindowOpen()) {
+				_infoPanel.width = _width;
+				if (_infoPanel.isChatWindowOpen() && _infoPanel.isLive()) {
 					_editor.setSize(_width - 288, _height);
 				} else {
 					_editor.setSize(_width, _height);
-					
 				}
+			} else {
+				_editor.setSize(_width, _height);
 			}
 		}
 	}

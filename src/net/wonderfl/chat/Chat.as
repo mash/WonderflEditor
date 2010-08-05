@@ -37,11 +37,6 @@ package net.wonderfl.chat
 			});
 			$client.addEventListener(LiveCodingEvent.CHAT_RECEIVED, chatReceived);
 			
-			listenOnce(this, Event.ADDED_TO_STAGE, init);
-		}
-		
-		private function init():void
-		{
 			_area = new ChatArea;
 			addChild(_area);
 			addChild(_sp = new Sprite);

@@ -32,11 +32,6 @@ package net.wonderfl.chat
 		
 		public function ChatButton() 
 		{
-			listenOnce(this, Event.ADDED_TO_STAGE, init);
-		}
-		
-		private function init():void
-		{
 			tabEnabled = false;
 			buttonMode = true;
 			

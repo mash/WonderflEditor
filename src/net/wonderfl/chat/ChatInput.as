@@ -31,11 +31,6 @@ package net.wonderfl.chat
 		public function ChatInput($inputHandler:Function) 
 		{
 			_defaultHandler = $inputHandler;
-			listenOnce(this, Event.ADDED_TO_STAGE, init);
-		}
-		
-		private function init():void
-		{
 			_input = new TextField;
 			_input.type = TextFieldType.INPUT;
 			_input.defaultTextFormat = new TextFormat(FontSetting.GOTHIC_FONT);
