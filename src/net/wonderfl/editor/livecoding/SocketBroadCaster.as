@@ -56,8 +56,8 @@ package net.wonderfl.editor.livecoding {
             socket.connect( host, port );
         }
 
-        public function join( room :String, ticket :String ) :void {
-            call( 'join', { room : room, ticket : ticket } );
+        public function join(ticket :String ) :void {
+            call( 'join', { ticket : ticket } );
         }
 
         private function call( method :String, args :Object ) :void {
@@ -125,15 +125,15 @@ package net.wonderfl.editor.livecoding {
             call( 'relay', { command: command, args: args } );
         }
 
-        public function chat( text :String, name :String, icon :String ) :void {
+        public function chat( text :String ) :void {
             if ( ! socket || ! socket.connected ) { return; }
 
-            call( 'chat', { text : text, name : name, icon : icon } );
+            call( 'chat', { text : text } );
         }
 
         // to notify the end of live coding
         public function close():void {
-            socket.close();
+			if (socket.connected) socket.close();
         }
 
         private function logger(... args):void {

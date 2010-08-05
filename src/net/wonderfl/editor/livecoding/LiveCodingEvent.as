@@ -1,4 +1,5 @@
 package net.wonderfl.editor.livecoding{
+	import com.adobe.serialization.json.JSON;
     import flash.events.Event;
 
 	public class LiveCodingEvent extends Event {
@@ -16,6 +17,11 @@ package net.wonderfl.editor.livecoding{
 
 		public override function clone():Event {
 			return new LiveCodingEvent( type, data );
+		}
+		
+		override public function formatToString(className:String, ...rest):String 
+		{
+			return <>[Event type={type}, data={JSON.encode(data)}]</>;
 		}
 	}
 }

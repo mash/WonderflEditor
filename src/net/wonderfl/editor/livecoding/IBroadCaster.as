@@ -3,7 +3,7 @@ package net.wonderfl.editor.livecoding
     import flash.events.IEventDispatcher;
     public interface IBroadCaster extends IEventDispatcher
     {
-        function join( room :String, ticket :String ) :void;
+        function join(ticket :String ) :void;
 
         function send( command :String, ... args ) :void;
 
