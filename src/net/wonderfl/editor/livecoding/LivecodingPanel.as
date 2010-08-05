@@ -29,18 +29,18 @@ package net.wonderfl.editor.livecoding
 		protected var _host:String;
 		protected var _port:int;
 		protected var _isLive:Boolean = false;
-		private var _chatButton:ChatButton;
-		private var _chat:Chat;
+		protected var _label:TextLine;
+		protected var _chatButton:ChatButton;
+		protected var _chat:Chat;
 		private var _elapsed_time:int;
 		private var _factory:TextBlock;
 		private var _elf:ElementFormat;
-		private var _label:TextLine;
 		private var _strTime:String = '--:--';
 		private var _strViewer:String = '-';
 		private var _time:int;
 		private var _timer:Timer;
 		
-		public function init():void {
+		public function init($chatWindowOpen:Boolean = false):void {
 			trace("LiveCodingPanel.init");
 			if (!root) throw new Error('add this compoent to the stage first. then, call this method!');
 			
@@ -70,7 +70,20 @@ package net.wonderfl.editor.livecoding
 			const LEFT:uint = _width - 288;
 			_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
 			
-			_chatButton.addEventListener(MouseEvent.CLICK, function ():void {
+			_chatButton.addEventListener(MouseEvent.CLICK, click);
+			
+			_chat = new Chat(_socket);
+			_chat.x = _width - 288;
+			_chat.y = 20;
+			_chatButton.setSize(288, 20);
+			_chatButton.x = LEFT;
+			
+			_height = 20;
+			if ($chatWindowOpen) {
+				click(null);
+			}
+			
+			function click(e:MouseEvent):void {
 				if (tweening) return;
 				
 				tweening = true;
@@ -90,8 +103,7 @@ package net.wonderfl.editor.livecoding
 				
 				startTime = getTimer();
 				addEventListener(Event.ENTER_FRAME, tweener);
-			});
-			
+			}
 			
 			function tweener(e:Event):void {
 				var time:int = getTimer() - startTime;
@@ -115,17 +127,6 @@ package net.wonderfl.editor.livecoding
 				_chatButton.x = t * buttonXTo + u * buttonXFrom;
 				_chat.x = t * chatXTo + u * chatXFrom;
 			}
-			
-			_chat = new Chat(_socket);
-			_chat.x = _width - 288;
-			_chat.y = 20;
-			addChild(_chat);
-			
-			addChild(_chatButton);
-			_chatButton.setSize(288, 20);
-			_chatButton.x = LEFT;
-			
-			_height = 20;
 		}
 		
 		public function isChatWindowOpen():Boolean {
@@ -190,7 +191,6 @@ package net.wonderfl.editor.livecoding
 		}
 		
 		public function connect():void {
-			trace("LiveCodingPanel.connect");
 			_socket.connect(_host, _port);
 		}
 		
@@ -199,6 +199,8 @@ package net.wonderfl.editor.livecoding
 			timer(null);
 			_timer.start();
 			_isLive = true;
+			addChild(_chat);
+			addChild(_chatButton);
 		}
 		
 		public function stop():void {

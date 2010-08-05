@@ -2,8 +2,10 @@ package net.wonderfl.editor.livecoding
 {
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import net.wonderfl.editor.AS3Editor;
+	import net.wonderfl.utils.removeFromParent;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -67,17 +69,13 @@ package net.wonderfl.editor.livecoding
 		private function stopLive():Boolean {
 			stop();
 			LiveCoding.stop();
+			removeFromParent(_label);
+			removeFromParent(_chat);
+			removeFromParent(_chatButton);
+			dispatchEvent(new Event(Event.CLOSE));
 			
 			return false;
 		}
-		
-		override public function init():void 
-		{
-			super.init();
-			
-			
-		}
-		
 	}
 
 }

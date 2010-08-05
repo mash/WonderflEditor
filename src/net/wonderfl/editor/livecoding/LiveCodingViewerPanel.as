@@ -31,9 +31,9 @@ package net.wonderfl.editor.livecoding
 			_viewer = $viewer;
 		}
 		
-		override public function init():void 
+		override public function init($chatWindowOpen:Boolean = false):void 
 		{
-			super.init();
+			super.init($chatWindowOpen);
 			
 			addChild(_onImage);
 			_syncButton = new CheckBox(this, _onImage.width + 5, 5, 'Sync', function ():void {
@@ -130,7 +130,6 @@ package net.wonderfl.editor.livecoding
 		
 		override public function start():void 
 		{
-			trace("LiveCodingViewerPanel.start");
 			super.start();
 			
 			dispatchEvent(new LiveCodingEvent(LiveCodingEvent.JOINED, null));
