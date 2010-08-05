@@ -29,8 +29,6 @@ package net.wonderfl.editor.livecoding
 		protected var _host:String;
 		protected var _port:int;
 		protected var _isLive:Boolean = false;
-		protected var _userName:String;
-		protected var _iconURL:String;
 		private var _chatButton:ChatButton;
 		private var _chat:Chat;
 		private var _elapsed_time:int;
@@ -61,7 +59,7 @@ package net.wonderfl.editor.livecoding
 			_socket = new SocketBroadCaster;
 			_socket.addEventListener(LiveCodingEvent.JOINED, joined);
 			_socket.addEventListener(LiveCodingEvent.MEMBERS_UPDATED, membersUpdated);
-			listenOnce(_socket, Event.CONNECT, _socket.join, [params.root, params.ticket]);
+			listenOnce(_socket, Event.CONNECT, _socket.join, [params.ticket]);
 			_socket.addEventListener(Event.CONNECT, trace);
 			
 			_chatButton = new ChatButton;
@@ -118,7 +116,7 @@ package net.wonderfl.editor.livecoding
 				_chat.x = t * chatXTo + u * chatXFrom;
 			}
 			
-			_chat = new Chat(_socket, params["viewer.displayName"], params["viewer.iconURL"]);
+			_chat = new Chat(_socket);
 			_chat.x = _width - 288;
 			_chat.y = 20;
 			addChild(_chat);
@@ -188,7 +186,7 @@ package net.wonderfl.editor.livecoding
 		}
 		
 		protected function chat($message:String):void {
-			_socket.chat($message, _userName, _iconURL);
+			_socket.chat($message);
 		}
 		
 		public function connect():void {
@@ -223,6 +221,8 @@ package net.wonderfl.editor.livecoding
 			graphics.beginFill(0);
 			graphics.drawRect(0, 0, _width, _height);
 		}
+		
+		public function isLive():Boolean { return _isLive; }
 	}
 
 }

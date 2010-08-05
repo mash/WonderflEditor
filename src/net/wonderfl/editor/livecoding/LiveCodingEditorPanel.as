@@ -34,7 +34,7 @@ package net.wonderfl.editor.livecoding
 				if (!_clickable) return;
 				_clickable = false;
 				
-				isLive = _isLive ? stopLive() : startLive();
+				setIsLive(_isLive ? stopLive() : startLive());
 			});
 			
 			sp.addEventListener(MouseEvent.ROLL_OVER, function () :void {
@@ -50,13 +50,14 @@ package net.wonderfl.editor.livecoding
 			return _socket;
 		}
 		
-		private function set isLive(value:Boolean):void {
+		private function setIsLive(value:Boolean):void {
 			_onImage.visible = value;
 			_clickable = true;
 			_isLive = value;
 		}
 		
 		private function startLive():Boolean {
+			connect();
 			start();
 			LiveCoding.start();
 			

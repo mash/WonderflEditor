@@ -31,7 +31,6 @@
 		
 		public function startLiveCoding():void {
 			_isReady = false;
-			//_broadcaster.connect(LiveCodingSettings.server, LiveCodingSettings.port);
 			_queue.length = 0;
 			_executer.addEventListener(Event.ENTER_FRAME, execute);
 		}

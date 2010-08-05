@@ -18,8 +18,6 @@ package net.wonderfl.chat
 	public class Chat extends UIComponent
 	{
 		private static const MARGIN:int = 20;
-		protected var _userName:String;
-		protected var _iconURL:String;
 		private var _area:ChatArea;
 		private var _resizeButton:ChatResizeButton;
 		private var _input:ChatInput;
@@ -29,11 +27,9 @@ package net.wonderfl.chat
 		private var _joinedAt:Number;
 		private var _localJoinedAt:Number;
 		
-		public function Chat($client:SocketBroadCaster, $userName:String, $iconURL:String) 
+		public function Chat($client:SocketBroadCaster) 
 		{
 			_client = $client;
-			_userName = $userName;
-			_iconURL = $iconURL;
 			_client.addEventListener(LiveCodingEvent.JOINED, function joined(e:LiveCodingEvent):void {
 				_client.removeEventListener(LiveCodingEvent.JOINED, joined);
 				_joinedAt = Number(e.data.now);
@@ -90,7 +86,7 @@ package net.wonderfl.chat
 		private function onClick(e:MouseEvent):void {
 			if (_input.text) {
 				var message:String = _input.text.replace(/\t/g, "    ").replace(/\r/g, "\n");
-				_client.chat(message, _userName, _iconURL);
+				_client.chat(message);
 			}
 			_input.text = "";
 		}

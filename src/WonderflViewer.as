@@ -66,6 +66,7 @@
 				_isLive = true;
 				_infoPanel = new LiveCodingViewerPanel(_viewer);
 				_infoPanel.addEventListener(Event.CLOSE, resize);
+				_infoPanel.addEventListener(LiveCodingEvent.JOINED, resize);
 				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_OPEN, resize);
 				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_CLOSE, resize);
 				addChild(_infoPanel);
@@ -120,21 +121,21 @@
 		
 		override protected function updateSize():void 
 		{
+			if (!_viewer) return;
+			
+			trace("WonderflViewer.updateSize");
 			_viewer.width = _width;
-			if (_isLive) {
+			if (_infoPanel && _infoPanel.isLive()) {
 				_infoPanel.width = _width;
 				_viewer.y = _infoPanel.height;
 				_viewer.height = height - _infoPanel.height;
+				if (_infoPanel.isChatWindowOpen())
+					_viewer.setSize(_width - 288, _height);
+				if (!_infoPanel.parent) addChild(_infoPanel);
 			} else {
 				_viewer.y = 0;
 				_viewer.height = _height;
-			}
-			
-			if (_infoPanel && _infoPanel.isChatWindowOpen()) {
-				_viewer.setSize(_width - 288, _height);
-			} else {
 				_viewer.setSize(_width, _height);
-				
 			}
 		}
 		

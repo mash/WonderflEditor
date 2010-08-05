@@ -12,6 +12,7 @@ package net.wonderfl.editor.livecoding
 	 * @author kobayashi-taro
 	 */
 	[Event(name = 'close', type = 'flash.events.Event')]
+	[Event(name = 'LiveCodingEvent_JOINED', type = 'net.wonderfl.editor.livecoding.LiveCodingEvent')]
 	public class LiveCodingViewerPanel extends LiveCodingPanel
 	{
 		[Embed(source = '../../../../../assets/on_live.png')]
@@ -44,7 +45,7 @@ package net.wonderfl.editor.livecoding
 		
 		private function relayed(e:LiveCodingEvent):void 
 		{
-			trace(">>> e : " + e);
+			//trace("viewer : " + e);
 			if (!_isLive) {
 				start();
 			}
@@ -76,10 +77,7 @@ package net.wonderfl.editor.livecoding
 			
 			if (method != null) {
 				var args:Array = e.data.args;
-				_commandList[_commandList.length] = {
-					method : method,
-					args : args
-				}
+				method.apply(null, args);
 			}
 		}
 		
@@ -132,7 +130,10 @@ package net.wonderfl.editor.livecoding
 		
 		override public function start():void 
 		{
+			trace("LiveCodingViewerPanel.start");
 			super.start();
+			
+			dispatchEvent(new LiveCodingEvent(LiveCodingEvent.JOINED, null));
 			addEventListener(Event.ENTER_FRAME, update);
 		}
 		

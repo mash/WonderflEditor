@@ -27,7 +27,7 @@ package net.wonderfl.chat
 		}
 		
 		public function chat($message:String):void {
-			broadcaster.chat($message, _userName, _iconURL);
+			broadcaster.chat($message);
 		}
 	}
 
