@@ -40,6 +40,7 @@ package net.wonderfl.editor.livecoding
 		private var _time:int;
 		private var _timer:Timer;
 		private var _updateParent:Function;
+		private var _onStart:Function;
 		
 		public function setUpdateParent($updateParent:Function):void {
 			_updateParent = $updateParent;
@@ -82,16 +83,26 @@ package net.wonderfl.editor.livecoding
 			_chatButton.x = LEFT;
 			
 			_height = 20;
+			_chat.x = _width;
+			_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
 			if ($chatWindowOpen) {
-				_chat.x = _chatButton.x = LEFT;
 				_chatButton.toggle();
-			} else {
-				_chat.x = _width;
-				_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
+				_onStart = function ():void {
+					tweening = true;
+					_chat.x = _width;
+					_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
+					buttonXTo = chatXTo = _width - 288;
+					buttonXFrom = _width - CHAT_BUTTON_MIN_WIDTH;
+					chatXFrom = _width;
+					trace('onStart : ', _chatButton.x, _chat.x);
+					startTime = getTimer();
+					addEventListener(Event.ENTER_FRAME, tweener);
+				};
 			}
 			
 			function click(e:MouseEvent):void {
 				if (tweening) return;
+				trace('click');
 				
 				tweening = true;
 				_chatButton.toggle();
@@ -119,6 +130,7 @@ package net.wonderfl.editor.livecoding
 					_chatButton.x = buttonXTo; _chat.x = chatXTo;
 					removeEventListener(Event.ENTER_FRAME, tweener);
 					tweening = false;
+					trace('tween end : ', _chatButton.x, _chat.x);
 					dispatchEvent(new LiveCodingPanelEvent(LiveCodingPanelEvent.CHAT_WINDOW_OPEN));
 					
 					updateSize();
@@ -132,6 +144,7 @@ package net.wonderfl.editor.livecoding
 				
 				_chatButton.x = t * buttonXTo + u * buttonXFrom;
 				_chat.x = t * chatXTo + u * chatXFrom;
+				trace(_chat.x, _chatButton.x, chatXFrom, chatXTo);
 			}
 		}
 		
@@ -206,6 +219,11 @@ package net.wonderfl.editor.livecoding
 		}
 		
 		public function start():void {
+			if (_onStart != null) {
+				_onStart();
+				_onStart = null;
+			}
+			
 			_time = getTimer();
 			timer(null);
 			_timer.start();
@@ -221,6 +239,7 @@ package net.wonderfl.editor.livecoding
 		
 		override protected function updateSize():void 
 		{
+			trace("LiveCodingPanel.updateSize");
 			_chat.setSize(288, parent.height - 20);
 			if (_chatButton.isOpen()) {
 				_chat.x = _width - _chatButton.width;
