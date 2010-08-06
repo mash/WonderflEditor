@@ -39,9 +39,14 @@ package net.wonderfl.editor.livecoding
 		private var _strViewer:String = '-';
 		private var _time:int;
 		private var _timer:Timer;
+		private var _updateParent:Function;
+		
+		public function setUpdateParent($updateParent:Function):void {
+			_updateParent = $updateParent;
+		}
 		
 		public function init($chatWindowOpen:Boolean = false):void {
-			trace("LiveCodingPanel.init");
+			if (_updateParent == null) throw new Error('call setUpdateParent first!');
 			if (!root) throw new Error('add this compoent to the stage first. then, call this method!');
 			
 			var params:Object = root.loaderInfo.parameters;
@@ -68,19 +73,21 @@ package net.wonderfl.editor.livecoding
 			var tweening:Boolean = false;
 			var buttonXTo:int, buttonXFrom:int, chatXTo:int, chatXFrom:int;
 			const LEFT:uint = _width - 288;
-			_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
 			
 			_chatButton.addEventListener(MouseEvent.CLICK, click);
 			
 			_chat = new Chat(_socket);
-			_chat.x = _width - 288;
 			_chat.y = 20;
 			_chatButton.setSize(288, 20);
 			_chatButton.x = LEFT;
 			
 			_height = 20;
 			if ($chatWindowOpen) {
-				click(null);
+				_chat.x = _chatButton.x = LEFT;
+				_chatButton.toggle();
+			} else {
+				_chat.x = _width;
+				_chatButton.x = _width - CHAT_BUTTON_MIN_WIDTH;
 			}
 			
 			function click(e:MouseEvent):void {
@@ -112,8 +119,7 @@ package net.wonderfl.editor.livecoding
 					_chatButton.x = buttonXTo; _chat.x = chatXTo;
 					removeEventListener(Event.ENTER_FRAME, tweener);
 					tweening = false;
-					if (_chatButton.isOpen())
-						dispatchEvent(new LiveCodingPanelEvent(LiveCodingPanelEvent.CHAT_WINDOW_OPEN));
+					dispatchEvent(new LiveCodingPanelEvent(LiveCodingPanelEvent.CHAT_WINDOW_OPEN));
 					
 					updateSize();
 					return;
@@ -127,6 +133,11 @@ package net.wonderfl.editor.livecoding
 				_chatButton.x = t * buttonXTo + u * buttonXFrom;
 				_chat.x = t * chatXTo + u * chatXFrom;
 			}
+		}
+		
+		public function getChatLeftPos():int {
+			//return _chat.parent ? _chat.x : _width;
+			return _chat.x;
 		}
 		
 		public function isChatWindowOpen():Boolean {

@@ -19,7 +19,6 @@ package net.wonderfl.editor.livecoding
 		private var _startClass:Class;
 		private var _editor:AS3Editor;
 		private var _clickable:Boolean = true;
-		
 		public function LiveCodingEditorPanel($editor:AS3Editor) 
 		{
 			_editor = $editor;
