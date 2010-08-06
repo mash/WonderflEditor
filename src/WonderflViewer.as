@@ -73,7 +73,7 @@
 				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_OPEN, resize);
 				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_CLOSE, resize);
 				addChild(_infoPanel);
-				_infoPanel.init();
+				_infoPanel.init(Boolean(loaderInfo.parameters.big_viewer));
 				_infoPanel.connect();
 				_infoPanel.start();
 			}

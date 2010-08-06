@@ -15,7 +15,6 @@ package net.wonderfl.editor
 	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.editor.core.UIFTETextField;
 	import net.wonderfl.editor.error.ErrorMessage;
-	import net.wonderfl.editor.livecoding.LiveCodingControllerView;
 	import net.wonderfl.editor.manager.ClipboardManager;
 	import net.wonderfl.editor.manager.CodeAssistManager;
 	import net.wonderfl.editor.manager.EditorHotkeyManager;
@@ -42,7 +41,6 @@ package net.wonderfl.editor
 		private var _this:AS3Editor;
 		private var _parser:ASParserController;
 		private var _errorEngine:Sprite = new Sprite;
-		//private var _liveCodingController:LiveCodingControllerView;
 		private var _blackShade:Shape;
 		
 		public function AS3Editor() 
