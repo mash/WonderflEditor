@@ -76,10 +76,6 @@ package
 		
 		private function init():void 
 		{
-			//if (loaderInfo.parameters)
-				//LiveCodingSettings.setUpParameters(loaderInfo.parameters);
-				
-			
 			var resetTimer:Function;
 			
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, resetTimer = bind(_compileTimer.reset));
@@ -95,6 +91,7 @@ package
 			
 			if (loaderInfo.parameters.server) {
 				_infoPanel = new LiveCodingEditorPanel(_editor);
+				_infoPanel.setUpdateParent(updateSize);
 				_infoPanel.addEventListener(Event.CLOSE, resize);
 				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_OPEN, resize);
 				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_CLOSE, resize);
@@ -147,11 +144,7 @@ package
 		{
 			if (_infoPanel) {
 				_infoPanel.width = _width;
-				if (_infoPanel.isChatWindowOpen() && _infoPanel.isLive()) {
-					_editor.setSize(_width - 288, _height);
-				} else {
-					_editor.setSize(_width, _height);
-				}
+				_editor.setSize(_infoPanel.getChatLeftPos(), _height);
 			} else {
 				_editor.setSize(_width, _height);
 			}

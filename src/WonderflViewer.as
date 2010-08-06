@@ -53,6 +53,8 @@
 			SWFWheel.initialize(stage);
 			SWFWheel.browserScroll = false;
 			
+			//loaderInfo.parameters.big_viewer <- viewer size
+			
 			focusRect = null;
 			trace(JSON.encode(loaderInfo.parameters));
 			
@@ -65,6 +67,7 @@
 			if (loaderInfo.parameters.server) {
 				_isLive = true;
 				_infoPanel = new LiveCodingViewerPanel(_viewer);
+				_infoPanel.setUpdateParent(updateSize);
 				_infoPanel.addEventListener(Event.CLOSE, resize);
 				_infoPanel.addEventListener(LiveCodingEvent.JOINED, resize);
 				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_OPEN, resize);
