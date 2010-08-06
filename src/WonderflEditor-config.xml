@@ -1,5 +1,6 @@
 <flex-config>
 	<compiler>
+		<debug>false</debug>
 		<define>
 			<name>CONFIG::useExternalInterface</name>
 			<value>true</value>
@@ -24,7 +25,6 @@
 			<name>CONFIG::IME</name>
 			<value>false</value>
 		</define>
-		<debug>true</debug>
 		<incremental>true</incremental>
 		<source-path>
 			<path-element>.</path-element>
