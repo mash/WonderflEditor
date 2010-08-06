@@ -13,7 +13,7 @@
 	{
 		private var _onJoin:Function;
 		private var _onMemberUpdate:Function;
-		private static const TICK:int = 50;
+		private static const TICK:int = 80;
 		private var _queue:LiveCommandQueue = new LiveCommandQueue;
 		private var _executer:Sprite = new Sprite;
 		private var _isReady:Boolean;

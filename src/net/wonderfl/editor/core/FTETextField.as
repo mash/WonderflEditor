@@ -164,7 +164,7 @@ package net.wonderfl.editor.core
 			var delta:int = value - _scrollY;
 			_scrollY = value;
 			updateScrollProps();
-			trace("FTETextField :: scrollY : " + scrollY);
+			//trace("FTETextField :: scrollY : " + scrollY);
 			
 			dispatchEvent(
 				new ScrollEvent(
@@ -263,7 +263,6 @@ package net.wonderfl.editor.core
 			var p1:Point;
 			p1 = (i0 == i1) ? p0.clone() : getPointForIndex(i1);
 			
-			trace('start draw selection ' + p0 + p1);
 			var g:Graphics = _selectionShape.graphics;
 			g.clear();
 			if (_selStart != _selEnd && _selStart <= _lastPos && _selEnd >= _firstPos)

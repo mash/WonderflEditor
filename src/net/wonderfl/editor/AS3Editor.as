@@ -22,6 +22,7 @@ package net.wonderfl.editor
 	import net.wonderfl.editor.scroll.TextHScroll;
 	import net.wonderfl.editor.scroll.TextVScroll;
 	import net.wonderfl.utils.calcFontBox;
+	import net.wonderfl.utils.listenOnce;
 	import ro.minibuilder.main.editor.Location;
 	/**
 	 * ...
@@ -86,10 +87,8 @@ package net.wonderfl.editor
 			addChild(_blackShade);
 			addChild(_vScroll);
 			addChild(_hScroll);
-			//addChild(_liveCodingController = new LiveCodingControllerView);
 			
-			
-			addEventListener(Event.ADDED_TO_STAGE, init);
+			listenOnce(this, Event.ADDED_TO_STAGE, init);
 		}
 		
 		private function onVScroll(e:Event):void 
@@ -113,19 +112,13 @@ package net.wonderfl.editor
 			_codeAssistManager.cancelAssist();
 		}
 		
-		private function init(e:Event):void {
-			removeEventListener(Event.ADDED_TO_STAGE, init);
-			
+		private function init():void {
 			_parser = new ASParserController(stage, _this);
 			_parser.addEventListener(Event.COMPLETE, dispatchEvent);
 			_codeAssistManager = new CodeAssistManager(_field, _parser, stage, onComplete);
 			_editorHotkeyManager = new EditorHotkeyManager(_field, _parser);
 			_field.addPlugIn(_codeAssistManager);
 			_field.addPlugIn(_editorHotkeyManager);
-			
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, function ():void {
-				//checkMouse();
-			});
 			_field.addEventListener(Event.CHANGE, onChange);
 		}
 		

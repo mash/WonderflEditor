@@ -1,6 +1,5 @@
 package net.wonderfl.editor.livecoding 
 {
-	import com.bit101.components.CheckBox;
 	import flash.display.Bitmap;
 	import flash.events.Event;
 	import flash.external.ExternalInterface;
@@ -21,7 +20,7 @@ package net.wonderfl.editor.livecoding
 		private var _isSync:Boolean = true;
 		private const BLINK_PERIOD:int = 48;
 		private var _blink_count:int = 0;
-		private var _syncButton:CheckBox;
+		//private var _syncButton:CheckBox;
 		private var _commandList:Array = [];
 		
 		private var _viewer:AS3Viewer;
@@ -36,20 +35,19 @@ package net.wonderfl.editor.livecoding
 			super.init($chatWindowOpen);
 			
 			addChild(_onImage);
-			_syncButton = new CheckBox(this, _onImage.width + 5, 5, 'Sync', function ():void {
-				_isSync = !_isSync;
-			});
-			_syncButton.selected = true;
+			//_syncButton = new CheckBox(this, _onImage.width + 5, 5, 'Sync', function ():void {
+				//_isSync = !_isSync;
+			//});
+			//_syncButton.selected = true;
 			_socket.addEventListener(LiveCodingEvent.RELAYED, relayed);
 		}
 		
 		private function relayed(e:LiveCodingEvent):void 
 		{
-			//trace("viewer : " + e);
+			trace("viewer : " + e);
 			if (!_isLive) {
 				start();
 			}
-			
 			var method:Function;
 			switch (e.data.command) {
 			case LiveCoding.REPLACE_TEXT:
@@ -88,7 +86,7 @@ package net.wonderfl.editor.livecoding
 			
 			_viewer.slowDownParser();
 			_source = _source.substring(0, $beginIndex) + $newText + substring($endIndex);
-			_viewer.text = _source;
+			//_viewer.text = _source;
 			_viewer.onReplaceText($beginIndex, $endIndex, $newText);
 			//_selectionObject = {
 				//index : $endIndex + $newText.length

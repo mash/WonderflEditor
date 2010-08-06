@@ -26,7 +26,6 @@
 		private const CHAT_BUTTON_MIN_WIDTH:int = 80;
 		
 		private var _viewer:AS3Viewer;
-		//private var broadcaster:SocketBroadCaster = new SocketBroadCaster;
 		private var _source:String ='';
 		private var _commandList:Array = [];
 		private var _executer:Sprite = new Sprite;
@@ -53,8 +52,6 @@
 			SWFWheel.initialize(stage);
 			SWFWheel.browserScroll = false;
 			
-			//loaderInfo.parameters.big_viewer <- viewer size
-			
 			focusRect = null;
 			trace(JSON.encode(loaderInfo.parameters));
 			
@@ -77,20 +74,12 @@
 				_infoPanel.connect();
 				_infoPanel.start();
 			}
-			//if (LiveCodingSettings.server && LiveCodingSettings.port) {
-				//_setInitialCodeForLiveCoding = true;
-			//}
 			
 			if (ExternalInterface.available) {
 				var code:String = ExternalInterface.call("Wonderfl.Codepage.get_initial_code");
 				_source = code || "";
 				_viewer.text = _source;
  			}
-			
-			//if (_setInitialCodeForLiveCoding) {
-				//addEventListener(Event.ENTER_FRAME, setupInitialCode);
-				//_setInitialCodeForLiveCoding = false;
-			//}
 			
 			ContextMenuBuilder.getInstance().buildMenu(this, _viewer);
 			
@@ -99,9 +88,6 @@
 		
 		private function onColoringComplete(e:Event):void 
 		{
-			//if (_selectionObject)
-				//setSelection(_selectionObject.index, _selectionObject.index);
-				
 			_selectionObject = null;
 		}
 		
