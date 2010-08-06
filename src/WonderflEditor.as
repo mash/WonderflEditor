@@ -41,7 +41,6 @@ package
 			_compileTimer = new Timer(1500, 1);
 			_compileTimer.addEventListener(TimerEvent.TIMER, bind(compile));
 			_editor.addEventListener(Event.COMPLETE, bind(_compileTimer.start));
-			
 			_editor.setFontSize(12);
 			
 			focusRect = null;
@@ -94,7 +93,9 @@ package
 				_infoPanel.setUpdateParent(updateSize);
 				_infoPanel.addEventListener(Event.CLOSE, resize);
 				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_OPEN, resize);
-				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_CLOSE, resize);
+				_infoPanel.addEventListener(LiveCodingPanelEvent.CHAT_WINDOW_CLOSE, function ():void {
+					_editor.setSize(_width, _height);
+				});
 				addChild(_infoPanel);
 				_infoPanel.init(true);
 				
@@ -144,7 +145,11 @@ package
 		{
 			if (_infoPanel) {
 				_infoPanel.width = _width;
-				_editor.setSize(_infoPanel.getChatLeftPos(), _height);
+				
+				if (_infoPanel.isLive())
+					_editor.setSize(_infoPanel.getChatLeftPos(), _height);
+				else
+					_editor.setSize(_width, _height);
 			} else {
 				_editor.setSize(_width, _height);
 			}

@@ -92,7 +92,7 @@ package net.wonderfl.chat
 			_linkLineContainer.mouseChildren = _linkLineContainer.mouseEnabled = false;
 			_textLineContainer.mouseEnabled = _textLineContainer.mouseChildren = false;
 			
-			_icon.x = 5;
+			_icon.x = 1;
 			_text = $initData.text;
 			_seconds = $joinedAt - Number($initData.at);
 			_localJoinedAt = $localJoinedAt;
@@ -356,7 +356,7 @@ package net.wonderfl.chat
 			_textWidth = _width - 60;
 			graphics.clear();
 			graphics.beginFill(ChatStyle.MESSAGE_ITEM_HEADER);
-			graphics.drawRect(0, 0, _width, _icon.height);
+			graphics.drawRect(0, -1, _width, _icon.height + 2);
 			updateText();
 			
 			if (_tlTime) _tlTime.x = _width - 5 - _tlTime.width;
