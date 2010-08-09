@@ -178,8 +178,6 @@ package net.wonderfl.chat
 					content.push(new TextElement($str.substr(i), _elf.clone()));
 			}
 			
-			trace('emoticons : ' + JSON.encode(_emoticonPositions));
-			
 			_factory.content = new GroupElement(content);
 			var line:TextLine;
 			var yPos:int = (FontSetting.LINE_HEIGHT >> 1) + FontSetting.LINE_HEIGHT + 2;
