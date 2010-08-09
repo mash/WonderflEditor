@@ -3,6 +3,9 @@ package net.wonderfl.editor.livecoding
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
+	import flash.external.ExternalInterface;
+	import flash.net.navigateToURL;
+	import flash.net.URLRequest;
 	import flash.text.engine.ElementFormat;
 	import flash.text.engine.FontDescription;
 	import flash.text.engine.TextBaseline;
@@ -41,12 +44,14 @@ package net.wonderfl.editor.livecoding
 		private var _timer:Timer;
 		private var _updateParent:Function;
 		private var _onStart:Function;
+		private var _jumpToReadPage:Function;
 		
 		public function setUpdateParent($updateParent:Function):void {
 			_updateParent = $updateParent;
 		}
 		
 		public function init($chatWindowOpen:Boolean = false):void {
+			trace("LiveCodingPanel.init > $chatWindowOpen : " + $chatWindowOpen);
 			if (_updateParent == null) throw new Error('call setUpdateParent first!');
 			if (!root) throw new Error('add this compoent to the stage first. then, call this method!');
 			
@@ -98,11 +103,20 @@ package net.wonderfl.editor.livecoding
 					startTime = getTimer();
 					addEventListener(Event.ENTER_FRAME, tweener);
 				};
+			} else {
+				_jumpToReadPage = function ():void {
+					var href:String = ExternalInterface.call('function(){return location.href;}');
+					href = href.replace(/\/$/, '');
+					navigateToURL(new URLRequest(href + '/read'), '_self');
+				}
 			}
 			
 			function click(e:MouseEvent):void {
 				if (tweening) return;
-				trace('click');
+				if (_jumpToReadPage != null) {
+					_jumpToReadPage();
+					return;
+				}
 				
 				tweening = true;
 				_chatButton.toggle();
