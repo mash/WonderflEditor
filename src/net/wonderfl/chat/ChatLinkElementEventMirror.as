@@ -63,15 +63,14 @@ package net.wonderfl.chat
 		private var _count:int = 0;
 		public function draw($region:TextLineMirrorRegion):void {
 			var line:TextLine = $region.textLine;
-			_content = line.textBlock.content;
+			_content ||= line.textBlock.content;
 			var rect:Rectangle = $region.bounds;
 			var metrics:FontMetrics = _outFormat.getFontMetrics();
 			//trace("$region : " + rect, _count++);
-			_count++;
 
 			_line = line;
 			var yPos:int =	line.y;
-
+			
 			_hover ||= new Shape;
 			_hover.graphics.beginFill(0xf39c64);
 			_hover.graphics.drawRect(rect.x, yPos + rect.y - 2, rect.width, metrics.underlineOffset + 4 - rect.y);
@@ -81,14 +80,13 @@ package net.wonderfl.chat
 			_underline ||= new Shape;
 			_underline.graphics.lineStyle(1, _outFormat.color);
 			_underline.graphics.moveTo(rect.x, yPos + metrics.underlineOffset + 2);
-			_underline.graphics.lineTo(rect.x + rect.width, yPos + metrics.underlineOffset + 2);
+			_underline.graphics.lineTo(rect.right, yPos + metrics.underlineOffset + 2);
 
 
 			_linkSprite.graphics.beginFill(0, 0);
 			_linkSprite.graphics.drawRect(rect.x , yPos + rect.y - 2, rect.width, metrics.underlineOffset + 4 - rect.y);
 			_linkSprite.graphics.endFill();
 			_linkSprite.x = line.x + rect.x;
-			if (_count == 0) _linkSprite.y = line.y;
 
 			_decorationContainer.addChild(_linkSprite);
 			_linkSprite.addChild(_hover);
