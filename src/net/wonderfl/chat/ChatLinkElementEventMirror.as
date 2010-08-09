@@ -66,7 +66,8 @@ package net.wonderfl.chat
 			_content = line.textBlock.content;
 			var rect:Rectangle = $region.bounds;
 			var metrics:FontMetrics = _outFormat.getFontMetrics();
-			trace("$region : " + rect, _count++);
+			//trace("$region : " + rect, _count++);
+			_count++;
 
 			_line = line;
 			var yPos:int =	line.y;

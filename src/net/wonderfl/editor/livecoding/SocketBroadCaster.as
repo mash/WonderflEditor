@@ -119,7 +119,7 @@ package net.wonderfl.editor.livecoding {
             }
         }
 
-        public function send( command :String, ... args ) :void {
+        public function send( command :int, ... args ) :void {
             if ( ! socket || ! socket.connected ) { return; }
 
             call( 'relay', { command: command, args: args } );

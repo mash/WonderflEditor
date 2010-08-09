@@ -6,13 +6,13 @@
 	 */
 	public class LiveCoding
 	{
-		public static const REPLACE_TEXT:String = 'replaceText';
-		public static const SET_SELECTION:String = 'setSelection';
-		public static const SEND_CURRENT_TEXT:String = 'sendCurrentText';
-		public static const SWF_RELOADED:String = 'swfReloaded';
-		public static const CLOSED:String = 'closed';
-		public static const SCROLL_V:String = 'scrollV';
-		public static const SCROLL_H:String = 'scrollH';
+		public static const REPLACE_TEXT:int = 0;
+		public static const SET_SELECTION:int = 1;
+		public static const SEND_CURRENT_TEXT:int = 2;
+		public static const SWF_RELOADED:int = 3;
+		public static const CLOSED:int = 4;
+		public static const SCROLL_V:int = 5;
+		public static const SCROLL_H:int = 6;
 		
 		public static var isLive:Boolean = true;
 		private var _text:String = '';

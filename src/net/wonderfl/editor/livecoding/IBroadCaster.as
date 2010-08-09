@@ -5,7 +5,7 @@ package net.wonderfl.editor.livecoding
     {
         function join(ticket :String ) :void;
 
-        function send( command :String, ... args ) :void;
+        function send( command :int, ... args ) :void;
 
         // to notify the end of live coding
         function close():void;
