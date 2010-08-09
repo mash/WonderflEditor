@@ -32,7 +32,7 @@ package net.wonderfl.chat
 	 */
 	public class ChatMessage extends UIComponent
 	{
-		public static const LEFT_OF_TEXT:uint = 28;
+		public static const LEFT_OF_TEXT:uint = 21;
 		private static var _factory:TextBlock;
 		private static var _elf:ElementFormat;
 		private static var _headerFormat:ElementFormat;
@@ -351,7 +351,7 @@ package net.wonderfl.chat
 		
 		override protected function updateSize():void 
 		{
-			_textWidth = _width - 60;
+			_textWidth = _width - 50;
 			graphics.clear();
 			graphics.beginFill(ChatStyle.MESSAGE_ITEM_HEADER);
 			graphics.drawRect(0, -1, _width, _icon.height + 2);
