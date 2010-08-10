@@ -4,7 +4,9 @@ package net.wonderfl.editor.livecoding
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.ui.MouseCursor;
 	import net.wonderfl.editor.AS3Editor;
+	import net.wonderfl.mouse.MouseCursorController;
 	import net.wonderfl.utils.removeFromParent;
 	/**
 	 * ...
@@ -25,8 +27,6 @@ package net.wonderfl.editor.livecoding
 			_onImage.visible = false;
 			
 			var sp:Sprite = new Sprite;
-			sp.buttonMode = true;
-			sp.tabEnabled = false;
 			sp.addChild(new _startClass);
 			sp.addChild(_onImage);
 			addChild(sp);
@@ -40,10 +40,12 @@ package net.wonderfl.editor.livecoding
 			
 			sp.addEventListener(MouseEvent.ROLL_OVER, function () :void {
 				_onImage.visible = !_isLive;
+				MouseCursorController.getOverStateHandler(MouseCursor.BUTTON)();
 			});
 			
 			sp.addEventListener(MouseEvent.ROLL_OUT, function ():void {
 				_onImage.visible = _isLive;
+				MouseCursorController.resetMouseCursor();
 			});
 		}
 		

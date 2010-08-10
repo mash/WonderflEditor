@@ -3,7 +3,9 @@ package net.wonderfl.component.scroll
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.ui.MouseCursor;
 	import net.wonderfl.component.core.UIComponent;
+	import net.wonderfl.mouse.MouseCursorController;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -14,8 +16,6 @@ package net.wonderfl.component.scroll
 		public function ScrollBarHandle() {
 			_overSkin = new Sprite;
 			_overSkin.visible = false;
-			tabEnabled = false;
-			buttonMode = true;
 			addChild(_overSkin);
 			
 			addEventListener(Event.ADDED_TO_STAGE, init);
@@ -27,9 +27,11 @@ package net.wonderfl.component.scroll
 			
 			addEventListener(MouseEvent.MOUSE_OVER, function ():void {
 				_overSkin.visible = true;
+				MouseCursorController.getOverStateHandler(MouseCursor.BUTTON)();
 			});
 			addEventListener(MouseEvent.MOUSE_OUT, function ():void {
 				_overSkin.visible = false;
+				MouseCursorController.resetMouseCursor();
 			});
 		}
 		
