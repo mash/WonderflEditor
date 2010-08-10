@@ -6,9 +6,12 @@ package net.wonderfl.chat
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.net.navigateToURL;
+	import flash.net.URLRequest;
 	import flash.text.engine.ContentElement;
 	import flash.text.engine.ElementFormat;
 	import flash.text.engine.FontDescription;
@@ -24,6 +27,7 @@ package net.wonderfl.chat
 	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.editor.core.LinkElementEventMirror;
 	import net.wonderfl.editor.font.FontSetting;
+	import net.wonderfl.utils.bind;
 	import net.wonderfl.utils.listenOnce;
 	import net.wonderfl.utils.removeFromParent;
 	/**
@@ -76,6 +80,7 @@ package net.wonderfl.chat
 		private var _seconds:int;
 		private var _localJoinedAt:Number;
 		private var _timeStr:String = "";
+		private var _linkSprite:Sprite;
 		
 		public function ChatMessage($initData:Object, $joinedAt:Number, $localJoinedAt:Number) 
 		{
@@ -88,27 +93,30 @@ package net.wonderfl.chat
 			addChild(_decorationContainer = new Sprite);
 			addChild(_linkLineContainer = new Sprite);
 			addChild(_textLineContainer = new Sprite);
-			addChild(_icon = new ChatMessageIcon($initData.icon));
+			
+			if ($initData.icon && $initData.name) {
+				var userName:String = $initData.name;
+				
+				addChild(_linkSprite = new Sprite);
+				_linkSprite.addEventListener(MouseEvent.CLICK, bind(navigateToURL, [new URLRequest('/user/' + userName), '_blank']));
+				
+				_linkSprite.addChild(_icon = new ChatMessageIcon($initData.icon));
+				_icon.x = 1;
+				_factory.content = new TextElement(userName, _headerFormat.clone());
+				var line:DisplayObject = _linkSprite.addChild(_factory.createTextLine());
+				line.x = LEFT_OF_TEXT;
+				line.y = line.height + 1;
+			}
 			_linkLineContainer.mouseChildren = _linkLineContainer.mouseEnabled = false;
 			_textLineContainer.mouseEnabled = _textLineContainer.mouseChildren = false;
 			
-			_icon.x = 1;
 			_text = $initData.text;
 			_seconds = $joinedAt - Number($initData.at);
 			_localJoinedAt = $localJoinedAt;
-			drawHeader($initData.name);
 			updateText();
 			updateTime();
 			
 			addEventListener(Event.REMOVED_FROM_STAGE, onRemoved);
-		}
-		
-		private function drawHeader($userName:String):void
-		{
-			_factory.content = new TextElement($userName, _headerFormat.clone());
-			var line:DisplayObject = addChild(_factory.createTextLine());
-			line.x = LEFT_OF_TEXT;
-			line.y = line.height;
 		}
 		
 		public function updateTime():void {
@@ -120,7 +128,7 @@ package net.wonderfl.chat
 			_factory.content = new TextElement(_timeStr, _timeFormat.clone());
 			addChild(_tlTime = _factory.createTextLine());
 			_tlTime.x = _width - 5 - _tlTime.width;
-			_tlTime.y = _tlTime.height;
+			_tlTime.y = _tlTime.height + 1;
 		}
 		
 		private function onRemoved(e:Event):void 
@@ -354,7 +362,7 @@ package net.wonderfl.chat
 			_textWidth = _width - 50;
 			graphics.clear();
 			graphics.beginFill(ChatStyle.MESSAGE_ITEM_HEADER);
-			graphics.drawRect(0, -1, _width, _icon.height + 2);
+			graphics.drawRect(0, -1, _width, ChatMessageIcon.ICON_SIZE + 2);
 			updateText();
 			
 			if (_tlTime) _tlTime.x = _width - 5 - _tlTime.width;
