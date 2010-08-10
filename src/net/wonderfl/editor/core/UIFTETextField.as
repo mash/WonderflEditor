@@ -238,7 +238,9 @@ package net.wonderfl.editor.core
 		{
 			super._setSelection(beginIndex, endIndex, caret);
 			
-			stage.focus = this;
+			CONFIG::editor {
+				stage.focus = this;
+			}
 		}
 	}
 
