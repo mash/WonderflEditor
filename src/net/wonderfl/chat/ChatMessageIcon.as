@@ -16,7 +16,7 @@ package net.wonderfl.chat
 	public class ChatMessageIcon extends UIComponent
 	{
 		private static var _cache:Object = { };
-		private static const ICON_SIZE:uint = 16;
+		public static const ICON_SIZE:uint = 16;
 		private var _iconURL:String;
 		private var _icon:Bitmap;
 		private var _loader:Loader;
