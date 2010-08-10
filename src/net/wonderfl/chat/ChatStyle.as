@@ -11,7 +11,7 @@ package net.wonderfl.chat
 		public static const MESSAGE_ITEM_HEADER:uint = 0x585858;
 		public static const TIME_COLOR:uint = 0x909090;
 		public static const CHAT_MESSAGE:uint = 0xffffff;
-		public static const CHAT_NOTIFICATION:uint = 0xb34033;
+		public static const CHAT_NOTIFICATION:uint = 0xd6151b;
 		public static const SELECTION_COLOR:uint = 0x663333;
 	}
 

@@ -52,7 +52,7 @@ package net.wonderfl.chat
 			addChild(_input);
 			
 			var factory:TextBlock = new TextBlock;
-			factory.content = new TextElement('POST', new ElementFormat(new FontDescription(FontSetting.GOTHIC_FONT), 12, 0xffffff));
+			factory.content = new TextElement('Post', new ElementFormat(new FontDescription(FontSetting.GOTHIC_FONT), 10, 0xffffff));
 			var line:TextLine = factory.createTextLine();
 			line.y = line.height;
 			line.x = (70 - line.width) >> 1;
@@ -90,9 +90,7 @@ package net.wonderfl.chat
 			_spButton.graphics.drawRect(0, 0, 70, 15);
 			_spButton.graphics.endFill();
 			
-			
-			//textElement = new TextElement(str = url.toString(), _elf.clone());
-			//textElement.eventMirror = new ChatLinkElementEventMirror(this, _textLineContainer, _decorationContainer, textElement, FontSetting.LINE_HEIGHT);
+			addChild(new ChatSignUp);
 		}
 		
 		private function keyDown(e:KeyboardEvent):void 

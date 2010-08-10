@@ -87,7 +87,13 @@ package net.wonderfl.editor.livecoding
 			_chat.y = 20;
 			_chatButton.setSize(288, 20);
 			_chatButton.x = LEFT;
-			if (!Boolean(parseInt(params.is_login))) _chat.disableInput();
+			var is_login:Boolean = Boolean(parseInt(params.is_login));
+			
+			CONFIG::editor {
+				is_login = true;
+			}
+			
+			if (!is_login) _chat.disableInput();
 			
 			_height = 20;
 			_chat.x = _width;
