@@ -35,10 +35,6 @@ package net.wonderfl.editor.livecoding
 			super.init($chatWindowOpen);
 			
 			addChild(_onImage);
-			//_syncButton = new CheckBox(this, _onImage.width + 5, 5, 'Sync', function ():void {
-				//_isSync = !_isSync;
-			//});
-			//_syncButton.selected = true;
 			_socket.addEventListener(LiveCodingEvent.RELAYED, relayed);
 		}
 		
@@ -86,11 +82,7 @@ package net.wonderfl.editor.livecoding
 			
 			_viewer.slowDownParser();
 			_source = _source.substring(0, $beginIndex) + $newText + substring($endIndex);
-			//_viewer.text = _source;
 			_viewer.onReplaceText($beginIndex, $endIndex, $newText);
-			//_selectionObject = {
-				//index : $endIndex + $newText.length
-			//}
 			_viewer.updateLineNumbers();
 		}
 		
@@ -99,11 +91,7 @@ package net.wonderfl.editor.livecoding
 			if (_viewer.selectionBeginIndex == $selectionBeginIndex && _viewer.selectionEndIndex == $selectionEndIndex)
 				return;
 			
-			//_ignoreSelection = false;
 			_viewer.onSetSelection($selectionBeginIndex, $selectionEndIndex);
-			//_selectionObject = {
-				//index : $selectionEndIndex
-			//};
 		}
 		
 		private function substring($begin:int, $end:int = 0x7fffffff):String {
