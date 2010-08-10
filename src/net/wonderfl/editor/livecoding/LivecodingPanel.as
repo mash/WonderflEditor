@@ -70,6 +70,7 @@ package net.wonderfl.editor.livecoding
 			_socket = new SocketBroadCaster;
 			_socket.addEventListener(LiveCodingEvent.JOINED, joined);
 			_socket.addEventListener(LiveCodingEvent.MEMBERS_UPDATED, membersUpdated);
+			_socket.addEventListener(LiveCodingEvent.CHAT_RECEIVED, chatReceived);
 			listenOnce(_socket, Event.CONNECT, _socket.join, [params.ticket]);
 			_socket.addEventListener(Event.CONNECT, trace);
 			
@@ -160,6 +161,11 @@ package net.wonderfl.editor.livecoding
 				_chat.x = t * chatXTo + u * chatXFrom;
 				trace(_chat.x, _chatButton.x, chatXFrom, chatXTo);
 			}
+		}
+		
+		private function chatReceived(e:LiveCodingEvent):void 
+		{
+			if (!_chatButton.isOpen()) _chatButton.increaseNumMessages();
 		}
 		
 		public function getChatLeftPos():int {

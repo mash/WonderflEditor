@@ -51,16 +51,24 @@ package net.wonderfl.chat
 			_arrowScale *= -1;
 			_arrow.scaleX = _arrowScale;
 			
+			if (_open) {
+				setNumber(0);
+			}
+			
 			updateSize();
 		}
 		
-		public function setNumber($number:int):void {
+		public function increaseNumMessages():void {
+			setNumber(++_numMessages);
+		}
+		
+		private function setNumber($number:int):void {
 			if (_label) removeChild(_label);
 			
 			_numMessages = $number;
 			_factory.content = new GroupElement(Vector.<ContentElement>([
 				new GraphicElement(_arrow, _arrow.width + 2, _arrow.height, _elf.clone()),
-				new TextElement('Chat' + ($number ? ' : ' + $number : ''), _elf.clone())
+				new TextElement('Chat' + ($number ? ' (' + $number + ')' : ''), _elf.clone())
 			]));
 			_label = _factory.createTextLine();
 			_label.y = _label.height + 4;
