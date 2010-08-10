@@ -1,5 +1,6 @@
 package net.wonderfl.chat 
 {
+	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
@@ -14,9 +15,14 @@ package net.wonderfl.chat
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
+	import flash.ui.Mouse;
+	import flash.ui.MouseCursor;
 	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.editor.font.FontSetting;
+	import net.wonderfl.mouse.MouseCursorController;
+	import net.wonderfl.utils.bind;
 	import net.wonderfl.utils.listenOnce;
+	import net.wonderfl.utils.removeFromParent;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -36,7 +42,7 @@ package net.wonderfl.chat
 			_input.defaultTextFormat = new TextFormat(FontSetting.GOTHIC_FONT);
 			_input.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
 			_input.addEventListener(TextEvent.TEXT_INPUT, textInput);
-			
+			MouseCursorController.setOverState(_input, MouseCursor.IBEAM);
 			
 			_input.border = true;
 			_input.borderColor = 0x666666;
@@ -52,14 +58,41 @@ package net.wonderfl.chat
 			line.x = (70 - line.width) >> 1;
 			
 			_spButton = new Sprite;
-			_spButton.graphics.beginFill(0xb34033);
+			_spButton.graphics.beginFill(0xd6151b);
 			_spButton.graphics.drawRect(0, 0, 70, 15);
 			_spButton.graphics.endFill();
 			_spButton.addChild(line);
-			_spButton.tabEnabled = false;
-			_spButton.buttonMode = true;
+			_spButton.mouseChildren = false;
 			_spButton.addEventListener(MouseEvent.CLICK, _defaultHandler);
 			addChild(_spButton);
+			
+			var overShape:Shape = new Shape;
+			var prevCursor:String;
+			overShape.graphics.beginFill(0xffffff, 0.5);
+			overShape.graphics.drawRect(0, 0, 70, 15);
+			overShape.graphics.endFill();
+			_spButton.addEventListener(MouseEvent.MOUSE_OVER, function ():void {
+				_spButton.addChild(overShape);
+				MouseCursorController.getOverStateHandler(MouseCursor.BUTTON)();
+			});
+			_spButton.addEventListener(MouseEvent.MOUSE_OUT, function ():void {
+				removeFromParent(overShape);
+				MouseCursorController.resetMouseCursor();
+			});
+		}
+		
+		public function disable():void {
+			_input.backgroundColor = 0x666666;
+			_input.mouseEnabled = false;
+			_spButton.mouseEnabled = false;
+			_spButton.graphics.clear();
+			_spButton.graphics.beginFill(0x666666);
+			_spButton.graphics.drawRect(0, 0, 70, 15);
+			_spButton.graphics.endFill();
+			
+			
+			//textElement = new TextElement(str = url.toString(), _elf.clone());
+			//textElement.eventMirror = new ChatLinkElementEventMirror(this, _textLineContainer, _decorationContainer, textElement, FontSetting.LINE_HEIGHT);
 		}
 		
 		private function keyDown(e:KeyboardEvent):void 

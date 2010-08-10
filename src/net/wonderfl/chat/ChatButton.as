@@ -12,8 +12,10 @@ package net.wonderfl.chat
 	import flash.text.engine.TextBlock;
 	import flash.text.engine.TextElement;
 	import flash.text.engine.TextLine;
+	import flash.ui.MouseCursor;
 	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.editor.font.FontSetting;
+	import net.wonderfl.mouse.MouseCursorController;
 	import net.wonderfl.utils.listenOnce;
 	/**
 	 * ...
@@ -32,9 +34,7 @@ package net.wonderfl.chat
 		
 		public function ChatButton() 
 		{
-			tabEnabled = false;
-			buttonMode = true;
-			
+			MouseCursorController.setOverState(this, MouseCursor.BUTTON);
 			_elf = new ElementFormat(new FontDescription(FontSetting.GOTHIC_FONT), 10);
 			_elf.color = 0xffffff;
 			_elf.dominantBaseline = TextBaseline.IDEOGRAPHIC_CENTER;

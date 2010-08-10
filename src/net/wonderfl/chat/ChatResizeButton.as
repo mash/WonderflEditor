@@ -4,7 +4,9 @@ package net.wonderfl.chat
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.ui.Mouse;
+	import flash.ui.MouseCursor;
 	import net.wonderfl.component.core.UIComponent;
+	import net.wonderfl.mouse.MouseCursorController;
 	import net.wonderfl.utils.listenOnce;
 	import net.wonderfl.utils.removeFromParent;
 	/**
@@ -32,12 +34,14 @@ package net.wonderfl.chat
 		
 		private function mouseOut(e:MouseEvent):void 
 		{
+			MouseCursorController.resetMouseCursor();
 			Mouse.show();
 			removeFromParent(_cursor);
 		}
 		
 		private function mouseOver(e:MouseEvent):void 
 		{
+			MouseCursorController.getOverStateHandler(MouseCursor.ARROW);
 			Mouse.hide();
 			addChild(_cursor);
 			watchMouse();

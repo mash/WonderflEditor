@@ -50,12 +50,8 @@ package net.wonderfl.chat
 			updateSize();
 		}
 		
-		public function open():void {
-			
-		}
-		
-		public function close():void {
-			
+		public function disableInput():void {
+			_input.disable();
 		}
 		
 		private function mouseDown(e:MouseEvent):void 

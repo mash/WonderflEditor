@@ -23,10 +23,12 @@ package net.wonderfl.chat
 	import flash.text.engine.TextElement;
 	import flash.text.engine.TextLine;
 	import flash.text.engine.TextLineMirrorRegion;
+	import flash.ui.MouseCursor;
 	import flash.utils.getTimer;
 	import net.wonderfl.component.core.UIComponent;
 	import net.wonderfl.editor.core.LinkElementEventMirror;
 	import net.wonderfl.editor.font.FontSetting;
+	import net.wonderfl.mouse.MouseCursorController;
 	import net.wonderfl.utils.bind;
 	import net.wonderfl.utils.listenOnce;
 	import net.wonderfl.utils.removeFromParent;
@@ -99,6 +101,8 @@ package net.wonderfl.chat
 				
 				addChild(_linkSprite = new Sprite);
 				_linkSprite.addEventListener(MouseEvent.CLICK, bind(navigateToURL, [new URLRequest('/user/' + userName), '_blank']));
+				_linkSprite.addEventListener(MouseEvent.MOUSE_OVER, MouseCursorController.getOverStateHandler(MouseCursor.BUTTON));
+				_linkSprite.addEventListener(MouseEvent.MOUSE_OUT, MouseCursorController.resetMouseCursor);
 				
 				_linkSprite.addChild(_icon = new ChatMessageIcon($initData.icon));
 				_icon.x = 1;
