@@ -67,6 +67,7 @@ package net.wonderfl.chat
 			var rect:Rectangle = $region.bounds;
 			var metrics:FontMetrics = _outFormat.getFontMetrics();
 			//trace("$region : " + rect, _count++);
+			trace("$region : " + rect);
 
 			_line = line;
 			var yPos:int =	line.y;
@@ -82,11 +83,10 @@ package net.wonderfl.chat
 			_underline.graphics.moveTo(rect.x, yPos + metrics.underlineOffset + 2);
 			_underline.graphics.lineTo(rect.right, yPos + metrics.underlineOffset + 2);
 
-
 			_linkSprite.graphics.beginFill(0, 0);
 			_linkSprite.graphics.drawRect(rect.x , yPos + rect.y - 2, rect.width, metrics.underlineOffset + 4 - rect.y);
 			_linkSprite.graphics.endFill();
-			_linkSprite.x = line.x + rect.x;
+			_linkSprite.x = line.x;
 
 			_decorationContainer.addChild(_linkSprite);
 			_linkSprite.addChild(_hover);
