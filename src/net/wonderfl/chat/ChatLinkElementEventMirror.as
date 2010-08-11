@@ -20,6 +20,7 @@ package net.wonderfl.chat
 	import flash.ui.MouseCursor;
 	import net.wonderfl.editor.font.FontSetting;
 	import net.wonderfl.thread.ThreadExecuter;
+	import net.wonderfl.utils.bind;
 	/**
 	 * ...
 	 * @author kobayashi-taro
@@ -31,7 +32,6 @@ package net.wonderfl.chat
 		private var _region:TextLineMirrorRegion;
 		private var _overFormat:ElementFormat;
 		private var _outFormat:ElementFormat;
-		private var _url:String;
 		private var _hover:Shape;
 		private var _underline:Shape;
 		private var _line:TextLine;
@@ -48,14 +48,13 @@ package net.wonderfl.chat
 			_textLineContainer = $textLineContainer;
 			_decorationContainer = $decorationContainer;
 			_text = $text;
-			_url = $text.rawText;
 			_overFormat = $text.elementFormat.clone();
 			_overFormat.color = 0;
 			_outFormat = $text.elementFormat.clone();
 			_lineHeight = $lineHeight;
 
 			_linkSprite = new Sprite;
-			_linkSprite.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+			_linkSprite.addEventListener(MouseEvent.CLICK, bind(navigateToURL, [new URLRequest($text.rawText), "_blank"]));
 			_linkSprite.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 			_linkSprite.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
 		}
@@ -66,7 +65,6 @@ package net.wonderfl.chat
 			_content ||= line.textBlock.content;
 			var rect:Rectangle = $region.bounds;
 			var metrics:FontMetrics = _outFormat.getFontMetrics();
-			//trace("$region : " + rect, _count++);
 			trace("$region : " + rect);
 
 			_line = line;
@@ -91,11 +89,6 @@ package net.wonderfl.chat
 			_decorationContainer.addChild(_linkSprite);
 			_linkSprite.addChild(_hover);
 			_linkSprite.addChild(_underline);
-		}
-
-		private function onMouseDown(e:MouseEvent):void 
-		{
-			navigateToURL(new URLRequest(_url), "_blank");
 		}
 
 		private function onMouseOver(e:MouseEvent):void 
