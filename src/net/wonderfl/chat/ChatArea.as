@@ -4,6 +4,7 @@ package net.wonderfl.chat
 	import flash.desktop.ClipboardFormats;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
@@ -49,7 +50,7 @@ package net.wonderfl.chat
 			
 			addEventListener(MouseEvent.ROLL_OVER, onThisRollOver);
 			addEventListener(MouseEvent.ROLL_OUT, onRollOut);
-			addEventListener(Event.COPY, onCopy);
+			stage.addEventListener(Event.COPY, onCopy);
 			addEventListener(MouseEvent.MOUSE_WHEEL, function (e:MouseEvent):void {
 				scrollV = _scrollV - e.delta;
 				e.stopPropagation();
@@ -66,6 +67,7 @@ package net.wonderfl.chat
 		
 		private function onCopy(e:Event):void 
 		{
+			trace("ChatArea.onCopy > e : " + e);
 			var len:int = _messages.length;
 			var message:ChatMessage;
 			var selectedText:String = "";
@@ -139,15 +141,14 @@ package net.wonderfl.chat
 				_prevMouseUpTime = t;
 				p.x = mouseX; p.y = mouseY;
 				setSelection(dragStart.subtract(new Point(0, FontSetting.LINE_HEIGHT * (_scrollV - prevScrollV))), p);
-				if (stage.focus != _this)
+				if (stage.focus != _this) {
 					stage.focus = _this;
-				e.stopPropagation();
+				}
 			}
 		}
 		
 		private function setSelection($startPoint:Point, $endPoint:Point):void
 		{
-			trace("ChatArea.setSelection > $startPoint : " + $startPoint + ", $endPoint : " + $endPoint);
 			var s:int = getTimer();
 			var yMin:int = $startPoint.y;
 			var yMax:int = $endPoint.y;

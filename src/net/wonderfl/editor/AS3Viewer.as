@@ -49,7 +49,6 @@ package net.wonderfl.editor
 			_field.addPlugIn(_editorHotkeyManager);
 			
 			addEventListener(FocusEvent.FOCUS_IN, function(e:FocusEvent):void {
-				trace("AS3Viewer -> function : " + e);
 				stage.focus = _field;
 			});
 			

@@ -26,6 +26,7 @@ package net.wonderfl.editor.core
 	import net.wonderfl.editor.manager.IKeyboadEventManager;
 	import net.wonderfl.editor.manager.KeyDownProxy;
 	import net.wonderfl.editor.manager.SelectionManager;
+	import net.wonderfl.mouse.MouseCursorController;
 	import net.wonderfl.utils.bind;
 	import org.libspark.ui.SWFWheel;
 	/**
@@ -70,17 +71,7 @@ package net.wonderfl.editor.core
 				removeEventListener(Event.ADDED_TO_STAGE, __init);
 				stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
 			});
-			var prevMouse:String;
-			addEventListener(MouseEvent.MOUSE_OVER, function (e:MouseEvent):void {
-				if (e.target == _this) {
-					prevMouse = Mouse.cursor;
-					Mouse.cursor = MouseCursor.IBEAM;
-				}
-			});
-			addEventListener(MouseEvent.MOUSE_OUT, function (e:Event):void {
-				if (e.target == _this) 
-					Mouse.cursor = prevMouse;
-			});
+			MouseCursorController.setOverState(this, MouseCursor.IBEAM);
 			
 			
 			addEventListener(Event.COPY, bind(_clipboardManager.copy));
