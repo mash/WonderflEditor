@@ -106,6 +106,8 @@ package net.wonderfl.chat
 				
 				_linkSprite.addChild(_icon = new ChatMessageIcon($initData.icon));
 				_icon.x = 1;
+				
+				// user name
 				_factory.content = new TextElement(userName, _headerFormat.clone());
 				var line:DisplayObject = _linkSprite.addChild(_factory.createTextLine());
 				line.x = LEFT_OF_TEXT;
@@ -343,9 +345,9 @@ package net.wonderfl.chat
 		public function updateView():void {
 			if (_icon) {
 				if (_icon.parent) {
-					if (y < -_icon.height || y > _viewHeight) removeChild(_icon);
+					if (y < -_icon.height || y > _viewHeight) _linkSprite.removeChild(_icon);
 				} else if (y > -_icon.height && y < _viewHeight)
-					addChild(_icon);
+					_linkSprite.addChild(_icon);
 			}
 			
 			var len:int = _textLines.length;

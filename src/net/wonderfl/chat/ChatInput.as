@@ -33,6 +33,7 @@ package net.wonderfl.chat
 		private var _defaultHandler:Function;
 		private var _input:TextField;
 		private var _spButton:Sprite;
+		private var _preventFollowingTextInput:Boolean;
 		
 		public function ChatInput($inputHandler:Function) 
 		{
