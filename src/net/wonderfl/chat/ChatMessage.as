@@ -31,6 +31,7 @@ package net.wonderfl.chat
 	import net.wonderfl.mouse.MouseCursorController;
 	import net.wonderfl.utils.bind;
 	import net.wonderfl.utils.listenOnce;
+	import net.wonderfl.utils.removeAllChildren;
 	import net.wonderfl.utils.removeFromParent;
 	/**
 	 * ...
@@ -161,13 +162,17 @@ package net.wonderfl.chat
 			var textElement:TextElement;
 			
 			_emoticonPositions.length = 0;
+			removeAllChildren(_textLineContainer);
+			removeAllChildren(_decorationContainer);
 			
 			while (url = regURL.exec(_text)) {
 				parseEmoticons(_text.substring(i, url.index), i);
+
 				
 				textElement = new TextElement(str = url.toString(), _elf.clone());
 				textElement.eventMirror = new ChatLinkElementEventMirror(this, _textLineContainer, _decorationContainer, textElement, FontSetting.LINE_HEIGHT);
 				content.push(textElement);
+				trace(":: url link regexp :: ", i, url.index, str);
 				i = url.index + str.length;
 			}
 			if (i < _text.length) {
@@ -345,7 +350,7 @@ package net.wonderfl.chat
 		public function updateView():void {
 			if (_icon) {
 				if (_icon.parent) {
-					if (y < -_icon.height || y > _viewHeight) _linkSprite.removeChild(_icon);
+					if (y < -_icon.height || y > _viewHeight) removeFromParent(_icon);
 				} else if (y > -_icon.height && y < _viewHeight)
 					_linkSprite.addChild(_icon);
 			}
@@ -356,7 +361,7 @@ package net.wonderfl.chat
 			{
 				line = _textLines[i];
 				if (line.parent) {
-					if (y + line.y < -FontSetting.LINE_HEIGHT || y + line.y > _viewHeight) _textLineContainer.removeChild(line);
+					if (y + line.y < -FontSetting.LINE_HEIGHT || y + line.y > _viewHeight) removeFromParent(line);
 				} else if (y + line.y >  - FontSetting.LINE_HEIGHT && y + line.y < _viewHeight) {
 					_textLineContainer.addChild(line);
 				}
