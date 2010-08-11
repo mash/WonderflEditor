@@ -19,6 +19,7 @@ package net.wonderfl.chat
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
 	import net.wonderfl.editor.font.FontSetting;
+	import net.wonderfl.mouse.MouseCursorController;
 	import net.wonderfl.thread.ThreadExecuter;
 	import net.wonderfl.utils.bind;
 	/**
@@ -84,7 +85,8 @@ package net.wonderfl.chat
 			_linkSprite.graphics.beginFill(0, 0);
 			_linkSprite.graphics.drawRect(rect.x , yPos + rect.y - 2, rect.width, metrics.underlineOffset + 4 - rect.y);
 			_linkSprite.graphics.endFill();
-			_linkSprite.x = line.x;
+			
+			if (_count++ == 0) _linkSprite.x = line.x;
 
 			_decorationContainer.addChild(_linkSprite);
 			_linkSprite.addChild(_hover);
@@ -98,7 +100,7 @@ package net.wonderfl.chat
 
 			_text.elementFormat = _overFormat.clone();
 			updateView();
-			Mouse.cursor = MouseCursor.BUTTON;
+			MouseCursorController.getOverStateHandler(MouseCursor.BUTTON)();
 		}
 
 		private function onMouseOut(e:MouseEvent):void 
@@ -108,7 +110,7 @@ package net.wonderfl.chat
 
 			_text.elementFormat = _outFormat.clone();
 			updateView();
-			Mouse.cursor = MouseCursor.IBEAM;
+			MouseCursorController.resetMouseCursor();
 		}
 
 		private function updateView():void
