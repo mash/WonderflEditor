@@ -59,6 +59,7 @@ package
 		
 		private function compile():void
 		{
+			trace("WonderflEditor.compile");
 			CONFIG::useExternalInterface {
 				if (ExternalInterface.available && !_mouseUIFlag) {
 					ExternalInterface.call("Wonderfl.Compiler.edit_complete");
