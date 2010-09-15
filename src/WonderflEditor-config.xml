@@ -1,6 +1,6 @@
 <flex-config>
 	<compiler>
-		<debug>true</debug>
+		<debug>false</debug>
 		<define>
 			<name>CONFIG::useExternalInterface</name>
 			<value>true</value>
