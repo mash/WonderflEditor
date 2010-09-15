@@ -30,6 +30,7 @@ package
 	{
 		private var _editor:AS3Editor;
 		private var _compileTimer:Timer;
+		private var _compileFlag:Boolean;
 		private var _client:ChatClient;
 		private var _mouseUIFlag:Boolean = false;
 		private var _infoPanel:LiveCodingEditorPanel;
@@ -40,9 +41,10 @@ package
 			addChild(_editor = new AS3Editor);
 			_compileTimer = new Timer(1500, 1);
 			_compileTimer.addEventListener(TimerEvent.TIMER, bind(compile));
-			_compileTimer.addEventListener(TimerEvent.TIMER, trace);
-			_editor.addEventListener(Event.COMPLETE, bind(_compileTimer.start));
-			_editor.addEventListener(Event.COMPLETE, trace);
+			_editor.addEventListener(Event.COMPLETE, function ():void {
+				_compileFlag = true;
+				_compileTimer.start();
+			});
 			_editor.setFontSize(12);
 			
 			focusRect = null;
@@ -61,6 +63,7 @@ package
 		
 		private function compile():void
 		{
+			_compileFlag = false;
 			trace("WonderflEditor.compile");
 			CONFIG::useExternalInterface {
 				if (ExternalInterface.available && !_mouseUIFlag) {
@@ -75,11 +78,16 @@ package
 			return encodeURIComponent(_editor.text);
 		}
 		
+		private function resetTimer(e:Event = null) {
+			_compileTimer.reset();
+			if (_compileFlag) {
+				_compileTimer.start();
+			}
+		}
+		
 		private function init():void 
 		{
-			var resetTimer:Function;
-			
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, resetTimer = bind(_compileTimer.reset));
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, resetTimer);
 			stage.addEventListener(MouseEvent.MOUSE_DOWN, function ():void {
 				resetTimer();
 				_mouseUIFlag = true;
@@ -108,6 +116,7 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
+			stage.addEventListener(MouseEvent.MOUSE_WHEEL, resetTimer);
 			stage.dispatchEvent(new Event(Event.RESIZE));
 			
 			CONFIG::useExternalInterface {
