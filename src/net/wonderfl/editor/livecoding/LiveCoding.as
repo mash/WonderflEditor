@@ -52,7 +52,6 @@
 		}
 		
 		public function pushReplaceText($startIndex:int, $endIndex:int, $text:String):void {
-			trace("LiveCoding.pushReplaceText > s : " + $startIndex + ", e : " + $endIndex + ", text : [" + $text + "]");
 			_broadCaster.replaceText($startIndex, $endIndex, $text);
 		}
 		

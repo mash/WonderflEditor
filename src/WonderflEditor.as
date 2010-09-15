@@ -78,7 +78,7 @@ package
 			return encodeURIComponent(_editor.text);
 		}
 		
-		private function resetTimer(e:Event = null) {
+		private function resetTimer(e:Event = null):void {
 			_compileTimer.reset();
 			if (_compileFlag) {
 				_compileTimer.start();
