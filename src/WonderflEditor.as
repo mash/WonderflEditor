@@ -40,7 +40,9 @@ package
 			addChild(_editor = new AS3Editor);
 			_compileTimer = new Timer(1500, 1);
 			_compileTimer.addEventListener(TimerEvent.TIMER, bind(compile));
+			_compileTimer.addEventListener(TimerEvent.TIMER, trace);
 			_editor.addEventListener(Event.COMPLETE, bind(_compileTimer.start));
+			_editor.addEventListener(Event.COMPLETE, trace);
 			_editor.setFontSize(12);
 			
 			focusRect = null;
