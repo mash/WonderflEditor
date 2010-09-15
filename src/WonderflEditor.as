@@ -30,7 +30,7 @@ package
 	{
 		private var _editor:AS3Editor;
 		private var _compileTimer:Timer;
-		private var _compilerFlag:Boolean;
+		private var _compileFlag:Boolean;
 		private var _client:ChatClient;
 		private var _mouseUIFlag:Boolean = false;
 		private var _infoPanel:LiveCodingEditorPanel;
@@ -42,7 +42,7 @@ package
 			_compileTimer = new Timer(1500, 1);
 			_compileTimer.addEventListener(TimerEvent.TIMER, bind(compile));
 			_editor.addEventListener(Event.COMPLETE, function ():void {
-				_compilerFlag = true;
+				_compileFlag = true;
 				_compileTimer.start();
 			});
 			_editor.setFontSize(12);
@@ -63,7 +63,7 @@ package
 		
 		private function compile():void
 		{
-			_compilerFlag = false;
+			_compileFlag = false;
 			trace("WonderflEditor.compile");
 			CONFIG::useExternalInterface {
 				if (ExternalInterface.available && !_mouseUIFlag) {
@@ -80,7 +80,7 @@ package
 		
 		private function resetTimer(e:Event = null):void {
 			_compileTimer.reset();
-			if (_compilerFlag) {
+			if (_compileFlag) {
 				_compileTimer.start();
 			}
 		}
@@ -117,6 +117,7 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, onResize);
+			stage.addEventListener(MouseEvent.MOUSE_WHEEL, resetTimer);
 			stage.dispatchEvent(new Event(Event.RESIZE));
 			
 			CONFIG::useExternalInterface {
