@@ -179,6 +179,8 @@ package ro.minibuilder.asparser
 			//look for E4X
 			else if (c == '<')
 			{
+				if (tokens.length == 0) return null;
+				
 				lt = tokens[tokens.length-1].string;
 				if (lt=='=' || lt==',' || lt=='[' || lt=='(' || lt=='==' || lt=='!=')
 				{
@@ -449,7 +451,8 @@ package ro.minibuilder.asparser
 						//TODO if is "set" make it "*set"
 						field = new Field(tp.string, t.pos, t.string);
 						if (t.string != '(')//anonimus functions are not members
-							scope.members.setValue(t.string, field);
+							if (scope)
+								scope.members.setValue(t.string, field);
 						if (tp.string!='var' && tp.string!='const')
 							_scope = field;
 							
@@ -464,12 +467,12 @@ package ro.minibuilder.asparser
 							access = null;
 						}
 						//all interface methods are public
-						if (scope.fieldType == 'interface')
+						if (scope && scope.fieldType == 'interface')
 							field.access = 'public';
 						//this is so members will have the parent set to the scope
 						field.parent = scope;
 					}
-					if (_scope && (tp.string=='class' || tp.string=='interface' || scope.fieldType=='package'))
+					if (_scope && scope && (tp.string=='class' || tp.string=='interface' || scope.fieldType=='package'))
 					{
 						_scope.type = new Multiname('Class');
 						try {
